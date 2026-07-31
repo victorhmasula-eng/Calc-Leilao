@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Calculadora — Mansões Colorado (Leilão Caixa)</title>
+<title>Calculadora — Belle Horizonte (Leilão Caixa)</title>
 <style>
   :root {
     color-scheme: light;
@@ -15,8 +15,8 @@
     --gridline:       #e1e0d9;
     --border:         rgba(11,11,11,0.10);
     --series-1:       #2a78d6; /* aquisição */
-    --series-2:       #1baf7a; /* financiamento (juros+seguro) */
-    --series-3:       #eda100; /* reforma + dívidas + IPTU */
+    --series-2:       #8a4fd6; /* dívidas propter rem */
+    --series-3:       #eda100; /* reforma + posse */
     --good:           #0ca30c;
     --warning:        #b9790a;
     --critical:       #d03b3b;
@@ -32,7 +32,7 @@
       --gridline:       #2c2c2a;
       --border:         rgba(255,255,255,0.10);
       --series-1:       #3987e5;
-      --series-2:       #199e70;
+      --series-2:       #a06be8;
       --series-3:       #c98500;
       --good:           #0ca30c;
       --warning:        #fab219;
@@ -111,6 +111,7 @@
     background: var(--page-plane); color: var(--text-primary);
     font-variant-numeric: tabular-nums;
   }
+  select.numfield { appearance: none; -webkit-appearance: none; }
 
   details.advanced summary {
     cursor: pointer; font-size: 14px; font-weight: 600; color: var(--series-1);
@@ -120,6 +121,11 @@
   details.advanced summary::before { content: "▸ "; }
   details.advanced[open] summary::before { content: "▾ "; }
   details.advanced .field { margin-top: 16px; }
+  details.advanced .field-group-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--text-muted); margin: 18px 0 8px; font-weight: 700;
+  }
+  details.advanced .field-group-title:first-of-type { margin-top: 16px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .grid2 label { font-size: 12px; color: var(--text-muted); display:block; margin-bottom:4px; }
 
@@ -178,24 +184,36 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Casa Mansões Colorado — Leilão Caixa</h1>
-    <div class="subtitle">Sobradinho/DF · 355 m² · avaliação R$ 1.035.000 · matrícula 18.011. Ajuste o valor de aquisição e o prazo de venda para ver lucro e retorno estimados.</div>
+    <h1>Apto Belle Horizonte — Leilão Caixa</h1>
+    <div class="subtitle">Valparaíso de Goiás/GO · 42,81 m² · avaliação R$ 225.000 · matrícula 90.551 · venda online direta (sem comissão de leiloeiro). Ajuste o lance e o prazo de venda para ver lucro e retorno estimados.</div>
   </header>
 
   <div class="card">
-    <h2>Seus dois números</h2>
+    <h2>Seus três números</h2>
 
     <div class="field">
       <div class="field-label">
         <span>Preço de aquisição (lance)</span>
-        <span class="field-value" id="precoLabel">R$ 700.000</span>
+        <span class="field-value" id="precoLabel">R$ 77.945</span>
       </div>
-      <input type="range" id="precoSlider" min="600000" max="900000" step="1000" value="700000">
-      <div class="range-ticks"><span>R$ 600k</span><span>R$ 900k</span></div>
+      <input type="range" id="precoSlider" min="70000" max="160000" step="500" value="77945">
+      <div class="range-ticks"><span>R$ 70k</span><span>R$ 160k</span></div>
       <div style="margin-top:8px;">
-        <input type="number" class="numfield" id="precoInput" value="700000" step="1000">
+        <input type="number" class="numfield" id="precoInput" value="77945.34" step="500">
       </div>
-      <div class="alert warn" id="lanceAlert" style="display:none;">⚠ Abaixo do lance mínimo do edital (R$ 659.620,30) — não é um lance válido nesta praça.</div>
+      <div class="alert warn" id="lanceAlert" style="display:none;">⚠ Abaixo do lance/valor mínimo de venda (R$ 77.945,34) — não é um lance válido nesta venda online.</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">
+        <span>Preço de venda estimado</span>
+        <span class="field-value" id="vendaLabel">R$ 150.000</span>
+      </div>
+      <input type="range" id="vendaSlider" min="100000" max="200000" step="1000" value="150000">
+      <div class="range-ticks"><span>R$ 100k (conservador)</span><span>R$ 200k (otimista)</span></div>
+      <div style="margin-top:8px;">
+        <input type="number" class="numfield" id="vendaInput" value="150000" step="1000">
+      </div>
     </div>
 
     <div class="field">
@@ -209,23 +227,46 @@
 
     <details class="advanced">
       <summary>Ajustar premissas avançadas</summary>
-      <div class="field">
-        <div class="field-label"><span>Preço de venda estimado</span><span class="field-value" id="vendaLabel">R$ 1.100.000</span></div>
-        <input type="range" id="vendaSlider" min="900000" max="1300000" step="5000" value="1100000">
-      </div>
+
+      <div class="field-group-title">Custos na aquisição</div>
       <div class="grid2">
-        <div><label>Taxa financiamento (% a.a.)</label><input type="number" class="numfield" id="taxaInput" value="9.5" step="0.1"></div>
-        <div><label>Prazo financiamento (meses)</label><input type="number" class="numfield" id="prazoFinInput" value="360" step="12"></div>
-        <div><label>Reforma + contingência (R$)</label><input type="number" class="numfield" id="reformaInput" value="117500" step="1000"></div>
-        <div><label>Condomínio devido (R$)</label><input type="number" class="numfield" id="condoInput" value="21000" step="500"></div>
-        <div><label>IPTU/TLP em atraso (R$)</label><input type="number" class="numfield" id="iptuInput" value="3388" step="100"></div>
-        <div><label>IPTU corrente + consumo (R$/mês)</label><input type="number" class="numfield" id="iptuMesInput" value="833" step="50"></div>
-        <div><label>Comissão leiloeiro (%)</label><input type="number" class="numfield" id="comissaoInput" value="5" step="0.5"></div>
+        <div><label>Comissão leiloeiro (%)</label><input type="number" class="numfield" id="comissaoInput" value="0" step="0.5"></div>
         <div><label>ITBI (%)</label><input type="number" class="numfield" id="itbiInput" value="2" step="0.5"></div>
-        <div><label>Cartório/registro (R$)</label><input type="number" class="numfield" id="cartorioInput" value="8500" step="500"></div>
-        <div><label>Tarifa avaliação Caixa (R$)</label><input type="number" class="numfield" id="tarifaInput" value="4000" step="500"></div>
+        <div><label>Cartório / registro (R$)</label><input type="number" class="numfield" id="cartorioInput" value="2000" step="100"></div>
+        <div><label>Corretor / assessoria na aquisição (R$)</label><input type="number" class="numfield" id="corretorAquisicaoInput" value="0" step="100"></div>
+        <div><label>Outros custos (R$)</label><input type="number" class="numfield" id="outrosInput" value="0" step="100"></div>
+      </div>
+
+      <div class="field-group-title">Dívidas propter rem (assumidas pelo comprador)</div>
+      <div class="grid2">
+        <div><label>Condomínio em atraso — dívida total (R$)</label><input type="number" class="numfield" id="condoInput" value="25000" step="500"></div>
+        <div><label>Limite de responsabilidade do comprador (% da avaliação)</label><input type="number" class="numfield" id="condoLimitePctInput" value="10" step="1"></div>
+        <div><label>Avaliação Caixa (R$)</label><input type="number" class="numfield" id="avaliacaoInput" value="225000" step="1000"></div>
+        <div><label>IPTU em atraso (R$)</label><input type="number" class="numfield" id="iptuInput" value="535.54" step="10"></div>
+      </div>
+      <div class="stat-sub" id="condoResumo" style="margin-top:6px;"></div>
+
+      <div class="field-group-title">Reforma e posse</div>
+      <div class="grid2">
+        <div><label>Reforma (R$)</label><input type="number" class="numfield" id="reformaInput" value="10000" step="500"></div>
+        <div><label>Condomínio + IPTU corrente (R$/mês)</label><input type="number" class="numfield" id="iptuMesInput" value="380" step="10"></div>
+      </div>
+
+      <div class="field-group-title">Custos na venda e imposto de renda</div>
+      <div class="grid2">
         <div><label>Corretagem na venda (%)</label><input type="number" class="numfield" id="corretagemInput" value="6" step="0.5"></div>
-        <div><label>Entrada (%)</label><input type="number" class="numfield" id="entradaInput" value="5" step="1"></div>
+        <div>
+          <label>Imposto de renda</label>
+          <select class="numfield" id="irTipoSelect">
+            <option value="15" selected>Pessoa física (15%)</option>
+            <option value="6">Pessoa jurídica (~6%, presumido)</option>
+            <option value="manual">Manual</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" id="irManualField" style="display:none; margin-top:10px;">
+        <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">Alíquota manual de IR (%)</label>
+        <input type="number" class="numfield" id="irManualInput" value="15" step="0.5">
       </div>
     </details>
   </div>
@@ -240,9 +281,9 @@
 
     <div class="stat-row">
       <div class="stat-tile">
-        <div class="stat-label"><span class="status-dot" id="dotCaixa"></span>Caixa próprio total</div>
+        <div class="stat-label"><span class="status-dot" id="dotCaixa"></span>Total desembolsado</div>
         <div class="stat-value" id="caixaValue">R$ 0</div>
-        <div class="stat-sub">desembolsado até a venda</div>
+        <div class="stat-sub">até a venda</div>
       </div>
       <div class="stat-tile">
         <div class="stat-label"><span class="status-dot" id="dotRetorno"></span>Retorno anualizado</div>
@@ -256,15 +297,15 @@
     <div class="bar" id="costBar"></div>
     <div class="legend">
       <div class="item"><span class="swatch" style="background:var(--series-1)"></span>Aquisição</div>
-      <div class="item"><span class="swatch" style="background:var(--series-2)"></span>Financiamento (juros+seguro)</div>
-      <div class="item"><span class="swatch" style="background:var(--series-3)"></span>Reforma + dívidas + IPTU</div>
+      <div class="item"><span class="swatch" style="background:var(--series-2)"></span>Dívidas propter rem</div>
+      <div class="item"><span class="swatch" style="background:var(--series-3)"></span>Reforma + posse</div>
     </div>
 
     <table class="breakdown" id="breakdownTable"></table>
   </div>
 
   <footer>
-    Modelo simplificado de apoio à decisão. Financiamento SAC estimado com taxa e prazo editáveis; seguro MIP/DFI aproximado em 0,035%/mês do saldo devedor. IR de 15% sobre ganho de capital, com custo de aquisição = arrematação + comissão + ITBI + cartório + reforma (assumindo reforma documentada). Não substitui análise de advogado, contador ou despachante imobiliário. Averbação de leilão negativo pendente pode atrasar a revenda em qualquer prazo — confirme com o leiloeiro antes de dar lance.
+    Modelo simplificado de apoio à decisão, compra à vista (sem financiamento). IR sobre ganho de capital calculado com custo de aquisição = arrematação + ITBI + cartório + corretor/assessoria + reforma (dívidas assumidas e custos de posse não entram na base do IR, apenas no caixa desembolsado). O condomínio em atraso segue a regra da Caixa: o comprador responde até um limite (% editável) da avaliação, e a Caixa paga o excedente. Valores de referência: lance mínimo R$ 77.945,34, condomínio em atraso R$ 25.000 (dívida total; comprador responde por até R$ 22.500, limite de 10% da avaliação de R$ 225.000), IPTU em atraso R$ 535,54 (confirmado na Prefeitura de Valparaíso de Goiás). Não substitui análise de advogado, contador ou despachante imobiliário.
   </footer>
 </div>
 
@@ -282,7 +323,9 @@ function fmtPct(v) {
 const el = id => document.getElementById(id);
 
 const precoSlider = el('precoSlider'), precoInput = el('precoInput');
+const vendaSlider = el('vendaSlider'), vendaInput = el('vendaInput');
 const prazoSlider = el('prazoSlider');
+const irTipoSelect = el('irTipoSelect'), irManualField = el('irManualField');
 
 function syncPrecoFromSlider() { precoInput.value = precoSlider.value; compute(); }
 function syncPrecoFromInput() {
@@ -292,77 +335,88 @@ function syncPrecoFromInput() {
 }
 precoSlider.addEventListener('input', syncPrecoFromSlider);
 precoInput.addEventListener('input', syncPrecoFromInput);
+
+function syncVendaFromSlider() { vendaInput.value = vendaSlider.value; compute(); }
+function syncVendaFromInput() {
+  let v = parseFloat(vendaInput.value) || 0;
+  vendaSlider.value = Math.min(Math.max(v, vendaSlider.min), vendaSlider.max);
+  compute();
+}
+vendaSlider.addEventListener('input', syncVendaFromSlider);
+vendaInput.addEventListener('input', syncVendaFromInput);
+
 prazoSlider.addEventListener('input', compute);
 
-['vendaSlider','taxaInput','prazoFinInput','reformaInput','condoInput','iptuInput',
- 'iptuMesInput','comissaoInput','itbiInput','cartorioInput','tarifaInput','corretagemInput','entradaInput']
+irTipoSelect.addEventListener('input', () => {
+  irManualField.style.display = irTipoSelect.value === 'manual' ? 'block' : 'none';
+  compute();
+});
+
+['comissaoInput','itbiInput','cartorioInput','corretorAquisicaoInput','outrosInput',
+ 'condoInput','condoLimitePctInput','avaliacaoInput','iptuInput',
+ 'reformaInput','iptuMesInput','corretagemInput','irManualInput']
  .forEach(id => el(id).addEventListener('input', compute));
 
 function compute() {
   const P = parseFloat(precoInput.value) || 0;
   const meses = parseInt(prazoSlider.value, 10);
-  const V = parseFloat(el('vendaSlider').value) || 0;
-  const taxaAA = parseFloat(el('taxaInput').value) / 100 || 0;
-  const prazoFin = parseInt(el('prazoFinInput').value, 10) || 360;
-  const reforma = parseFloat(el('reformaInput').value) || 0;
-  const condo = parseFloat(el('condoInput').value) || 0;
-  const iptuAtraso = parseFloat(el('iptuInput').value) || 0;
-  const iptuMes = parseFloat(el('iptuMesInput').value) || 0;
+  const V = parseFloat(vendaInput.value) || 0;
   const comissaoPct = parseFloat(el('comissaoInput').value) / 100 || 0;
   const itbiPct = parseFloat(el('itbiInput').value) / 100 || 0;
   const cartorio = parseFloat(el('cartorioInput').value) || 0;
-  const tarifa = parseFloat(el('tarifaInput').value) || 0;
+  const corretorAquisicao = parseFloat(el('corretorAquisicaoInput').value) || 0;
+  const outros = parseFloat(el('outrosInput').value) || 0;
+  const condoTotal = parseFloat(el('condoInput').value) || 0;
+  const condoLimitePct = parseFloat(el('condoLimitePctInput').value) / 100 || 0;
+  const avaliacao = parseFloat(el('avaliacaoInput').value) || 0;
+  const iptuAtraso = parseFloat(el('iptuInput').value) || 0;
+  const reforma = parseFloat(el('reformaInput').value) || 0;
+  const iptuMes = parseFloat(el('iptuMesInput').value) || 0;
   const corretagemPct = parseFloat(el('corretagemInput').value) / 100 || 0;
-  const entradaPct = parseFloat(el('entradaInput').value) / 100 || 0;
+  const irPct = (irTipoSelect.value === 'manual'
+    ? parseFloat(el('irManualInput').value) || 0
+    : parseFloat(irTipoSelect.value)) / 100;
 
   // labels
   el('precoLabel').textContent = fmtBRL(P);
   el('prazoLabel').textContent = meses + (meses === 1 ? ' mês' : ' meses');
   el('vendaLabel').textContent = fmtBRL(V);
-  el('lanceAlert').style.display = P < 659620 ? 'flex' : 'none';
+  el('lanceAlert').style.display = P < 77945.34 ? 'flex' : 'none';
 
-  // aquisição
-  const entrada = P * entradaPct;
+  // aquisição (à vista, sem financiamento)
   const comissaoLeiloeiro = P * comissaoPct;
   const itbi = P * itbiPct;
-  const subtotalAquisicao = entrada + comissaoLeiloeiro + tarifa + itbi + cartorio;
+  const subtotalAquisicao = P + comissaoLeiloeiro + itbi + cartorio + corretorAquisicao + outros;
 
-  // financiamento SAC
-  const financiado = P - entrada;
-  const amortConst = financiado / prazoFin;
-  const iMensal = Math.pow(1 + taxaAA, 1/12) - 1;
-  const seguroTaxaMensal = 0.00035;
+  // condomínio: comprador responde até um limite (% da avaliação); a Caixa paga o excedente
+  const condoLimite = avaliacao * condoLimitePct;
+  const condoComprador = Math.min(condoTotal, condoLimite);
+  const condoCaixa = Math.max(condoTotal - condoLimite, 0);
+  el('condoResumo').textContent =
+    'Dívida total ' + fmtBRL(condoTotal) + ' · limite do comprador ' + fmtBRL(condoLimite) +
+    ' → comprador paga ' + fmtBRL(condoComprador) +
+    (condoCaixa > 0 ? ' · Caixa paga o excedente de ' + fmtBRL(condoCaixa) : '');
 
-  let saldo = financiado;
-  let totalJuros = 0, totalSeguro = 0, totalAmort = 0;
-  const mesesPagos = Math.min(meses, prazoFin);
-  for (let k = 0; k < mesesPagos; k++) {
-    const juros = saldo * iMensal;
-    const seguro = saldo * seguroTaxaMensal;
-    totalJuros += juros;
-    totalSeguro += seguro;
-    totalAmort += amortConst;
-    saldo -= amortConst;
-  }
-  const saldoDevedor = Math.max(saldo, 0);
-  const custoFinanciamento = totalJuros + totalSeguro; // juros + seguro pagos (não amortização, que retorna como patrimônio)
+  // dívidas propter rem assumidas pelo comprador
+  const subtotalDividas = condoComprador + iptuAtraso;
 
+  // reforma + posse
   const iptuCorrenteTotal = iptuMes * meses;
+  const subtotalReformaPosse = reforma + iptuCorrenteTotal;
 
-  const subtotalCarrego = custoFinanciamento + condo + iptuAtraso + iptuCorrenteTotal + reforma;
-  const caixaProprioTotal = subtotalAquisicao + subtotalCarrego;
+  const totalDesembolsado = subtotalAquisicao + subtotalDividas + subtotalReformaPosse;
 
   // venda
   const corretagem = V * corretagemPct;
-  const custoBaseIR = P + comissaoLeiloeiro + itbi + cartorio + reforma;
+  const custoBaseIR = P + comissaoLeiloeiro + itbi + cartorio + corretorAquisicao + reforma;
   const ganho = Math.max(V - custoBaseIR, 0);
-  const ir = ganho * 0.15;
-  const liquidoVenda = V - corretagem - saldoDevedor - ir;
+  const ir = ganho * irPct;
+  const liquidoVenda = V - corretagem - ir;
 
-  const lucro = liquidoVenda - caixaProprioTotal;
-  const retorno = caixaProprioTotal > 0 ? (lucro / caixaProprioTotal) * 100 : 0;
-  const retornoAno = caixaProprioTotal > 0
-    ? (Math.pow(1 + lucro / caixaProprioTotal, 12 / meses) - 1) * 100
+  const lucro = liquidoVenda - totalDesembolsado;
+  const retorno = totalDesembolsado > 0 ? (lucro / totalDesembolsado) * 100 : 0;
+  const retornoAno = totalDesembolsado > 0
+    ? (Math.pow(1 + lucro / totalDesembolsado, 12 / meses) - 1) * 100
     : 0;
 
   // render hero
@@ -370,17 +424,17 @@ function compute() {
   el('lucroValue').className = 'hero-value ' + (lucro >= 0 ? '' : 'ink-critical');
   el('retornoValue').textContent = fmtPct(retorno) + ' em ' + meses + (meses === 1 ? ' mês' : ' meses');
 
-  el('caixaValue').textContent = fmtBRL(caixaProprioTotal);
+  el('caixaValue').textContent = fmtBRL(totalDesembolsado);
   el('retornoAnoValue').textContent = fmtPct(retornoAno);
 
   // status coloring
-  let statusRetorno = 'good', statusMsg = '';
+  let statusRetorno = 'good';
   if (lucro < 0) { statusRetorno = 'critical'; }
   else if (retornoAno < 8) { statusRetorno = 'critical'; }
   else if (retornoAno < 20) { statusRetorno = 'warning'; }
   else { statusRetorno = 'good'; }
 
-  el('dotCaixa').className = 'status-dot status-' + (P < 659620 ? 'warning' : 'good');
+  el('dotCaixa').className = 'status-dot status-' + (P < 77945.34 ? 'warning' : 'good');
   el('dotRetorno').className = 'status-dot status-' + statusRetorno;
   el('retornoAnoValue').className = 'stat-value ink-' + statusRetorno;
 
@@ -389,36 +443,35 @@ function compute() {
   if (lucro < 0) {
     alertBox.innerHTML = '<div class="alert">⚠ Nesse cenário o resultado é <strong>prejuízo</strong> — reveja o preço de venda, o prazo ou o valor do lance.</div>';
   } else if (statusRetorno === 'warning') {
-    alertBox.innerHTML = '<div class="alert warn">⚠ Margem apertada: qualquer imprevisto (reforma, atraso na venda, preço abaixo do estimado) pode zerar o lucro.</div>';
+    alertBox.innerHTML = '<div class="alert warn">⚠ Margem apertada: o débito de condomínio (' + fmtBRL(condoComprador) + ' de responsabilidade do comprador) já consome boa parte da folga — qualquer imprevisto pode zerar o lucro.</div>';
   }
 
   // cost bar
-  const total = subtotalAquisicao + custoFinanciamento + (condo + iptuAtraso + iptuCorrenteTotal + reforma);
+  const total = subtotalAquisicao + subtotalDividas + subtotalReformaPosse;
   const pctAq = total > 0 ? (subtotalAquisicao / total) * 100 : 0;
-  const pctFin = total > 0 ? (custoFinanciamento / total) * 100 : 0;
-  const pctObra = total > 0 ? 100 - pctAq - pctFin : 0;
+  const pctDividas = total > 0 ? (subtotalDividas / total) * 100 : 0;
+  const pctReforma = total > 0 ? 100 - pctAq - pctDividas : 0;
   el('costBar').innerHTML =
     '<div style="width:' + pctAq.toFixed(1) + '%;background:var(--series-1)"></div>' +
-    '<div style="width:' + pctFin.toFixed(1) + '%;background:var(--series-2)"></div>' +
-    '<div style="width:' + pctObra.toFixed(1) + '%;background:var(--series-3)"></div>';
+    '<div style="width:' + pctDividas.toFixed(1) + '%;background:var(--series-2)"></div>' +
+    '<div style="width:' + pctReforma.toFixed(1) + '%;background:var(--series-3)"></div>';
 
   // breakdown table
   const rows = [
-    ['Subtotal aquisição', subtotalAquisicao],
-    ['Financiamento (juros + seguro, ' + mesesPagos + ' meses)', custoFinanciamento],
-    ['Condomínio + IPTU em atraso', condo + iptuAtraso],
-    ['IPTU corrente + consumo (' + meses + ' meses)', iptuCorrenteTotal],
-    ['Reforma + contingência', reforma],
-    ['Caixa próprio total', caixaProprioTotal],
+    ['Subtotal aquisição (lance + ITBI + cartório + corretor + outros)', subtotalAquisicao],
+    ['Condomínio em atraso (comprador, limitado)', condoComprador],
+    ['IPTU em atraso', iptuAtraso],
+    ['Reforma', reforma],
+    ['Condomínio + IPTU corrente (' + meses + ' meses)', iptuCorrenteTotal],
+    ['Total desembolsado', totalDesembolsado],
     ['Preço de venda', V],
     ['(-) Corretagem', -corretagem],
-    ['(-) Quitação do saldo devedor', -saldoDevedor],
     ['(-) IR ganho de capital', -ir],
     ['Líquido da venda', liquidoVenda],
     ['LUCRO', lucro],
   ];
-  el('breakdownTable').innerHTML = rows.map((r, i) => {
-    const isTotal = r[0] === 'Caixa próprio total' || r[0] === 'LUCRO' || r[0] === 'Líquido da venda';
+  el('breakdownTable').innerHTML = rows.map((r) => {
+    const isTotal = r[0] === 'Total desembolsado' || r[0] === 'LUCRO' || r[0] === 'Líquido da venda';
     return '<tr class="' + (isTotal ? 'total' : '') + '"><td>' + r[0] + '</td><td>' + fmtBRL(r[1]) + '</td></tr>';
   }).join('');
 }
