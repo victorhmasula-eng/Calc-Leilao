@@ -49,6 +49,27 @@
       --critbg:         rgba(230,103,103,0.10);
     }
   }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --surface-2:      #232320;
+    --page-plane:     #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #918f87;
+    --gridline:       #2c2c2a;
+    --border:         rgba(255,255,255,0.12);
+    --accent:         #3987e5;
+    --series-1:       #3987e5;
+    --series-2:       #199e70;
+    --series-3:       #c98500;
+    --good:           #3fcf3f;
+    --goodbg:         rgba(63,207,63,0.10);
+    --warning:        #fab219;
+    --warnbg:         rgba(250,178,25,0.10);
+    --critical:       #e66767;
+    --critbg:         rgba(230,103,103,0.10);
+  }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
     margin: 0; padding: 0;
@@ -65,17 +86,20 @@
     border-bottom: 1px solid var(--border);
     padding-top: max(10px, env(safe-area-inset-top));
   }
-  .topbar-inner { padding: 6px 16px 12px; }
+  .topbar-inner { padding: 6px 16px 12px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
   .topbar-title { font-size: 17px; font-weight: 800; margin-bottom: 2px; }
   .topbar-sub { font-size: 12px; color: var(--text-muted); }
+  .theme-btn {
+    flex: none; width: 36px; height: 36px; border-radius: 10px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
 
   .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); flex: none; }
 
   main { padding: 14px 16px 0; }
   .tabpanel { display: none; }
   .tabpanel.active { display: block; }
-  .subpanel { display: none; }
-  .subpanel.active { display: block; }
 
   /* Bottom nav */
   nav.bottomnav {
@@ -93,13 +117,6 @@
   }
   .navbtn .navicon { font-size: 20px; line-height: 1; position: relative; }
   .navbtn.active { color: var(--accent); }
-  .navbtn .navicon .live-dot { position: absolute; top: -1px; right: -3px; width: 8px; height: 8px; border: 2px solid var(--surface-1); }
-
-  .back-btn {
-    display: inline-flex; align-items: center; gap: 4px; font-size: 13.5px; font-weight: 700;
-    color: var(--accent); background: none; border: none; cursor: pointer; padding: 4px 0 12px;
-    font-family: inherit;
-  }
 
   .card {
     background: var(--surface-1); border: 1px solid var(--border);
@@ -118,6 +135,7 @@
   }
   .badge-live { background: var(--goodbg); color: var(--good); }
   .badge-dead { background: var(--surface-2); color: var(--text-muted); }
+  .badge-progress { background: var(--warnbg); color: var(--warning); }
 
   table.kv { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   table.kv td { padding: 7px 0; border-bottom: 1px solid var(--gridline); vertical-align: top; }
@@ -133,8 +151,6 @@
   .tablewrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
   p.body { font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); margin: 0 0 10px; }
-  ul.bullets { margin: 0 0 10px; padding-left: 18px; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); }
-  ul.bullets li { margin-bottom: 5px; }
 
   .callout { display: flex; gap: 8px; padding: 10px 12px; border-radius: 10px; font-size: 12.5px; line-height: 1.55; margin: 8px 0; }
   .callout.good { background: var(--goodbg); color: var(--good); }
@@ -150,9 +166,6 @@
   details.more summary::before { content: "▸ "; }
   details.more[open] summary::before { content: "▾ "; }
   details.more { margin-top: 4px; }
-
-  .contact-box { font-size: 12.5px; line-height: 1.7; color: var(--text-secondary); background: var(--surface-2); border-radius: 10px; padding: 10px 12px; }
-  .contact-box b { color: var(--text-primary); }
 
   footer.src { font-size: 11px; color: var(--text-muted); line-height: 1.6; margin-top: 6px; }
 
@@ -182,23 +195,20 @@
     width: 100%; font-size: 14.5px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
     background: var(--page-plane); color: var(--text-primary); font-variant-numeric: tabular-nums;
   }
+  select.selfield-sm { font-size: 12.5px; padding: 6px 8px; border-radius: 8px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .grid2 label { font-size: 11.5px; color: var(--text-muted); display:block; margin-bottom:4px; }
-  .switchrow { display: flex; align-items: center; justify-content: space-between; padding: 4px 0 10px; }
-  .switchrow span { font-size: 14px; font-weight: 600; }
-  .switch { position: relative; width: 46px; height: 27px; flex: none; }
-  .switch input { opacity: 0; width: 0; height: 0; }
-  .slider-tog { position: absolute; inset: 0; background: var(--gridline); border-radius: 27px; cursor: pointer; transition: .15s; }
-  .slider-tog::before { content: ""; position: absolute; width: 21px; height: 21px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .15s; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
-  .switch input:checked + .slider-tog { background: var(--accent); }
-  .switch input:checked + .slider-tog::before { transform: translateX(19px); }
+
+  .seg { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 10px; width: fit-content; }
+  .seg button { padding: 6px 16px; font-size: 12px; font-weight: 700; background: var(--surface-2); color: var(--text-muted); border: none; cursor: pointer; font-family: inherit; }
+  .seg button.active { background: var(--accent); color: #fff; }
 
   .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
   .stat-tile { background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
   .stat-tile .stat-label { font-size: 11.5px; color: var(--text-muted); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
   .stat-tile .stat-value { font-size: 21px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.15; }
   .status-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
-  .status-good { background: var(--good); } .status-warning { background: var(--warning); } .status-critical{ background: var(--critical); }
+  .status-good { background: var(--good); } .status-warning { background: var(--warning); } .status-critical{ background: var(--critical); } .status-muted{ background: var(--text-muted); }
   .ink-good { color: var(--good); } .ink-warning { color: var(--warning); } .ink-critical{ color: var(--critical); }
 
   .hero { text-align: center; padding: 4px 0 14px; }
@@ -211,512 +221,62 @@
   .legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 11.5px; color: var(--text-secondary); }
   .legend .item { display: flex; align-items: center; gap: 5px; }
   .legend .swatch { width: 9px; height: 9px; border-radius: 3px; }
-
-  .toppick { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 14px; border-radius:12px; background:var(--surface-2); margin-bottom:8px; cursor:pointer; border:1px solid var(--border); }
-  .toppick .name { font-size: 14px; font-weight: 700; }
-  .toppick .meta { font-size: 11.5px; color: var(--text-muted); margin-top:2px; }
-  .toppick .chev { color: var(--text-muted); font-size: 18px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="topbar-title">🏠 Leilões Caixa — Painel</div>
-      <div class="topbar-sub">Due diligence + calculadora de cenários, para revisar junto com o sócio</div>
+      <div>
+        <div class="topbar-title">🏠 Leilões Caixa — Painel</div>
+        <div class="topbar-sub">Due diligence + calculadora de cenários, para revisar junto com o sócio</div>
+      </div>
+      <button class="theme-btn" id="themeToggle" type="button" aria-label="Alternar tema claro/escuro">🌙</button>
     </div>
   </header>
 
   <main>
 
-    <!-- ===================== GRAN ACRÓPOLIS ===================== -->
-    <section id="tab-gran" class="tabpanel active">
-      <span class="badge badge-live"><span class="live-dot"></span>Pendente — em análise</span>
-      <h1 class="pagetitle">AP202 - Gran Acrópolis IV</h1>
-      <div class="pagesub">Rua 8, Apto. 202, Bloco 44, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO · Matrícula 104.684 · Insc. 265086</div>
+    <!-- ===================== IMÓVEL ===================== -->
+    <section id="tab-imovel" class="tabpanel active">
+
+      <div class="card">
+        <h2 class="sec">Selecionar imóvel</h2>
+        <select class="selfield" id="propSelect"></select>
+      </div>
+
+      <span class="badge" id="prop-badge"></span>
+      <h1 class="pagetitle" id="prop-title"></h1>
+      <div class="pagesub" id="prop-subtitle"></div>
 
       <div class="card">
         <h2 class="sec">Ficha do imóvel</h2>
-        <table class="kv">
-          <tr><td>Avaliação Caixa</td><td>R$ 165.000,00</td></tr>
-          <tr><td>Valor mínimo</td><td>R$ 84.033,11 (49,07% deságio)</td></tr>
-          <tr><td>Modalidade</td><td>Compra Direta / Venda Online</td></tr>
-          <tr><td>Pagamento aceito</td><td>Recursos próprios, FGTS, SBPE</td></tr>
-        </table>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Matrícula e riscos</h2>
-        <p class="body">Prédio praticamente novo (habite-se 29/11/2023). Unidade vendida em 09/03/2023 por R$175.000 via Casa Verde e Amarela/FGTS; consolidação em nome da Caixa em 12/02/2025 por inadimplência (financiamento durou menos de 2 anos). Avaliação usada na consolidação (R$168.856,86) próxima da avaliação atual — sem a discrepância vista em outros casos.</p>
-        <div class="callout good">✓ Fora a alienação já baixada e a consolidação, não há outros ônus, ações ou restrições visíveis.</div>
-        <div class="callout warn">⚠ Já houve ao menos uma tentativa de leilão anterior sem sucesso (averbação de leilão negativo) — vale investigar se está ligado ao débito de condomínio não divulgado.</div>
-        <div class="callout warn">⚠ Situação de ocupação não confirmada.</div>
+        <table class="kv" id="prop-ficha-table"></table>
+        <h2 class="sec" style="margin-top:16px;">Comparáveis de mercado</h2>
+        <div class="tablewrap"><table class="datatable" id="prop-comp-table"></table></div>
+        <p class="body" id="prop-comp-note" style="margin-top:8px;"></p>
       </div>
 
       <div class="card">
         <h2 class="sec">Dívidas</h2>
-        <table class="kv">
-          <tr><td>IPTU</td><td>R$ 523,34</td></tr>
-          <tr><td>Condomínio</td><td><b>A CONFIRMAR</b></td></tr>
-        </table>
-        <p class="body" style="margin-top:8px;font-size:12px;">Administradora: JK Exclusive — (61) 3798-9888 / contabil@jkexclusive.com.br. Contato ainda não realizado.</p>
+        <table class="kv" id="prop-dividas-table"></table>
+        <p class="body" id="prop-dividas-note" style="margin-top:8px;font-size:12px;"></p>
       </div>
 
-      <div class="card">
-        <h2 class="sec">Comparáveis de mercado</h2>
-        <div class="tablewrap">
-        <table class="datatable">
-          <tr><th>Empreendimento</th><th>Área</th><th>Preço</th></tr>
-          <tr><td>Gran Acrópolis IV (mesmo prédio, ágio)</td><td>48,92 m²</td><td>≈R$129.000</td></tr>
-          <tr><td>Gran Acrópole IV</td><td>49 m²</td><td>R$119.000</td></tr>
-          <tr><td>Condomínio Acrópolis</td><td>44 m²</td><td>R$160.000</td></tr>
-          <tr><td>Região Marajó/Anhanguera</td><td>44-51 m²</td><td>R$110.000-190.900</td></tr>
-        </table>
-        </div>
-        <p class="body" style="margin-top:8px;">Valor de mercado realista estimado: <b>R$115.000 a R$155.000</b> — a avaliação da Caixa (R$165.000) parece um pouco acima do mercado local.</p>
-      </div>
-
-      <div class="toppick" onclick="showTab('ap102')">
-        <div>
-          <div class="name">📎 AP102 — outra unidade no mesmo condomínio</div>
-          <div class="meta">Bloco 22 · avaliação R$ 168.000 · mínimo R$ 89.600,30 · análise própria</div>
-        </div>
-        <div class="chev">›</div>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Cenários — financiado (SBPE, 20% entrada)</h2>
-        <p class="body">Entrada de 20% (≈R$16.807) sobre R$84.033,11, financiando ≈R$67.226 a 11,49%a.a.+TR, SAC, 360 meses.</p>
-        <div class="tablewrap">
-        <table class="datatable">
-          <tr><th></th><th>Conserv.<br>R$115k</th><th>Médio<br>R$135k</th><th>Otim.<br>R$155k</th></tr>
-          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 6 meses</td></tr>
-          <tr class="tot"><td>Lucro</td><td>R$4.983</td><td>R$20.783</td><td>R$36.583</td></tr>
-          <tr><td>Retorno</td><td>≈14,6%</td><td>≈60,9%</td><td>≈107,2%</td></tr>
-          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 12 meses</td></tr>
-          <tr class="tot"><td>Lucro</td><td>R$1.060</td><td>R$16.860</td><td>R$32.660</td></tr>
-          <tr><td>Retorno</td><td>≈2,7%</td><td>≈43,1%</td><td>≈83,4%</td></tr>
-        </table>
-        </div>
-        <p class="body">Financiar amplia o retorno % (efeito alavancagem) mas reduz a margem de segurança do cenário conservador de 12 meses (lucro cai a quase zero).</p>
-      </div>
-
-      <details class="more"><summary>Ver recomendação completa</summary>
-        <p class="body">Oportunidade mais sólida que a do Belle Horizonte — imóvel novo, comparável direto no mesmo prédio, resiste bem ao estresse de condomínio. Antes de fechar: (1) confirmar dívida de condomínio com a JK Exclusive; (2) usar R$115-155k como referência de venda, não os R$165k da Caixa; (3) confirmar desocupação; (4) reforma leve de R$8.000 deve bastar; (5) vender em 6 meses rende mais por ano; (6) se financiar, confirmar com a agência o LTV real para investidor, não assumir a entrada mínima de 5%.</p>
-      </details>
-
-      <div class="card" id="granCalcCard">
+      <div class="card" id="calcCard">
         <h2 class="sec">🧮 Calculadora deste imóvel</h2>
 
         <div class="field">
-          <div class="field-label"><span>Preço de compra</span><span class="field-value" id="g_precoLabel">—</span></div>
-          <input type="range" id="g_precoSlider" min="0" max="1000000" step="500">
-          <div class="range-ticks"><span id="g_precoMinTick"></span><span id="g_precoMaxTick"></span></div>
-          <div style="margin-top:8px;"><input type="number" class="numfield" id="g_precoInput" step="500"></div>
-          <div class="callout warn" id="g_lanceAlert" style="display:none;">⚠ Abaixo do valor mínimo do anúncio para este imóvel.</div>
-        </div>
-        <div class="field">
-          <div class="field-label"><span>Entrada (financiamento SAC)</span><span class="field-value" id="g_entradaLabel">20%</span></div>
-          <input type="range" id="g_entradaSlider" min="5" max="100" step="1" value="20">
-          <div class="range-ticks"><span>5%</span><span>100%</span></div>
-        </div>
-        <div class="field">
-          <div class="field-label"><span>Prazo até a venda</span><span class="field-value" id="g_prazoLabel">6 meses</span></div>
-          <input type="range" id="g_prazoSlider" min="1" max="24" step="1" value="6">
-          <div class="range-ticks"><span>1 mês</span><span>24 meses</span></div>
-        </div>
-        <div class="field">
-          <div class="field-label"><span>Preço de venda estimado</span><span class="field-value" id="g_vendaLabel">—</span></div>
-          <input type="range" id="g_vendaSlider" min="0" max="1000000" step="1000">
-          <div class="range-ticks"><span id="g_vendaMinTick"></span><span id="g_vendaMaxTick"></span></div>
-        </div>
-
-        <details class="more"><summary>Ajustar premissas avançadas</summary>
-          <div class="grid2" style="margin-top:14px;">
-            <div><label>Taxa (% a.a. + TR)</label><input type="number" class="numfield" id="g_taxaInput" step="0.1"></div>
-            <div><label>Prazo financiamento (meses)</label><input type="number" class="numfield" id="g_prazoFinInput" step="12"></div>
-            <div><label>Seguro MIP+DFI (%/mês do saldo)</label><input type="number" class="numfield" id="g_seguroInput" step="0.005"></div>
-            <div><label>Reforma (R$)</label><input type="number" class="numfield" id="g_reformaInput" step="500"></div>
-            <div><label>Dívida condomínio a assumir (R$)</label><input type="number" class="numfield" id="g_condoDividaInput" step="500"></div>
-            <div><label>IPTU/tributos em atraso (R$)</label><input type="number" class="numfield" id="g_iptuAtrasoInput" step="50"></div>
-            <div><label>Condomínio+IPTU corrente (R$/mês)</label><input type="number" class="numfield" id="g_condoMesInput" step="10"></div>
-            <div><label>Comissão leiloeiro (%)</label><input type="number" class="numfield" id="g_comissaoInput" step="0.5"></div>
-            <div><label>ITBI (%)</label><input type="number" class="numfield" id="g_itbiInput" step="0.5"></div>
-            <div><label>Cartório/registro (R$)</label><input type="number" class="numfield" id="g_cartorioInput" step="100"></div>
-            <div><label>Outros custos fixos (R$)</label><input type="number" class="numfield" id="g_outrosInput" step="100"></div>
-            <div><label>Corretagem na venda (%)</label><input type="number" class="numfield" id="g_corretagemInput" step="0.5"></div>
-            <div><label>IR ganho de capital (%)</label><input type="number" class="numfield" id="g_irInput" step="1"></div>
+          <div class="field-label"><span>Entrada</span><span class="field-value" id="entradaLabel">20%</span></div>
+          <div class="seg">
+            <button type="button" id="entradaModePct" class="active">%</button>
+            <button type="button" id="entradaModeAbs">R$</button>
           </div>
-        </details>
-
-        <div class="hero">
-          <div class="hero-label">Lucro estimado</div>
-          <div class="hero-value" id="g_lucroValue">R$ 0</div>
-          <div class="hero-sub" id="g_retornoValue">0% no prazo</div>
-        </div>
-        <div class="stat-row">
-          <div class="stat-tile">
-            <div class="stat-label"><span class="status-dot" id="g_dotCaixa"></span>Caixa próprio total</div>
-            <div class="stat-value" id="g_caixaValue">R$ 0</div>
-          </div>
-          <div class="stat-tile">
-            <div class="stat-label"><span class="status-dot" id="g_dotRetorno"></span>Retorno anualizado</div>
-            <div class="stat-value" id="g_retornoAnoValue">0%</div>
-          </div>
-        </div>
-        <div id="g_lucroAlert"></div>
-        <div class="bar" id="g_costBar"></div>
-        <div class="legend">
-          <div class="item"><span class="swatch" style="background:var(--series-1)"></span>Aquisição</div>
-          <div class="item"><span class="swatch" style="background:var(--series-2)"></span>Financiamento</div>
-          <div class="item"><span class="swatch" style="background:var(--series-3)"></span>Reforma+dívidas+IPTU</div>
-        </div>
-        <div class="tablewrap"><table class="datatable" id="g_breakdownTable" style="text-align:left;"></table></div>
-      </div>
-
-      <footer class="src">Fontes: matrícula 104.684, venda-imoveis.caixa.gov.br, "Como Comprar" (regras-VOL/comocomprar.pdf), IPTU Prefeitura Valparaíso de Goiás (insc. 265086), comparáveis de mercado, CNPJ 53.959.381/0001-05.</footer>
-    </section>
-
-    <!-- ===================== AP102 ===================== -->
-    <section id="tab-ap102" class="tabpanel">
-      <span class="badge badge-live"><span class="live-dot"></span>Pendente — due diligence inicial</span>
-      <h1 class="pagetitle">AP102 - Gran Acrópolis IV</h1>
-      <div class="pagesub">Rua 8, Apto. 102, Bloco 22, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO · Matrícula 104.556 · Insc. 264956</div>
-
-      <div class="callout warn">⚠ Due diligence parcial: nesta sessão não foi possível abrir o texto completo da matrícula nem consultar o IPTU oficial (ferramenta de navegador indisponível no momento). Os dados abaixo vêm da própria página do anúncio Caixa e de comparáveis públicos — trate como ponto de partida, não como análise fechada.</div>
-
-      <div class="card">
-        <h2 class="sec">Ficha do imóvel</h2>
-        <table class="kv">
-          <tr><td>Avaliação Caixa</td><td>R$ 168.000,00</td></tr>
-          <tr><td>Valor mínimo</td><td>R$ 89.600,30 (46,67% deságio)</td></tr>
-          <tr><td>Modalidade</td><td>Venda Online</td></tr>
-          <tr><td>Pagamento aceito</td><td>Recursos próprios, FGTS, SBPE</td></tr>
-        </table>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Matrícula e riscos</h2>
-        <p class="body">Mesma incorporação do AP202 (Res. Gran Acrópolis IV), construtora Asteri/BP, mas matrícula própria (104.556) — texto completo ainda não extraído.</p>
-        <div class="callout warn">⚠ "Leilões negativos averbados" consta na própria página do anúncio Caixa — mesma situação do AP202, pode atrasar a regularização da transferência.</div>
-        <div class="callout warn">⚠ Histórico de propriedade, ônus, consolidação por inadimplência e situação de ocupação ainda não verificados — pendente de extração da matrícula.</div>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Dívidas</h2>
-        <table class="kv">
-          <tr><td>IPTU</td><td><b>A CONFIRMAR</b></td></tr>
-          <tr><td>Condomínio</td><td><b>A CONFIRMAR</b></td></tr>
-        </table>
-        <p class="body" style="margin-top:8px;font-size:12px;">Mesma administradora do AP202: JK Exclusive — (61) 3798-9888 / contabil@jkexclusive.com.br. Teto de responsabilidade do comprador (10% da avaliação): R$ 16.800.</p>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Comparáveis de mercado</h2>
-        <p class="body">Não há, até agora, um comparável de 68,67 m² exato no mesmo condomínio. Referências encontradas (mesmo prédio, outras metragens):</p>
-        <div class="tablewrap">
-        <table class="datatable">
-          <tr><th>Unidade</th><th>Área</th><th>Avaliação</th></tr>
-          <tr><td>Gran Acrópolis IV (outro bloco)</td><td>56,37 m²</td><td>R$180.000</td></tr>
-          <tr><td>Gran Acrópolis IV (outro bloco)</td><td>100,23 m²</td><td>N/D</td></tr>
-        </table>
-        </div>
-        <p class="body" style="margin-top:8px;">Aplicando a faixa de R$/m² observada no prédio (≈R$2.350-3.170/m², vista na análise do AP202) aos 68,67 m² desta unidade, a estimativa fica entre <b>R$161.000 e R$218.000</b> — uma faixa larga e pouco confiável por falta de comparável do mesmo tamanho. Diferente do AP202, aqui não dá pra afirmar com confiança se a avaliação da Caixa (R$168.000) está acima ou abaixo do mercado.</p>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Cenários — financiado (SBPE, 20% entrada)</h2>
-        <p class="body">Entrada de 20% (≈R$17.920) sobre R$89.600,30, financiando ≈R$71.680 a 11,49%a.a.+TR, SAC, 360 meses. Preços de venda estimados (conservador/médio/otimista) com base na faixa larga de comparáveis acima — revisar assim que houver comparável melhor.</p>
-        <div class="tablewrap">
-        <table class="datatable">
-          <tr><th></th><th>Conserv.<br>R$140k</th><th>Médio<br>R$165k</th><th>Otim.<br>R$195k</th></tr>
-          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 6 meses</td></tr>
-          <tr class="tot"><td>Lucro</td><td>R$18.193</td><td>R$37.943</td><td>R$61.643</td></tr>
-          <tr><td>Retorno</td><td>≈48,6%</td><td>≈101,4%</td><td>≈164,7%</td></tr>
-          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 12 meses</td></tr>
-          <tr class="tot"><td>Lucro</td><td>R$13.737</td><td>R$33.487</td><td>R$57.187</td></tr>
-          <tr><td>Retorno</td><td>≈31,9%</td><td>≈77,7%</td><td>≈132,7%</td></tr>
-        </table>
-        </div>
-        <div class="callout warn">⚠ Cenários calculados com condomínio e IPTU em atraso zerados (ainda não confirmados) e condomínio corrente estimado por proporção de área (≈R$280/mês) — ajustar assim que a JK Exclusive confirmar os valores reais.</div>
-      </div>
-
-      <details class="more"><summary>Ver recomendação preliminar</summary>
-        <p class="body">Ainda não dá pra recomendar com confiança — faltam três confirmações centrais: (1) texto completo da matrícula (ônus, histórico, consolidação), (2) IPTU oficial na Prefeitura de Valparaíso de Goiás (inscrição 264956), (3) dívida de condomínio com a JK Exclusive. Os números de cenário acima usam premissas otimistas de custo (sem dívidas em atraso) e uma faixa de venda pouco sustentada por comparável direto — tratar como estimativa preliminar, não como base para lance.</p>
-      </details>
-
-      <div class="card" id="ap102CalcCard">
-        <h2 class="sec">🧮 Calculadora deste imóvel</h2>
-
-        <div class="field">
-          <div class="field-label"><span>Preço de compra</span><span class="field-value" id="h_precoLabel">—</span></div>
-          <input type="range" id="h_precoSlider" min="0" max="1000000" step="500">
-          <div class="range-ticks"><span id="h_precoMinTick"></span><span id="h_precoMaxTick"></span></div>
-          <div style="margin-top:8px;"><input type="number" class="numfield" id="h_precoInput" step="500"></div>
-          <div class="callout warn" id="h_lanceAlert" style="display:none;">⚠ Abaixo do valor mínimo do anúncio para este imóvel.</div>
-        </div>
-        <div class="field">
-          <div class="field-label"><span>Entrada (financiamento SAC)</span><span class="field-value" id="h_entradaLabel">20%</span></div>
-          <input type="range" id="h_entradaSlider" min="5" max="100" step="1" value="20">
-          <div class="range-ticks"><span>5%</span><span>100%</span></div>
-        </div>
-        <div class="field">
-          <div class="field-label"><span>Prazo até a venda</span><span class="field-value" id="h_prazoLabel">6 meses</span></div>
-          <input type="range" id="h_prazoSlider" min="1" max="24" step="1" value="6">
-          <div class="range-ticks"><span>1 mês</span><span>24 meses</span></div>
-        </div>
-        <div class="field">
-          <div class="field-label"><span>Preço de venda estimado</span><span class="field-value" id="h_vendaLabel">—</span></div>
-          <input type="range" id="h_vendaSlider" min="0" max="1000000" step="1000">
-          <div class="range-ticks"><span id="h_vendaMinTick"></span><span id="h_vendaMaxTick"></span></div>
+          <input type="range" id="entradaSlider" min="5" max="100" step="1" value="20">
+          <div class="range-ticks" id="entradaTicks"><span>5%</span><span>100%</span></div>
+          <div style="margin-top:8px;display:none;" id="entradaAbsWrap"><input type="number" class="numfield" id="entradaAbsInput" step="500"></div>
         </div>
 
-        <details class="more"><summary>Ajustar premissas avançadas</summary>
-          <div class="grid2" style="margin-top:14px;">
-            <div><label>Taxa (% a.a. + TR)</label><input type="number" class="numfield" id="h_taxaInput" step="0.1"></div>
-            <div><label>Prazo financiamento (meses)</label><input type="number" class="numfield" id="h_prazoFinInput" step="12"></div>
-            <div><label>Seguro MIP+DFI (%/mês do saldo)</label><input type="number" class="numfield" id="h_seguroInput" step="0.005"></div>
-            <div><label>Reforma (R$)</label><input type="number" class="numfield" id="h_reformaInput" step="500"></div>
-            <div><label>Dívida condomínio a assumir (R$)</label><input type="number" class="numfield" id="h_condoDividaInput" step="500"></div>
-            <div><label>IPTU/tributos em atraso (R$)</label><input type="number" class="numfield" id="h_iptuAtrasoInput" step="50"></div>
-            <div><label>Condomínio+IPTU corrente (R$/mês)</label><input type="number" class="numfield" id="h_condoMesInput" step="10"></div>
-            <div><label>Comissão leiloeiro (%)</label><input type="number" class="numfield" id="h_comissaoInput" step="0.5"></div>
-            <div><label>ITBI (%)</label><input type="number" class="numfield" id="h_itbiInput" step="0.5"></div>
-            <div><label>Cartório/registro (R$)</label><input type="number" class="numfield" id="h_cartorioInput" step="100"></div>
-            <div><label>Outros custos fixos (R$)</label><input type="number" class="numfield" id="h_outrosInput" step="100"></div>
-            <div><label>Corretagem na venda (%)</label><input type="number" class="numfield" id="h_corretagemInput" step="0.5"></div>
-            <div><label>IR ganho de capital (%)</label><input type="number" class="numfield" id="h_irInput" step="1"></div>
-          </div>
-        </details>
-
-        <div class="hero">
-          <div class="hero-label">Lucro estimado</div>
-          <div class="hero-value" id="h_lucroValue">R$ 0</div>
-          <div class="hero-sub" id="h_retornoValue">0% no prazo</div>
-        </div>
-        <div class="stat-row">
-          <div class="stat-tile">
-            <div class="stat-label"><span class="status-dot" id="h_dotCaixa"></span>Caixa próprio total</div>
-            <div class="stat-value" id="h_caixaValue">R$ 0</div>
-          </div>
-          <div class="stat-tile">
-            <div class="stat-label"><span class="status-dot" id="h_dotRetorno"></span>Retorno anualizado</div>
-            <div class="stat-value" id="h_retornoAnoValue">0%</div>
-          </div>
-        </div>
-        <div id="h_lucroAlert"></div>
-        <div class="bar" id="h_costBar"></div>
-        <div class="legend">
-          <div class="item"><span class="swatch" style="background:var(--series-1)"></span>Aquisição</div>
-          <div class="item"><span class="swatch" style="background:var(--series-2)"></span>Financiamento</div>
-          <div class="item"><span class="swatch" style="background:var(--series-3)"></span>Reforma+dívidas+IPTU</div>
-        </div>
-        <div class="tablewrap"><table class="datatable" id="h_breakdownTable" style="text-align:left;"></table></div>
-      </div>
-
-      <footer class="src">Fontes: venda-imoveis.caixa.gov.br (anúncio AP102), comparáveis públicos (spyleiloes.com.br, loft.com.br). Matrícula 104.556 e IPTU (insc. 264956) ainda não verificados diretamente — devido diligência parcial.</footer>
-    </section>
-
-    <!-- ===================== ENCERRADOS ===================== -->
-    <section id="tab-encerrados" class="tabpanel">
-
-      <div id="encerrados-list">
-        <h1 class="pagetitle">📁 Encerrados</h1>
-        <div class="pagesub">Leilões que já terminaram — mantidos aqui como referência do método.</div>
-
-        <div class="toppick" onclick="showEncerrado('colorado')">
-          <div>
-            <div class="name">Casa Mansões Colorado</div>
-            <div class="meta">Sobradinho/DF · avaliação R$ 1.035.000 · mínimo R$ 659.620,30</div>
-          </div>
-          <div class="chev">›</div>
-        </div>
-        <div class="toppick" onclick="showEncerrado('loja')">
-          <div>
-            <div class="name">Loja SBS Quadra 1</div>
-            <div class="meta">Brasília/DF · avaliação R$ 475.000 · mínimo R$ 131.601,89</div>
-          </div>
-          <div class="chev">›</div>
-        </div>
-        <div class="toppick" onclick="showEncerrado('belo')">
-          <div>
-            <div class="name">Apto Belle Horizonte</div>
-            <div class="meta">Valparaíso de Goiás/GO · avaliação R$ 225.000 · mínimo R$ 77.945,34</div>
-          </div>
-          <div class="chev">›</div>
-        </div>
-      </div>
-
-    <!-- ===================== COLORADO ===================== -->
-    <div id="sub-colorado" class="subpanel">
-      <button class="back-btn" onclick="backToEncerradosList()">‹ Encerrados</button>
-      <span class="badge badge-dead">Encerrado — leilão em 27/07/2026</span>
-      <h1 class="pagetitle">Casa Mansões Colorado</h1>
-      <div class="pagesub">Rodovia DF-150, Lote 28 Cj. P, Grande Colorado, Sobradinho/DF · Matrícula 18.011 · 7º Ofício RI/DF</div>
-
-      <div class="card">
-        <h2 class="sec">Ficha do imóvel</h2>
-        <table class="kv">
-          <tr><td>Avaliação Caixa</td><td>R$ 1.035.000,00</td></tr>
-          <tr><td>Valor mínimo (leilão)</td><td>R$ 659.620,30</td></tr>
-          <tr><td>Área construída / terreno</td><td>354,96 m² / 426,85 m²</td></tr>
-          <tr><td>Modalidade</td><td>Licitação Aberta (Lance Total)</td></tr>
-          <tr><td>Comissão leiloeiro</td><td>5% do lance</td></tr>
-          <tr><td>IPTU inscrição</td><td>49060899</td></tr>
-        </table>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Matrícula e riscos</h2>
-        <p class="body">Consolidação de propriedade em nome da Caixa em 04/11/2024, por inadimplência da mutuária Janara Assunção no financiamento SFH (Av.10). Nenhuma penhora, hipoteca ativa ou ação judicial encontrada — histórico limpo de retomada padrão.</p>
-        <div class="callout warn">⚠ Certidão emitida em 17/03/2026, válida por apenas 30 dias — já vencida para a data do leilão. Pedir certidão atualizada antes de dar lance.</div>
-        <div class="callout warn">⚠ Averbação de leilões negativos "em tratamento" — pode atrasar o registro da transferência. Confirmar com o leiloeiro.</div>
-        <div class="callout good">✓ Nenhuma associação de moradores está averbada na matrícula — mas isso também gera incerteza sobre a exigibilidade formal de dívida condominial frente à Caixa.</div>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Débitos apurados</h2>
-        <table class="kv">
-          <tr><td>IPTU/TLP (oficial, Receita DF)</td><td>≈ R$ 3.388,24</td></tr>
-          <tr><td>Condomínio (AMCRMC)</td><td>≈ R$ 21.000,00 — relato informal do porteiro, <b>não confirmado</b></td></tr>
-        </table>
-        <p class="body" style="margin-top:8px;">Ambos os valores ficam bem abaixo do teto de 10% da avaliação (R$ 103.500) que definiria responsabilidade do comprador — mas o condomínio ainda carecia de confirmação documental com a associação (AMCRMC) antes do leilão.</p>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Cenários (venda estimada R$ 1.100.000)</h2>
-        <div class="tablewrap">
-        <table class="datatable">
-          <tr><th></th><th>650k / 6m</th><th>650k / 1a</th><th>700k / 6m</th><th>700k / 1a</th></tr>
-          <tr><td>Caixa próprio</td><td>R$278-285k</td><td>R$326-336k</td><td>R$288-295k</td><td>R$338-349k</td></tr>
-          <tr class="tot"><td>Lucro</td><td>R$98-105k</td><td>R$57-67k</td><td>R$49-56k</td><td>R$6-17k</td></tr>
-          <tr><td>Retorno</td><td>≈34-38%</td><td>≈17-21%</td><td>≈17-19%</td><td>≈2-5%</td></tr>
-        </table>
-        </div>
-        <div class="callout warn">⚠ O cenário mais apertado (700k / 1 ano) deixa margem de segurança mínima (≈R$6-17 mil). Preço de venda de R$1,1M ainda não foi validado por comparáveis reais — maior fonte de incerteza.</div>
-      </div>
-
-      <details class="more"><summary>Ver avaliação da oportunidade</summary>
-        <p class="body"><b>A favor:</b> histórico de matrícula limpo; débitos apurados bem abaixo do teto de 10%; desconto relevante sobre a avaliação.</p>
-        <p class="body"><b>Pontos de atenção:</b> condomínio não confirmado documentalmente; certidão desatualizada; averbação de leilão negativo pendente; preço de venda-alvo (R$1,1M) não validado por comparáveis reais.</p>
-      </details>
-
-      <footer class="src">Fontes: matrícula 18.011 (venda-imoveis.caixa.gov.br), edital EA00190326CPVERE.PDF, leilaoimovel.com.br, consulta Receita/DF (14/07/2026).</footer>
-    </div>
-
-    <!-- ===================== LOJA SBS ===================== -->
-    <div id="sub-loja" class="subpanel">
-      <button class="back-btn" onclick="backToEncerradosList()">‹ Encerrados</button>
-      <span class="badge badge-dead">Encerrado — leilão em 27/07/2026</span>
-      <h1 class="pagetitle">Loja SBS Quadra 1</h1>
-      <div class="pagesub">Edifício Seguradoras, SBS Quadra 1 Bloco K, Setor Bancário Sul, Brasília/DF · Matrícula 21117</div>
-
-      <div class="card">
-        <h2 class="sec">Ficha do imóvel</h2>
-        <table class="kv">
-          <tr><td>Avaliação Caixa</td><td>R$ 475.000,00 (≈R$6.250/m²)</td></tr>
-          <tr><td>Lance mínimo / atual</td><td>R$ 131.601,89</td></tr>
-          <tr><td>Área privativa</td><td>76 m²</td></tr>
-          <tr><td>Modalidade</td><td>Licitação Aberta (comissão 5%)</td></tr>
-        </table>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Matrícula e riscos</h2>
-        <p class="body">Propriedade direta da Caixa desde 1982 (não é execução de mutuário) — sem histórico de alienação fiduciária ou disputa de posse.</p>
-        <div class="callout warn">⚠ Certidão anexada é de 13/10/2016 — quase 10 anos desatualizada. Pedir certidão nova antes de ofertar.</div>
-        <div class="callout bad">⚠ <b>Não existe divisão física entre as lojas do andar</b> — o comprador precisa demarcar a área conforme a matrícula, podendo envolver obra e negociação com vizinhos.</div>
-        <div class="callout warn">⚠ Financiamento SBPE provavelmente indisponível para uso comercial — compra à vista é o cenário mais realista.</div>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Débitos e comparáveis</h2>
-        <table class="kv">
-          <tr><td>IPTU (oficial, Receita DF)</td><td>R$ 0,00 — nenhum débito</td></tr>
-          <tr><td>Condomínio</td><td>Não divulgado, <b>não confirmado</b></td></tr>
-          <tr><td>Comparáveis (SBS Q1)</td><td>≈R$ 8.230/m² → R$ 495-625 mil</td></tr>
-        </table>
-      </div>
-
-      <details class="more"><summary>Ver avaliação da oportunidade</summary>
-        <p class="body"><b>A favor:</b> desconto expressivo (≈20-28% do R$/m² dos comparáveis); localização institucional de alto padrão; nenhum débito de IPTU; menor risco de ocupação irregular por não ser execução de mutuário.</p>
-        <p class="body"><b>Pontos de atenção:</b> ausência de divisão física entre lojas do andar (maior risco prático); certidão de 2016; financiamento provavelmente indisponível; revenda de nicho, mais lenta.</p>
-      </details>
-
-      <footer class="src">Fontes: matrícula 21117, edital 0019/0326-CPVE/RE, lancetotal.com.br, consulta Receita/DF. Nenhum cenário financeiro de revenda foi modelado neste relatório original.</footer>
-    </div>
-
-    <!-- ===================== BELLE HORIZONTE ===================== -->
-    <div id="sub-belo" class="subpanel">
-      <button class="back-btn" onclick="backToEncerradosList()">‹ Encerrados</button>
-      <span class="badge badge-dead">Encerrado — leilão em 30/07/2026</span>
-      <h1 class="pagetitle">Apto Belle Horizonte</h1>
-      <div class="pagesub">Gleba 10 Rua E, Apto. 408 Bloco 10, Fazenda Saia Velha, Valparaíso de Goiás/GO · Matrícula 90.551</div>
-
-      <div class="card">
-        <h2 class="sec">Ficha do imóvel</h2>
-        <table class="kv">
-          <tr><td>Avaliação Caixa</td><td>R$ 225.000,00</td></tr>
-          <tr><td>Valor mínimo</td><td>R$ 77.945,34</td></tr>
-          <tr><td>Área privativa</td><td>42,81 m²</td></tr>
-          <tr><td>Modalidade</td><td>Venda Online Caixa (sem comissão)</td></tr>
-        </table>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Matrícula e riscos</h2>
-        <p class="body">Consolidação de propriedade em nome da Caixa em 14/08/2024, por inadimplência do casal financiado via Minha Casa Minha Vida/FGTS. Avaliação usada na consolidação (R$156.627,24) bem abaixo da avaliação atual do anúncio (R$225.000) — desconto anunciado de 65,36% deve ser relativizado.</p>
-        <div class="callout warn">⚠ Situação de ocupação não confirmada — pode exigir imissão de posse.</div>
-        <div class="callout good">✓ IPTU em atraso confirmado oficialmente: apenas R$ 535,54 — risco tributário baixo.</div>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Débito de condomínio — confirmado</h2>
-        <table class="kv">
-          <tr><td>Dívida total</td><td>R$ 25.000,00</td></tr>
-          <tr><td>Responsabilidade do comprador (teto 10%)</td><td>R$ 22.500,00</td></tr>
-          <tr><td>Responsabilidade da Caixa</td><td>R$ 2.500,00</td></tr>
-        </table>
-        <p class="body" style="margin-top:8px;">Valor informado pelo usuário — não verificado documentalmente com a administradora.</p>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Cenários de revenda</h2>
-        <div class="tablewrap">
-        <table class="datatable">
-          <tr><th></th><th>Conservador<br>R$130k</th><th>Médio<br>R$150k</th><th>Otimista<br>R$170k</th></tr>
-          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 6 meses</td></tr>
-          <tr class="tot"><td>Lucro</td><td class="ink-critical">−R$394</td><td>R$15.406</td><td>R$31.206</td></tr>
-          <tr><td>Retorno anual.</td><td>≈−0,7%</td><td>≈28,1%</td><td>≈60,6%</td></tr>
-          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 12 meses</td></tr>
-          <tr class="tot"><td>Lucro</td><td class="ink-critical">−R$2.674</td><td>R$13.126</td><td>R$28.926</td></tr>
-          <tr><td>Retorno anual.</td><td>≈−2,2%</td><td>≈11,0%</td><td>≈24,3%</td></tr>
-        </table>
-        </div>
-        <div class="callout bad">⚠ Com o condomínio incluído, o cenário conservador vira prejuízo nos dois prazos — ponto de equilíbrio (venda em 6m) fica em ≈R$130.500, praticamente no piso dos comparáveis.</div>
-      </div>
-
-      <details class="more"><summary>Ver recomendação completa</summary>
-        <p class="body">Deixou de ser oportunidade com margem folgada — só compensa claramente vendendo a R$150.000 ou mais. Evitar ofertar muito acima do mínimo (a R$100.000 já derrubaria o cenário médio para prejuízo). Prioridade: confirmar ocupação e o valor exato da dívida de condomínio com a administradora antes de ofertar.</p>
-      </details>
-
-      <footer class="src">Fontes: matrícula 90.551, venda-imoveis.caixa.gov.br, IPTU Prefeitura Valparaíso de Goiás (inscrição 131486), comparáveis de mercado regionais.</footer>
-    </div>
-
-    </section>
-
-    <!-- ===================== CALCULADORA ===================== -->
-    <section id="tab-calc" class="tabpanel">
-      <h1 class="pagetitle">Calculadora de cenários</h1>
-      <div class="pagesub">Escolha um imóvel para carregar as premissas do relatório, depois ajuste à vontade.</div>
-
-      <div class="card">
-        <h2 class="sec">Imóvel</h2>
-        <select class="selfield" id="presetSelect"></select>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Seus dois números</h2>
         <div class="field">
           <div class="field-label"><span>Preço de compra</span><span class="field-value" id="precoLabel">—</span></div>
           <input type="range" id="precoSlider" min="0" max="1000000" step="500">
@@ -724,45 +284,41 @@
           <div style="margin-top:8px;"><input type="number" class="numfield" id="precoInput" step="500"></div>
           <div class="callout warn" id="lanceAlert" style="display:none;">⚠ Abaixo do valor mínimo do anúncio/edital para este imóvel.</div>
         </div>
+
         <div class="field">
-          <div class="field-label"><span>Entrada (financiamento SAC)</span><span class="field-value" id="entradaLabel">20%</span></div>
-          <input type="range" id="entradaSlider" min="5" max="100" step="1" value="20">
-          <div class="range-ticks"><span>5%</span><span>100%</span></div>
+          <div class="field-label"><span>Valor da reforma</span></div>
+          <input type="number" class="numfield" id="reformaInput" step="500">
         </div>
+
         <div class="field">
           <div class="field-label"><span>Prazo até a venda</span><span class="field-value" id="prazoLabel">6 meses</span></div>
           <input type="range" id="prazoSlider" min="1" max="24" step="1" value="6">
           <div class="range-ticks"><span>1 mês</span><span>24 meses</span></div>
         </div>
+
         <div class="field">
           <div class="field-label"><span>Preço de venda estimado</span><span class="field-value" id="vendaLabel">—</span></div>
           <input type="range" id="vendaSlider" min="0" max="1000000" step="1000">
           <div class="range-ticks"><span id="vendaMinTick"></span><span id="vendaMaxTick"></span></div>
         </div>
-      </div>
 
-      <div class="card">
         <details class="more"><summary>Ajustar premissas avançadas</summary>
           <div class="grid2" style="margin-top:14px;">
-            <div><label>Taxa (% a.a. + TR)</label><input type="number" class="numfield" id="taxaInput" value="11.49" step="0.1"></div>
-            <div><label>Prazo financiamento (meses)</label><input type="number" class="numfield" id="prazoFinInput" value="360" step="12"></div>
-            <div><label>Seguro MIP+DFI (%/mês do saldo)</label><input type="number" class="numfield" id="seguroInput" value="0.035" step="0.005"></div>
-            <div><label>Reforma (R$)</label><input type="number" class="numfield" id="reformaInput" step="500"></div>
+            <div><label>Taxa (% a.a. + TR)</label><input type="number" class="numfield" id="taxaInput" step="0.1"></div>
+            <div><label>Prazo financiamento (meses)</label><input type="number" class="numfield" id="prazoFinInput" step="12"></div>
+            <div><label>Seguro MIP+DFI (%/mês do saldo)</label><input type="number" class="numfield" id="seguroInput" step="0.005"></div>
             <div><label>Dívida condomínio a assumir (R$)</label><input type="number" class="numfield" id="condoDividaInput" step="500"></div>
             <div><label>IPTU/tributos em atraso (R$)</label><input type="number" class="numfield" id="iptuAtrasoInput" step="50"></div>
             <div><label>Condomínio+IPTU corrente (R$/mês)</label><input type="number" class="numfield" id="condoMesInput" step="10"></div>
             <div><label>Comissão leiloeiro (%)</label><input type="number" class="numfield" id="comissaoInput" step="0.5"></div>
-            <div><label>ITBI (%)</label><input type="number" class="numfield" id="itbiInput" value="2" step="0.5"></div>
+            <div><label>ITBI (%)</label><input type="number" class="numfield" id="itbiInput" step="0.5"></div>
             <div><label>Cartório/registro (R$)</label><input type="number" class="numfield" id="cartorioInput" step="100"></div>
             <div><label>Outros custos fixos (R$)</label><input type="number" class="numfield" id="outrosInput" step="100"></div>
-            <div><label>Corretagem na venda (%)</label><input type="number" class="numfield" id="corretagemInput" value="6" step="0.5"></div>
-            <div><label>IR ganho de capital (%)</label><input type="number" class="numfield" id="irInput" value="15" step="1"></div>
+            <div><label>Corretagem na venda (%)</label><input type="number" class="numfield" id="corretagemInput" step="0.5"></div>
+            <div><label>IR ganho de capital (%)</label><input type="number" class="numfield" id="irInput" step="1"></div>
           </div>
         </details>
-      </div>
 
-      <div class="card">
-        <h2 class="sec">Resultado</h2>
         <div class="hero">
           <div class="hero-label">Lucro estimado</div>
           <div class="hero-value" id="lucroValue">R$ 0</div>
@@ -786,9 +342,37 @@
           <div class="item"><span class="swatch" style="background:var(--series-3)"></span>Reforma+dívidas+IPTU</div>
         </div>
         <div class="tablewrap"><table class="datatable" id="breakdownTable" style="text-align:left;"></table></div>
+        <p class="body" style="margin-top:10px;font-size:11px;color:var(--text-muted);">Modelo simplificado de apoio à decisão. Financiamento SAC (taxa/prazo editáveis); seguro MIP/DFI aproximado sobre saldo devedor; IR 15% padrão sobre ganho de capital. Não substitui análise de advogado, contador ou despachante imobiliário.</p>
       </div>
 
-      <footer class="src">Modelo simplificado de apoio à decisão, unificando a metodologia usada nos 4 relatórios (ver CLAUDE.md do projeto). Financiamento SAC com taxa/prazo editáveis; seguro MIP/DFI aproximado sobre saldo devedor. IR 15% padrão sobre ganho de capital (base = aquisição+ITBI+cartório+reforma). Não substitui análise de advogado, contador ou despachante imobiliário.</footer>
+      <footer class="src" id="prop-fontes"></footer>
+    </section>
+
+    <!-- ===================== LISTA ===================== -->
+    <section id="tab-lista" class="tabpanel">
+      <h1 class="pagetitle">📋 Lista de imóveis</h1>
+      <div class="pagesub">Todas as análises feitas até agora — classifique e filtre.</div>
+
+      <div class="card">
+        <h2 class="sec">Filtrar por classificação</h2>
+        <select class="selfield" id="filterSelect">
+          <option value="todos">Todos</option>
+          <option value="analise">Em análise</option>
+          <option value="descartado">Descartado</option>
+          <option value="comprado">Comprado</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="tablewrap">
+          <table class="datatable" id="listaTable" style="text-align:left;">
+            <thead>
+              <tr><th>Imóvel</th><th>Avaliação</th><th>Mínimo</th><th>Classificação</th></tr>
+            </thead>
+            <tbody id="listaTbody"></tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
   </main>
@@ -796,101 +380,192 @@
 
 <nav class="bottomnav">
   <div class="bottomnav-inner">
-    <button class="navbtn active" data-tab="gran">
-      <span class="navicon">🏢<span class="live-dot"></span></span>AP202
+    <button class="navbtn active" data-tab="imovel">
+      <span class="navicon">🏢</span>Imóvel
     </button>
-    <button class="navbtn" data-tab="ap102">
-      <span class="navicon">🏢<span class="live-dot"></span></span>AP102
-    </button>
-    <button class="navbtn" data-tab="encerrados">
-      <span class="navicon">📁</span>Encerrados
-    </button>
-    <button class="navbtn" data-tab="calc">
-      <span class="navicon">🧮</span>Calc.
+    <button class="navbtn" data-tab="lista">
+      <span class="navicon">📋</span>Lista
     </button>
   </div>
 </nav>
 
 <script>
+// ---------- theme ----------
+const rootEl = document.documentElement;
+const themeBtn = document.getElementById('themeToggle');
+function currentEffectiveTheme() {
+  const explicit = rootEl.getAttribute('data-theme');
+  if (explicit) return explicit;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+function updateThemeBtn() {
+  themeBtn.textContent = currentEffectiveTheme() === 'dark' ? '☀️' : '🌙';
+}
+themeBtn.addEventListener('click', () => {
+  const next = currentEffectiveTheme() === 'dark' ? 'light' : 'dark';
+  rootEl.setAttribute('data-theme', next);
+  updateThemeBtn();
+});
+updateThemeBtn();
+
 // ---------- tab switching ----------
 function showTab(id) {
   document.querySelectorAll('.tabpanel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.navbtn').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
   document.querySelector('.navbtn[data-tab="' + id + '"]').classList.add('active');
-  if (id === 'encerrados') backToEncerradosList();
   window.scrollTo({top:0, behavior:'instant'});
 }
 document.querySelectorAll('.navbtn').forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
 
-function showEncerrado(id) {
-  document.getElementById('encerrados-list').style.display = 'none';
-  document.querySelectorAll('#tab-encerrados .subpanel').forEach(p => p.classList.remove('active'));
-  document.getElementById('sub-' + id).classList.add('active');
-  window.scrollTo({top:0, behavior:'instant'});
-}
-function backToEncerradosList() {
-  document.querySelectorAll('#tab-encerrados .subpanel').forEach(p => p.classList.remove('active'));
-  document.getElementById('encerrados-list').style.display = 'block';
-}
-
-// ---------- calculator ----------
-const PRESETS = {
+// ---------- property data ----------
+const PROP_ORDER = ['gran','ap102','colorado','loja','belo'];
+const PROPS = {
   gran: {
-    label: "AP202 - Gran Acrópolis IV (pendente)",
+    title: "AP202 - Gran Acrópolis IV",
+    subtitle: "Rua 8, Apto. 202, Bloco 44, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO · Matrícula 104.684 · Insc. 265086",
+    avaliacao: "R$ 165.000,00",
+    valorMinimo: "R$ 84.033,11 (49,07% deságio)",
+    condoMensal: "≈ R$ 220,00/mês — estimativa não confirmada",
+    modalidade: "Compra Direta / Venda Online",
+    pagamento: "Recursos próprios, FGTS, SBPE",
+    endereco: "Rua 8, Apto. 202, Bloco 44, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO",
+    ultimaVenda: "R$ 175.000,00 em 09/03/2023 (Casa Verde e Amarela/FGTS)",
+    comparaveis: [
+      ["Gran Acrópolis IV (mesmo prédio, ágio)", "48,92 m²", "≈R$129.000"],
+      ["Gran Acrópole IV", "49 m²", "R$119.000"],
+      ["Condomínio Acrópolis", "44 m²", "R$160.000"],
+      ["Região Marajó/Anhanguera", "44-51 m²", "R$110.000-190.900"],
+    ],
+    comparaveisNote: "Valor de mercado realista estimado: R$115.000 a R$155.000 — a avaliação da Caixa (R$165.000) parece um pouco acima do mercado local.",
+    dividasIPTU: "R$ 523,34",
+    dividasCondominio: "A CONFIRMAR",
+    dividasOutros: null,
+    dividasNote: "Administradora: JK Exclusive — (61) 3798-9888 / contabil@jkexclusive.com.br. Contato ainda não realizado.",
+    fontes: "matrícula 104.684, venda-imoveis.caixa.gov.br, \"Como Comprar\" (regras-VOL/comocomprar.pdf), IPTU Prefeitura Valparaíso de Goiás (insc. 265086), comparáveis de mercado, CNPJ 53.959.381/0001-05.",
     P_min: 84033.11, P_max: 165000, P_default: 84033.11,
     V_min: 100000, V_max: 175000, V_default: 135000,
     reforma: 8000, condoDivida: 0, iptuAtraso: 523.34, condoMes: 220,
     comissaoPct: 0, itbiPct: 2, cartorio: 2000, outros: 0,
     corretagemPct: 6, irPct: 15,
-    financiar: false, entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+    entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+  },
+  ap102: {
+    title: "AP102 - Gran Acrópolis IV",
+    subtitle: "Rua 8, Apto. 102, Bloco 22, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO · Matrícula 104.556 · Insc. 264956",
+    avaliacao: "R$ 168.000,00",
+    valorMinimo: "R$ 89.600,30 (46,67% deságio)",
+    condoMensal: "≈ R$ 280,00/mês — estimativa não confirmada",
+    modalidade: "Venda Online",
+    pagamento: "Recursos próprios, FGTS, SBPE",
+    endereco: "Rua 8, Apto. 102, Bloco 22, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO",
+    ultimaVenda: "A CONFIRMAR (texto completo da matrícula ainda não extraído)",
+    comparaveis: [
+      ["Gran Acrópolis IV (outro bloco)", "56,37 m²", "R$180.000"],
+      ["Gran Acrópolis IV (outro bloco)", "100,23 m²", "N/D"],
+    ],
+    comparaveisNote: "Faixa estimada aplicando a faixa de R$/m² do prédio (≈R$2.350-3.170/m²) aos 68,67 m² desta unidade: R$161.000 a R$218.000 — faixa larga e pouco confiável por falta de comparável do mesmo tamanho.",
+    dividasIPTU: "R$ 373,83",
+    dividasCondominio: "A CONFIRMAR",
+    dividasOutros: null,
+    dividasNote: "IPTU confirmado oficialmente na Prefeitura de Valparaíso de Goiás (insc. 264956): guia 5.121.374, dívida do ano 2026, venc. 10/04/2026. Condomínio: mesma administradora do AP202, JK Exclusive — (61) 3798-9888 / contabil@jkexclusive.com.br. Teto de responsabilidade do comprador (10% da avaliação): R$16.800.",
+    fontes: "venda-imoveis.caixa.gov.br (anúncio AP102), comparáveis públicos (spyleiloes.com.br, loft.com.br), IPTU Prefeitura Valparaíso de Goiás (insc. 264956, guia 5.121.374, consultado 02/08/2026). Matrícula 104.556 e dívida de condomínio ainda não verificadas diretamente.",
+    P_min: 89600.30, P_max: 195000, P_default: 89600.30,
+    V_min: 130000, V_max: 220000, V_default: 165000,
+    reforma: 10000, condoDivida: 0, iptuAtraso: 373.83, condoMes: 280,
+    comissaoPct: 0, itbiPct: 2, cartorio: 2000, outros: 0,
+    corretagemPct: 6, irPct: 15,
+    entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
   },
   colorado: {
-    label: "Casa Mansões Colorado (encerrado)",
+    title: "Casa Mansões Colorado",
+    subtitle: "Rodovia DF-150, Lote 28 Cj. P, Grande Colorado, Sobradinho/DF · Matrícula 18.011 · 7º Ofício RI/DF",
+    avaliacao: "R$ 1.035.000,00",
+    valorMinimo: "R$ 659.620,30",
+    condoMensal: "N/A — sem associação de moradores averbada na matrícula",
+    modalidade: "Licitação Aberta (Lance Total) · comissão leiloeiro 5%",
+    pagamento: "A CONFIRMAR (não especificado no anúncio coletado)",
+    endereco: "Rodovia DF-150, Lote 28 Cj. P, Grande Colorado, Sobradinho/DF",
+    ultimaVenda: "A CONFIRMAR",
+    comparaveis: [],
+    comparaveisNote: "Comparáveis de mercado não foram coletados nesta análise; o preço de venda estimado (R$1.100.000) usado nos cenários não foi validado por comparáveis reais — maior fonte de incerteza.",
+    dividasIPTU: "≈ R$ 3.388,24 (oficial, Receita DF)",
+    dividasCondominio: "≈ R$ 21.000,00 (AMCRMC) — não confirmado, relato informal do porteiro",
+    dividasOutros: null,
+    dividasNote: "Ambos os valores ficam abaixo do teto de 10% da avaliação (R$103.500).",
+    fontes: "matrícula 18.011 (venda-imoveis.caixa.gov.br), edital EA00190326CPVERE.PDF, leilaoimovel.com.br, consulta Receita/DF (14/07/2026).",
     P_min: 659620.30, P_max: 950000, P_default: 700000,
     V_min: 900000, V_max: 1300000, V_default: 1100000,
     reforma: 117500, condoDivida: 21000, iptuAtraso: 3388.24, condoMes: 0,
     comissaoPct: 5, itbiPct: 2, cartorio: 8500, outros: 4000,
     corretagemPct: 6, irPct: 15,
-    financiar: false, entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+    entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
   },
   loja: {
-    label: "Loja SBS Quadra 1 (encerrado)",
+    title: "Loja SBS Quadra 1",
+    subtitle: "Edifício Seguradoras, SBS Quadra 1 Bloco K, Setor Bancário Sul, Brasília/DF · Matrícula 21117",
+    avaliacao: "R$ 475.000,00 (≈R$6.250/m²)",
+    valorMinimo: "R$ 131.601,89",
+    condoMensal: "Não divulgado, não confirmado",
+    modalidade: "Licitação Aberta · comissão 5%",
+    pagamento: "Financiamento SBPE provavelmente indisponível (uso comercial) — compra à vista mais realista",
+    endereco: "Edifício Seguradoras, SBS Quadra 1 Bloco K, Setor Bancário Sul, Brasília/DF",
+    ultimaVenda: "N/A — propriedade direta da Caixa desde 1982 (não é execução de mutuário)",
+    comparaveis: [["SBS Quadra 1 (mesmo padrão)", "76 m² (referência)", "≈R$8.230/m² → R$495-625 mil"]],
+    comparaveisNote: null,
+    dividasIPTU: "R$ 0,00 (nenhum débito, oficial Receita DF)",
+    dividasCondominio: "Não divulgado, não confirmado",
+    dividasOutros: null,
+    dividasNote: null,
+    fontes: "matrícula 21117, edital 0019/0326-CPVE/RE, lancetotal.com.br, consulta Receita/DF. Nenhum cenário financeiro de revenda foi modelado no relatório original.",
     P_min: 131601.89, P_max: 450000, P_default: 131601.89,
     V_min: 400000, V_max: 650000, V_default: 495000,
     reforma: 0, condoDivida: 0, iptuAtraso: 0, condoMes: 0,
     comissaoPct: 5, itbiPct: 2, cartorio: 2000, outros: 0,
     corretagemPct: 6, irPct: 15,
-    financiar: false, entradaPct: 100, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+    entradaPct: 100, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
   },
   belo: {
-    label: "Apto Belle Horizonte (encerrado)",
+    title: "Apto Belle Horizonte",
+    subtitle: "Gleba 10 Rua E, Apto. 408 Bloco 10, Fazenda Saia Velha, Valparaíso de Goiás/GO · Matrícula 90.551",
+    avaliacao: "R$ 225.000,00",
+    valorMinimo: "R$ 77.945,34",
+    condoMensal: "≈ R$ 380,00/mês — estimativa não confirmada",
+    modalidade: "Venda Online Caixa (sem comissão)",
+    pagamento: "Recursos próprios, FGTS, SBPE",
+    endereco: "Gleba 10 Rua E, Apto. 408 Bloco 10, Fazenda Saia Velha, Valparaíso de Goiás/GO",
+    ultimaVenda: "A CONFIRMAR (consolidação por inadimplência MCMV/FGTS em 14/08/2024)",
+    comparaveis: [],
+    comparaveisNote: "Comparáveis regionais não tabulados neste relatório; ponto de equilíbrio de venda em 6 meses ≈R$130.500 (praticamente no piso dos comparáveis observados).",
+    dividasIPTU: "R$ 535,54 (confirmado oficialmente)",
+    dividasCondominio: "R$ 25.000,00 (informado pelo usuário, não confirmado documentalmente) — teto do comprador R$22.500, Caixa R$2.500",
+    dividasOutros: null,
+    dividasNote: null,
+    fontes: "matrícula 90.551, venda-imoveis.caixa.gov.br, IPTU Prefeitura Valparaíso de Goiás (inscrição 131486), comparáveis de mercado regionais.",
     P_min: 77945.34, P_max: 190000, P_default: 77945.34,
     V_min: 110000, V_max: 190000, V_default: 150000,
     reforma: 10000, condoDivida: 22500, iptuAtraso: 535.54, condoMes: 380,
     comissaoPct: 0, itbiPct: 2, cartorio: 2000, outros: 0,
     corretagemPct: 6, irPct: 15,
-    financiar: false, entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
-  },
-  ap102: {
-    label: "AP102 - Gran Acrópolis IV (pendente)",
-    P_min: 89600.30, P_max: 195000, P_default: 89600.30,
-    V_min: 130000, V_max: 220000, V_default: 165000,
-    reforma: 10000, condoDivida: 0, iptuAtraso: 0, condoMes: 280,
-    comissaoPct: 0, itbiPct: 2, cartorio: 2000, outros: 0,
-    corretagemPct: 6, irPct: 15,
-    financiar: false, entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+    entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
   },
 };
 
+let propStatus = { gran: 'analise', ap102: 'analise', colorado: 'descartado', loja: 'descartado', belo: 'descartado' };
+const STATUS_LABEL = { analise: 'Em análise', descartado: 'Descartado', comprado: 'Comprado' };
+const STATUS_CLASS = { analise: 'badge-progress', descartado: 'badge-dead', comprado: 'badge-live' };
+const STATUS_DOT   = { analise: 'status-warning', descartado: 'status-muted', comprado: 'status-good' };
+
 const el = id => document.getElementById(id);
 const g = (prefix, id) => document.getElementById(prefix + id);
-const presetSelect = el('presetSelect');
-Object.keys(PRESETS).forEach(k => {
+
+const propSelect = el('propSelect');
+PROP_ORDER.forEach(k => {
   const o = document.createElement('option');
-  o.value = k; o.textContent = PRESETS[k].label;
-  presetSelect.appendChild(o);
+  o.value = k; o.textContent = PROPS[k].title;
+  propSelect.appendChild(o);
 });
+propSelect.addEventListener('change', () => renderProperty(propSelect.value));
 
 function fmtBRL(v) {
   const neg = v < 0;
@@ -899,88 +574,155 @@ function fmtBRL(v) {
 }
 function fmtPct(v) { return v.toFixed(1).replace('.', ',') + '%'; }
 
-function loadPreset(prefix, key, overrides) {
-  const p = Object.assign({}, PRESETS[key], overrides || {});
-  g(prefix,'precoSlider').min = Math.max(0, p.P_min * 0.6);
-  g(prefix,'precoSlider').max = p.P_max;
-  g(prefix,'precoSlider').value = p.P_default;
-  g(prefix,'precoInput').value = p.P_default;
-  g(prefix,'precoMinTick').textContent = fmtBRL(p.P_min);
-  g(prefix,'precoMaxTick').textContent = fmtBRL(p.P_max);
-  g(prefix,'lanceAlert').dataset.min = p.P_min;
+function renderProperty(key) {
+  const p = PROPS[key];
+  const status = propStatus[key];
+  el('prop-badge').className = 'badge ' + STATUS_CLASS[status];
+  el('prop-badge').innerHTML = '<span class="live-dot"></span>' + STATUS_LABEL[status];
+  el('prop-title').textContent = p.title;
+  el('prop-subtitle').textContent = p.subtitle;
 
-  g(prefix,'vendaSlider').min = p.V_min;
-  g(prefix,'vendaSlider').max = p.V_max;
-  g(prefix,'vendaSlider').value = p.V_default;
-  g(prefix,'vendaMinTick').textContent = fmtBRL(p.V_min);
-  g(prefix,'vendaMaxTick').textContent = fmtBRL(p.V_max);
+  el('prop-ficha-table').innerHTML =
+    '<tr><td>Avaliação Caixa</td><td>' + p.avaliacao + '</td></tr>' +
+    '<tr><td>Valor mínimo</td><td>' + p.valorMinimo + '</td></tr>' +
+    '<tr><td>Condomínio (mensal)</td><td>' + p.condoMensal + '</td></tr>' +
+    '<tr><td>Modalidade</td><td>' + p.modalidade + '</td></tr>' +
+    '<tr><td>Pagamento aceito</td><td>' + p.pagamento + '</td></tr>' +
+    '<tr><td>Endereço</td><td>' + p.endereco + '</td></tr>' +
+    '<tr><td>Última venda</td><td>' + p.ultimaVenda + '</td></tr>';
 
-  g(prefix,'reformaInput').value = p.reforma;
-  g(prefix,'condoDividaInput').value = p.condoDivida;
-  g(prefix,'iptuAtrasoInput').value = p.iptuAtraso;
-  g(prefix,'condoMesInput').value = p.condoMes;
-  g(prefix,'comissaoInput').value = p.comissaoPct;
-  g(prefix,'itbiInput').value = p.itbiPct;
-  g(prefix,'cartorioInput').value = p.cartorio;
-  g(prefix,'outrosInput').value = p.outros;
-  g(prefix,'corretagemInput').value = p.corretagemPct;
-  g(prefix,'irInput').value = p.irPct;
+  if (p.comparaveis.length) {
+    el('prop-comp-table').innerHTML = '<tr><th>Empreendimento</th><th>Área</th><th>Preço</th></tr>' +
+      p.comparaveis.map(c => '<tr><td>' + c[0] + '</td><td>' + c[1] + '</td><td>' + c[2] + '</td></tr>').join('');
+  } else {
+    el('prop-comp-table').innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Nenhum comparável coletado</td></tr>';
+  }
+  el('prop-comp-note').textContent = p.comparaveisNote || '';
+  el('prop-comp-note').style.display = p.comparaveisNote ? 'block' : 'none';
 
-  g(prefix,'entradaSlider').value = p.entradaPct;
-  g(prefix,'entradaLabel').textContent = p.entradaPct + '%';
-  g(prefix,'taxaInput').value = p.taxaAA;
-  g(prefix,'prazoFinInput').value = p.prazoFin;
-  g(prefix,'seguroInput').value = p.seguroPct;
+  el('prop-dividas-table').innerHTML =
+    '<tr><td>IPTU</td><td>' + p.dividasIPTU + '</td></tr>' +
+    '<tr><td>Condomínio</td><td>' + p.dividasCondominio + '</td></tr>' +
+    (p.dividasOutros ? '<tr><td>Outros</td><td>' + p.dividasOutros + '</td></tr>' : '');
+  el('prop-dividas-note').textContent = p.dividasNote || '';
+  el('prop-dividas-note').style.display = p.dividasNote ? 'block' : 'none';
 
-  compute(prefix);
+  el('prop-fontes').textContent = 'Fontes: ' + p.fontes;
+
+  loadPreset(key);
 }
-presetSelect.addEventListener('change', () => loadPreset('', presetSelect.value));
 
-function bindCalc(prefix) {
-  const precoSlider = g(prefix,'precoSlider'), precoInput = g(prefix,'precoInput');
-  precoSlider.addEventListener('input', () => { precoInput.value = precoSlider.value; compute(prefix); });
+// ---------- calculator ----------
+let entradaMode = '%';
+
+function setEntradaMode(mode) {
+  entradaMode = mode;
+  el('entradaModePct').classList.toggle('active', mode === '%');
+  el('entradaModeAbs').classList.toggle('active', mode === 'R$');
+  el('entradaSlider').style.display = mode === '%' ? 'block' : 'none';
+  el('entradaTicks').style.display = mode === '%' ? 'flex' : 'none';
+  el('entradaAbsWrap').style.display = mode === 'R$' ? 'block' : 'none';
+}
+function syncEntradaAbsFromPct() {
+  const preco = parseFloat(el('precoInput').value) || 0;
+  const pct = parseFloat(el('entradaSlider').value) || 0;
+  el('entradaAbsInput').value = Math.round(preco * pct / 100);
+}
+function syncEntradaPctFromAbs() {
+  const preco = parseFloat(el('precoInput').value) || 0;
+  const abs = parseFloat(el('entradaAbsInput').value) || 0;
+  const pct = preco > 0 ? Math.min(Math.max(abs / preco * 100, 5), 100) : 20;
+  el('entradaSlider').value = pct;
+}
+el('entradaModePct').addEventListener('click', () => setEntradaMode('%'));
+el('entradaModeAbs').addEventListener('click', () => { syncEntradaAbsFromPct(); setEntradaMode('R$'); });
+
+function loadPreset(key) {
+  const p = PROPS[key];
+  el('precoSlider').min = Math.max(0, p.P_min * 0.6);
+  el('precoSlider').max = p.P_max;
+  el('precoSlider').value = p.P_default;
+  el('precoInput').value = p.P_default;
+  el('precoMinTick').textContent = fmtBRL(p.P_min);
+  el('precoMaxTick').textContent = fmtBRL(p.P_max);
+  el('lanceAlert').dataset.min = p.P_min;
+
+  el('vendaSlider').min = p.V_min;
+  el('vendaSlider').max = p.V_max;
+  el('vendaSlider').value = p.V_default;
+  el('vendaMinTick').textContent = fmtBRL(p.V_min);
+  el('vendaMaxTick').textContent = fmtBRL(p.V_max);
+
+  el('reformaInput').value = p.reforma;
+  el('condoDividaInput').value = p.condoDivida;
+  el('iptuAtrasoInput').value = p.iptuAtraso;
+  el('condoMesInput').value = p.condoMes;
+  el('comissaoInput').value = p.comissaoPct;
+  el('itbiInput').value = p.itbiPct;
+  el('cartorioInput').value = p.cartorio;
+  el('outrosInput').value = p.outros;
+  el('corretagemInput').value = p.corretagemPct;
+  el('irInput').value = p.irPct;
+
+  el('entradaSlider').value = p.entradaPct;
+  el('taxaInput').value = p.taxaAA;
+  el('prazoFinInput').value = p.prazoFin;
+  el('seguroInput').value = p.seguroPct;
+
+  setEntradaMode('%');
+  syncEntradaAbsFromPct();
+  compute();
+}
+
+function bindCalc() {
+  const precoSlider = el('precoSlider'), precoInput = el('precoInput');
+  precoSlider.addEventListener('input', () => {
+    precoInput.value = precoSlider.value;
+    if (entradaMode === '%') syncEntradaAbsFromPct(); else syncEntradaPctFromAbs();
+    compute();
+  });
   precoInput.addEventListener('input', () => {
     let v = parseFloat(precoInput.value) || 0;
     precoSlider.value = Math.min(Math.max(v, precoSlider.min), precoSlider.max);
-    compute(prefix);
+    if (entradaMode === '%') syncEntradaAbsFromPct(); else syncEntradaPctFromAbs();
+    compute();
   });
-  g(prefix,'entradaSlider').addEventListener('input', () => compute(prefix));
-  g(prefix,'prazoSlider').addEventListener('input', () => compute(prefix));
-  g(prefix,'vendaSlider').addEventListener('input', () => compute(prefix));
+  el('entradaSlider').addEventListener('input', () => { syncEntradaAbsFromPct(); compute(); });
+  el('entradaAbsInput').addEventListener('input', () => { syncEntradaPctFromAbs(); compute(); });
+  el('prazoSlider').addEventListener('input', () => compute());
+  el('vendaSlider').addEventListener('input', () => compute());
   ['taxaInput','prazoFinInput','seguroInput','reformaInput','condoDividaInput',
    'iptuAtrasoInput','condoMesInput','comissaoInput','itbiInput','cartorioInput','outrosInput',
-   'corretagemInput','irInput'].forEach(id => g(prefix,id).addEventListener('input', () => compute(prefix)));
+   'corretagemInput','irInput'].forEach(id => el(id).addEventListener('input', () => compute()));
 }
-bindCalc('');
-bindCalc('g_');
-bindCalc('h_');
+bindCalc();
 
-function compute(prefix) {
-  const precoInput = g(prefix,'precoInput');
+function compute() {
+  const precoInput = el('precoInput');
   const P = parseFloat(precoInput.value) || 0;
-  const meses = parseInt(g(prefix,'prazoSlider').value, 10);
-  const V = parseFloat(g(prefix,'vendaSlider').value) || 0;
-  const entradaPct = parseFloat(g(prefix,'entradaSlider').value) / 100 || 1;
-  const taxaAA = parseFloat(g(prefix,'taxaInput').value) / 100 || 0;
-  const prazoFin = parseInt(g(prefix,'prazoFinInput').value, 10) || 360;
-  const seguroMensal = (parseFloat(g(prefix,'seguroInput').value) || 0) / 100;
-  const reforma = parseFloat(g(prefix,'reformaInput').value) || 0;
-  const condoDivida = parseFloat(g(prefix,'condoDividaInput').value) || 0;
-  const iptuAtraso = parseFloat(g(prefix,'iptuAtrasoInput').value) || 0;
-  const condoMes = parseFloat(g(prefix,'condoMesInput').value) || 0;
-  const comissaoPct = (parseFloat(g(prefix,'comissaoInput').value) || 0) / 100;
-  const itbiPct = (parseFloat(g(prefix,'itbiInput').value) || 0) / 100;
-  const cartorio = parseFloat(g(prefix,'cartorioInput').value) || 0;
-  const outros = parseFloat(g(prefix,'outrosInput').value) || 0;
-  const corretagemPct = (parseFloat(g(prefix,'corretagemInput').value) || 0) / 100;
-  const irPct = (parseFloat(g(prefix,'irInput').value) || 0) / 100;
+  const meses = parseInt(el('prazoSlider').value, 10);
+  const V = parseFloat(el('vendaSlider').value) || 0;
+  const entradaPct = parseFloat(el('entradaSlider').value) / 100 || 1;
+  const taxaAA = parseFloat(el('taxaInput').value) / 100 || 0;
+  const prazoFin = parseInt(el('prazoFinInput').value, 10) || 360;
+  const seguroMensal = (parseFloat(el('seguroInput').value) || 0) / 100;
+  const reforma = parseFloat(el('reformaInput').value) || 0;
+  const condoDivida = parseFloat(el('condoDividaInput').value) || 0;
+  const iptuAtraso = parseFloat(el('iptuAtrasoInput').value) || 0;
+  const condoMes = parseFloat(el('condoMesInput').value) || 0;
+  const comissaoPct = (parseFloat(el('comissaoInput').value) || 0) / 100;
+  const itbiPct = (parseFloat(el('itbiInput').value) || 0) / 100;
+  const cartorio = parseFloat(el('cartorioInput').value) || 0;
+  const outros = parseFloat(el('outrosInput').value) || 0;
+  const corretagemPct = (parseFloat(el('corretagemInput').value) || 0) / 100;
+  const irPct = (parseFloat(el('irInput').value) || 0) / 100;
 
-  g(prefix,'precoLabel').textContent = fmtBRL(P);
-  g(prefix,'entradaLabel').textContent = Math.round(entradaPct * 100) + '%';
-  g(prefix,'prazoLabel').textContent = meses + (meses === 1 ? ' mês' : ' meses');
-  g(prefix,'vendaLabel').textContent = fmtBRL(V);
-  const pmin = parseFloat(g(prefix,'lanceAlert').dataset.min || 0);
-  g(prefix,'lanceAlert').style.display = P < pmin ? 'flex' : 'none';
+  el('precoLabel').textContent = fmtBRL(P);
+  el('entradaLabel').textContent = Math.round(entradaPct * 100) + '%';
+  el('prazoLabel').textContent = meses + (meses === 1 ? ' mês' : ' meses');
+  el('vendaLabel').textContent = fmtBRL(V);
+  const pmin = parseFloat(el('lanceAlert').dataset.min || 0);
+  el('lanceAlert').style.display = P < pmin ? 'flex' : 'none';
 
   const entrada = P * entradaPct;
   const comissaoLeiloeiro = P * comissaoPct;
@@ -1015,21 +757,21 @@ function compute(prefix) {
   const retorno = caixaProprioTotal > 0 ? (lucro / caixaProprioTotal) * 100 : 0;
   const retornoAno = caixaProprioTotal > 0 ? (Math.pow(1 + lucro / caixaProprioTotal, 12 / meses) - 1) * 100 : 0;
 
-  g(prefix,'lucroValue').textContent = fmtBRL(lucro);
-  g(prefix,'lucroValue').className = 'hero-value ' + (lucro >= 0 ? '' : 'ink-critical');
-  g(prefix,'retornoValue').textContent = fmtPct(retorno) + ' em ' + meses + (meses === 1 ? ' mês' : ' meses');
-  g(prefix,'caixaValue').textContent = fmtBRL(caixaProprioTotal);
-  g(prefix,'retornoAnoValue').textContent = fmtPct(retornoAno);
+  el('lucroValue').textContent = fmtBRL(lucro);
+  el('lucroValue').className = 'hero-value ' + (lucro >= 0 ? '' : 'ink-critical');
+  el('retornoValue').textContent = fmtPct(retorno) + ' em ' + meses + (meses === 1 ? ' mês' : ' meses');
+  el('caixaValue').textContent = fmtBRL(caixaProprioTotal);
+  el('retornoAnoValue').textContent = fmtPct(retornoAno);
 
   let statusRetorno = 'good';
   if (lucro < 0) statusRetorno = 'critical';
   else if (retornoAno < 8) statusRetorno = 'critical';
   else if (retornoAno < 20) statusRetorno = 'warning';
-  g(prefix,'dotCaixa').className = 'status-dot status-' + (P < pmin ? 'warning' : 'good');
-  g(prefix,'dotRetorno').className = 'status-dot status-' + statusRetorno;
-  g(prefix,'retornoAnoValue').className = 'stat-value ink-' + statusRetorno;
+  el('dotCaixa').className = 'status-dot status-' + (P < pmin ? 'warning' : 'good');
+  el('dotRetorno').className = 'status-dot status-' + statusRetorno;
+  el('retornoAnoValue').className = 'stat-value ink-' + statusRetorno;
 
-  const alertBox = g(prefix,'lucroAlert');
+  const alertBox = el('lucroAlert');
   alertBox.innerHTML = '';
   if (lucro < 0) {
     alertBox.innerHTML = '<div class="callout bad">⚠ Nesse cenário o resultado é <b>prejuízo</b> — reveja preço de venda, prazo ou entrada.</div>';
@@ -1041,7 +783,7 @@ function compute(prefix) {
   const pctAq = total > 0 ? (subtotalAquisicao / total) * 100 : 0;
   const pctFin = total > 0 ? (custoFinanciamento / total) * 100 : 0;
   const pctObra = total > 0 ? 100 - pctAq - pctFin : 0;
-  g(prefix,'costBar').innerHTML =
+  el('costBar').innerHTML =
     '<div style="width:' + pctAq.toFixed(1) + '%;background:var(--series-1)"></div>' +
     '<div style="width:' + pctFin.toFixed(1) + '%;background:var(--series-2)"></div>' +
     '<div style="width:' + pctObra.toFixed(1) + '%;background:var(--series-3)"></div>';
@@ -1064,15 +806,56 @@ function compute(prefix) {
     ['Líquido da venda', liquidoVenda],
     ['LUCRO', lucro],
   ].filter(Boolean);
-  g(prefix,'breakdownTable').innerHTML = rows.map(r => {
+  el('breakdownTable').innerHTML = rows.map(r => {
     const isTotal = ['Caixa próprio total','LUCRO','Líquido da venda'].includes(r[0]);
     return '<tr' + (isTotal ? ' class="tot"' : '') + '><td>' + r[0] + '</td><td style="text-align:right;">' + fmtBRL(r[1]) + '</td></tr>';
   }).join('');
 }
 
-loadPreset('', 'gran');
-loadPreset('g_', 'gran');
-loadPreset('h_', 'ap102');
+// ---------- lista ----------
+function renderLista() {
+  const filter = el('filterSelect').value;
+  const tbody = el('listaTbody');
+  const rows = PROP_ORDER.filter(k => filter === 'todos' || propStatus[k] === filter);
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Nenhum imóvel nesta classificação</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(k => {
+    const p = PROPS[k];
+    return '<tr>' +
+      '<td><a href="#" class="lista-link" data-key="' + k + '" style="color:var(--accent);font-weight:700;text-decoration:none;">' + p.title + '</a></td>' +
+      '<td>' + p.avaliacao + '</td>' +
+      '<td>' + p.valorMinimo + '</td>' +
+      '<td><select class="selfield selfield-sm status-select" data-key="' + k + '">' +
+        '<option value="analise"' + (propStatus[k]==='analise'?' selected':'') + '>Em análise</option>' +
+        '<option value="descartado"' + (propStatus[k]==='descartado'?' selected':'') + '>Descartado</option>' +
+        '<option value="comprado"' + (propStatus[k]==='comprado'?' selected':'') + '>Comprado</option>' +
+      '</select></td>' +
+    '</tr>';
+  }).join('');
+
+  tbody.querySelectorAll('.status-select').forEach(sel => {
+    sel.addEventListener('change', () => {
+      propStatus[sel.dataset.key] = sel.value;
+      if (propSelect.value === sel.dataset.key) renderProperty(sel.dataset.key);
+      renderLista();
+    });
+  });
+  tbody.querySelectorAll('.lista-link').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      propSelect.value = a.dataset.key;
+      renderProperty(a.dataset.key);
+      showTab('imovel');
+    });
+  });
+}
+el('filterSelect').addEventListener('change', renderLista);
+
+// ---------- init ----------
+renderProperty('gran');
+renderLista();
 </script>
 </body>
 </html>
