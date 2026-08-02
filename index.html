@@ -232,7 +232,7 @@
     <!-- ===================== GRAN ACRÓPOLIS ===================== -->
     <section id="tab-gran" class="tabpanel active">
       <span class="badge badge-live"><span class="live-dot"></span>Pendente — em análise</span>
-      <h1 class="pagetitle">Apto Gran Acrópolis IV</h1>
+      <h1 class="pagetitle">AP202 - Gran Acrópolis IV</h1>
       <div class="pagesub">Rua 8, Apto. 202, Bloco 44, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO · Matrícula 104.684 · Insc. 265086</div>
 
       <div class="card">
@@ -277,6 +277,20 @@
       </div>
 
       <div class="card">
+        <h2 class="sec">📎 Outra unidade no mesmo condomínio (ainda não analisada)</h2>
+        <p class="body">Apareceu uma nova unidade à venda no mesmo Res. Gran Acrópolis IV — ainda não fizemos due diligence completa (matrícula, IPTU, comparáveis).</p>
+        <table class="kv">
+          <tr><td>Unidade</td><td>AP102, Bloco 22</td></tr>
+          <tr><td>Matrícula</td><td>104.556 · Insc. 264956</td></tr>
+          <tr><td>Área privativa</td><td>68,67 m²</td></tr>
+          <tr><td>Avaliação Caixa</td><td>R$ 168.000,00</td></tr>
+          <tr><td>Valor mínimo</td><td>R$ 89.600,30 (46,67% deságio)</td></tr>
+          <tr><td>Modalidade</td><td>Venda Online</td></tr>
+        </table>
+        <p class="body" style="margin-top:8px;"><a href="https://venda-imoveis.caixa.gov.br/sistema/detalhe-imovel.asp?hdnimovel=08787717219031" target="_blank" rel="noopener">Ver anúncio na Caixa ›</a></p>
+      </div>
+
+      <div class="card">
         <h2 class="sec">Cenários — financiado (SBPE, 20% entrada)</h2>
         <p class="body">Entrada de 20% (≈R$16.807) sobre R$84.033,11, financiando ≈R$67.226 a 11,49%a.a.+TR, SAC, 360 meses.</p>
         <div class="tablewrap">
@@ -293,29 +307,6 @@
         <p class="body">Financiar amplia o retorno % (efeito alavancagem) mas reduz a margem de segurança do cenário conservador de 12 meses (lucro cai a quase zero).</p>
       </div>
 
-      <details class="more"><summary>Ver cenário à vista (menos provável)</summary>
-        <div class="tablewrap">
-        <table class="datatable">
-          <tr><th></th><th>Conserv.<br>R$115k</th><th>Médio<br>R$135k</th><th>Otim.<br>R$155k</th></tr>
-          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 6 meses</td></tr>
-          <tr class="tot"><td>Lucro</td><td>R$7.650</td><td>R$23.450</td><td>R$39.250</td></tr>
-          <tr><td>Retorno anual.</td><td>≈16,3%</td><td>≈53,9%</td><td>≈96,7%</td></tr>
-          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 12 meses</td></tr>
-          <tr class="tot"><td>Lucro</td><td>R$6.330</td><td>R$22.130</td><td>R$37.930</td></tr>
-          <tr><td>Retorno anual.</td><td>≈6,4%</td><td>≈22,4%</td><td>≈38,4%</td></tr>
-        </table>
-        </div>
-        <p class="body" style="margin-top:14px;font-weight:700;">Estresse — condomínio no teto (R$16.500)</p>
-        <div class="tablewrap">
-        <table class="datatable">
-          <tr><th></th><th>Conserv.</th><th>Médio</th><th>Otim.</th></tr>
-          <tr><td>Lucro (6m)</td><td class="ink-critical">−R$8.850</td><td>R$6.950</td><td>R$22.750</td></tr>
-          <tr><td>Lucro (12m)</td><td class="ink-critical">−R$10.170</td><td>R$5.630</td><td>R$21.430</td></tr>
-        </table>
-        </div>
-        <div class="callout good">✓ Mesmo no estresse, os cenários médio e otimista continuam positivos — margem de segurança melhor que a do Belle Horizonte.</div>
-      </details>
-
       <details class="more"><summary>Ver recomendação completa</summary>
         <p class="body">Oportunidade mais sólida que a do Belle Horizonte — imóvel novo, comparável direto no mesmo prédio, resiste bem ao estresse de condomínio. Antes de fechar: (1) confirmar dívida de condomínio com a JK Exclusive; (2) usar R$115-155k como referência de venda, não os R$165k da Caixa; (3) confirmar desocupação; (4) reforma leve de R$8.000 deve bastar; (5) vender em 6 meses rende mais por ano; (6) se financiar, confirmar com a agência o LTV real para investidor, não assumir a entrada mínima de 5%.</p>
       </details>
@@ -331,6 +322,11 @@
           <div class="callout warn" id="g_lanceAlert" style="display:none;">⚠ Abaixo do valor mínimo do anúncio para este imóvel.</div>
         </div>
         <div class="field">
+          <div class="field-label"><span>Entrada (financiamento SAC)</span><span class="field-value" id="g_entradaLabel">20%</span></div>
+          <input type="range" id="g_entradaSlider" min="5" max="100" step="1" value="20">
+          <div class="range-ticks"><span>5%</span><span>100%</span></div>
+        </div>
+        <div class="field">
           <div class="field-label"><span>Prazo até a venda</span><span class="field-value" id="g_prazoLabel">6 meses</span></div>
           <input type="range" id="g_prazoSlider" min="1" max="24" step="1" value="6">
           <div class="range-ticks"><span>1 mês</span><span>24 meses</span></div>
@@ -341,21 +337,11 @@
           <div class="range-ticks"><span id="g_vendaMinTick"></span><span id="g_vendaMaxTick"></span></div>
         </div>
 
-        <div class="switchrow">
-          <span>Financiar (SAC)</span>
-          <label class="switch"><input type="checkbox" id="g_financiarToggle"><span class="slider-tog"></span></label>
-        </div>
-        <div id="g_financiarFields" style="display:none;">
-          <div class="grid2">
-            <div><label>Entrada (%)</label><input type="number" class="numfield" id="g_entradaInput" step="1"></div>
+        <details class="more"><summary>Ajustar premissas avançadas</summary>
+          <div class="grid2" style="margin-top:14px;">
             <div><label>Taxa (% a.a. + TR)</label><input type="number" class="numfield" id="g_taxaInput" step="0.1"></div>
             <div><label>Prazo financiamento (meses)</label><input type="number" class="numfield" id="g_prazoFinInput" step="12"></div>
             <div><label>Seguro MIP+DFI (%/mês do saldo)</label><input type="number" class="numfield" id="g_seguroInput" step="0.005"></div>
-          </div>
-        </div>
-
-        <details class="more"><summary>Ajustar premissas avançadas</summary>
-          <div class="grid2" style="margin-top:14px;">
             <div><label>Reforma (R$)</label><input type="number" class="numfield" id="g_reformaInput" step="500"></div>
             <div><label>Dívida condomínio a assumir (R$)</label><input type="number" class="numfield" id="g_condoDividaInput" step="500"></div>
             <div><label>IPTU/tributos em atraso (R$)</label><input type="number" class="numfield" id="g_iptuAtrasoInput" step="50"></div>
@@ -605,6 +591,11 @@
           <div class="callout warn" id="lanceAlert" style="display:none;">⚠ Abaixo do valor mínimo do anúncio/edital para este imóvel.</div>
         </div>
         <div class="field">
+          <div class="field-label"><span>Entrada (financiamento SAC)</span><span class="field-value" id="entradaLabel">20%</span></div>
+          <input type="range" id="entradaSlider" min="5" max="100" step="1" value="20">
+          <div class="range-ticks"><span>5%</span><span>100%</span></div>
+        </div>
+        <div class="field">
           <div class="field-label"><span>Prazo até a venda</span><span class="field-value" id="prazoLabel">6 meses</span></div>
           <input type="range" id="prazoSlider" min="1" max="24" step="1" value="6">
           <div class="range-ticks"><span>1 mês</span><span>24 meses</span></div>
@@ -617,21 +608,11 @@
       </div>
 
       <div class="card">
-        <div class="switchrow">
-          <span>Financiar (SAC)</span>
-          <label class="switch"><input type="checkbox" id="financiarToggle"><span class="slider-tog"></span></label>
-        </div>
-        <div id="financiarFields" style="display:none;">
-          <div class="grid2">
-            <div><label>Entrada (%)</label><input type="number" class="numfield" id="entradaInput" value="20" step="1"></div>
+        <details class="more"><summary>Ajustar premissas avançadas</summary>
+          <div class="grid2" style="margin-top:14px;">
             <div><label>Taxa (% a.a. + TR)</label><input type="number" class="numfield" id="taxaInput" value="11.49" step="0.1"></div>
             <div><label>Prazo financiamento (meses)</label><input type="number" class="numfield" id="prazoFinInput" value="360" step="12"></div>
             <div><label>Seguro MIP+DFI (%/mês do saldo)</label><input type="number" class="numfield" id="seguroInput" value="0.035" step="0.005"></div>
-          </div>
-        </div>
-
-        <details class="more"><summary>Ajustar premissas avançadas</summary>
-          <div class="grid2" style="margin-top:14px;">
             <div><label>Reforma (R$)</label><input type="number" class="numfield" id="reformaInput" step="500"></div>
             <div><label>Dívida condomínio a assumir (R$)</label><input type="number" class="numfield" id="condoDividaInput" step="500"></div>
             <div><label>IPTU/tributos em atraso (R$)</label><input type="number" class="numfield" id="iptuAtrasoInput" step="50"></div>
@@ -719,7 +700,7 @@ function backToEncerradosList() {
 // ---------- calculator ----------
 const PRESETS = {
   gran: {
-    label: "Apto Gran Acrópolis IV (pendente)",
+    label: "AP202 - Gran Acrópolis IV (pendente)",
     P_min: 84033.11, P_max: 165000, P_default: 84033.11,
     V_min: 100000, V_max: 175000, V_default: 135000,
     reforma: 8000, condoDivida: 0, iptuAtraso: 523.34, condoMes: 220,
@@ -799,9 +780,8 @@ function loadPreset(prefix, key, overrides) {
   g(prefix,'corretagemInput').value = p.corretagemPct;
   g(prefix,'irInput').value = p.irPct;
 
-  g(prefix,'financiarToggle').checked = p.financiar;
-  g(prefix,'financiarFields').style.display = p.financiar ? 'block' : 'none';
-  g(prefix,'entradaInput').value = p.entradaPct;
+  g(prefix,'entradaSlider').value = p.entradaPct;
+  g(prefix,'entradaLabel').textContent = p.entradaPct + '%';
   g(prefix,'taxaInput').value = p.taxaAA;
   g(prefix,'prazoFinInput').value = p.prazoFin;
   g(prefix,'seguroInput').value = p.seguroPct;
@@ -818,13 +798,10 @@ function bindCalc(prefix) {
     precoSlider.value = Math.min(Math.max(v, precoSlider.min), precoSlider.max);
     compute(prefix);
   });
+  g(prefix,'entradaSlider').addEventListener('input', () => compute(prefix));
   g(prefix,'prazoSlider').addEventListener('input', () => compute(prefix));
   g(prefix,'vendaSlider').addEventListener('input', () => compute(prefix));
-  g(prefix,'financiarToggle').addEventListener('change', () => {
-    g(prefix,'financiarFields').style.display = g(prefix,'financiarToggle').checked ? 'block' : 'none';
-    compute(prefix);
-  });
-  ['entradaInput','taxaInput','prazoFinInput','seguroInput','reformaInput','condoDividaInput',
+  ['taxaInput','prazoFinInput','seguroInput','reformaInput','condoDividaInput',
    'iptuAtrasoInput','condoMesInput','comissaoInput','itbiInput','cartorioInput','outrosInput',
    'corretagemInput','irInput'].forEach(id => g(prefix,id).addEventListener('input', () => compute(prefix)));
 }
@@ -836,8 +813,7 @@ function compute(prefix) {
   const P = parseFloat(precoInput.value) || 0;
   const meses = parseInt(g(prefix,'prazoSlider').value, 10);
   const V = parseFloat(g(prefix,'vendaSlider').value) || 0;
-  const financiar = g(prefix,'financiarToggle').checked;
-  const entradaPct = financiar ? (parseFloat(g(prefix,'entradaInput').value) / 100 || 1) : 1;
+  const entradaPct = parseFloat(g(prefix,'entradaSlider').value) / 100 || 1;
   const taxaAA = parseFloat(g(prefix,'taxaInput').value) / 100 || 0;
   const prazoFin = parseInt(g(prefix,'prazoFinInput').value, 10) || 360;
   const seguroMensal = (parseFloat(g(prefix,'seguroInput').value) || 0) / 100;
@@ -853,6 +829,7 @@ function compute(prefix) {
   const irPct = (parseFloat(g(prefix,'irInput').value) || 0) / 100;
 
   g(prefix,'precoLabel').textContent = fmtBRL(P);
+  g(prefix,'entradaLabel').textContent = Math.round(entradaPct * 100) + '%';
   g(prefix,'prazoLabel').textContent = meses + (meses === 1 ? ' mês' : ' meses');
   g(prefix,'vendaLabel').textContent = fmtBRL(V);
   const pmin = parseFloat(g(prefix,'lanceAlert').dataset.min || 0);
@@ -864,20 +841,18 @@ function compute(prefix) {
   const subtotalAquisicao = entrada + comissaoLeiloeiro + itbi + cartorio + outros;
 
   let custoFinanciamento = 0, saldoDevedor = 0, mesesPagos = 0;
-  if (financiar) {
-    const financiado = P - entrada;
-    const amortConst = financiado / prazoFin;
-    const iMensal = Math.pow(1 + taxaAA, 1/12) - 1;
-    let saldo = financiado, totalJuros = 0, totalSeguro = 0;
-    mesesPagos = Math.min(meses, prazoFin);
-    for (let k = 0; k < mesesPagos; k++) {
-      totalJuros += saldo * iMensal;
-      totalSeguro += saldo * seguroMensal;
-      saldo -= amortConst;
-    }
-    saldoDevedor = Math.max(saldo, 0);
-    custoFinanciamento = totalJuros + totalSeguro;
+  const financiado = P - entrada;
+  const amortConst = financiado / prazoFin;
+  const iMensal = Math.pow(1 + taxaAA, 1/12) - 1;
+  let saldo = financiado, totalJuros = 0, totalSeguro = 0;
+  mesesPagos = Math.min(meses, prazoFin);
+  for (let k = 0; k < mesesPagos; k++) {
+    totalJuros += saldo * iMensal;
+    totalSeguro += saldo * seguroMensal;
+    saldo -= amortConst;
   }
+  saldoDevedor = Math.max(saldo, 0);
+  custoFinanciamento = totalJuros + totalSeguro;
 
   const custoCorrente = condoMes * meses;
   const subtotalCarrego = custoFinanciamento + condoDivida + iptuAtraso + custoCorrente + reforma;
@@ -910,7 +885,7 @@ function compute(prefix) {
   const alertBox = g(prefix,'lucroAlert');
   alertBox.innerHTML = '';
   if (lucro < 0) {
-    alertBox.innerHTML = '<div class="callout bad">⚠ Nesse cenário o resultado é <b>prejuízo</b> — reveja preço de venda, prazo ou valor de compra.</div>';
+    alertBox.innerHTML = '<div class="callout bad">⚠ Nesse cenário o resultado é <b>prejuízo</b> — reveja preço de venda, prazo ou entrada.</div>';
   } else if (statusRetorno === 'warning') {
     alertBox.innerHTML = '<div class="callout warn">⚠ Margem apertada: qualquer imprevisto pode zerar o lucro.</div>';
   }
@@ -925,15 +900,19 @@ function compute(prefix) {
     '<div style="width:' + pctObra.toFixed(1) + '%;background:var(--series-3)"></div>';
 
   const rows = [
-    ['Subtotal aquisição', subtotalAquisicao],
-    financiar ? ['Financiamento (juros+seguro, ' + mesesPagos + ' m)', custoFinanciamento] : null,
-    ['Dívida condomínio + IPTU em atraso', condoDivida + iptuAtraso],
-    ['Condomínio+IPTU corrente (' + meses + ' m)', custoCorrente],
+    ['Entrada (' + Math.round(entradaPct*100) + '%)', entrada],
+    comissaoLeiloeiro > 0 ? ['Comissão leiloeiro', comissaoLeiloeiro] : null,
+    ['ITBI', itbi],
+    ['Cartório/registro', cartorio],
+    outros > 0 ? ['Outros custos', outros] : null,
+    ['Financiamento (juros+seguro, ' + mesesPagos + ' m)', custoFinanciamento],
     ['Reforma', reforma],
+    (condoDivida + iptuAtraso) > 0 ? ['Dívida condomínio + IPTU em atraso', condoDivida + iptuAtraso] : null,
+    ['Condomínio+IPTU corrente (' + meses + ' m)', custoCorrente],
     ['Caixa próprio total', caixaProprioTotal],
     ['Preço de venda', V],
     ['(-) Corretagem', -corretagem],
-    financiar ? ['(-) Quitação saldo devedor', -saldoDevedor] : null,
+    ['(-) Quitação saldo devedor', -saldoDevedor],
     ['(-) IR ganho de capital', -ir],
     ['Líquido da venda', liquidoVenda],
     ['LUCRO', lucro],
@@ -945,7 +924,7 @@ function compute(prefix) {
 }
 
 loadPreset('', 'gran');
-loadPreset('g_', 'gran', { financiar: true });
+loadPreset('g_', 'gran');
 </script>
 </body>
 </html>
