@@ -3,43 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Calculadora — Belle Horizonte (Leilão Caixa)</title>
+<title>Leilões Caixa — Painel de Análise</title>
 <style>
   :root {
     color-scheme: light;
     --surface-1:      #fcfcfb;
+    --surface-2:      #f2f1ec;
     --page-plane:     #f9f9f7;
     --text-primary:   #0b0b0b;
     --text-secondary: #52514e;
     --text-muted:     #898781;
     --gridline:       #e1e0d9;
     --border:         rgba(11,11,11,0.10);
-    --series-1:       #2a78d6; /* aquisição */
-    --series-2:       #8a4fd6; /* dívidas propter rem */
-    --series-3:       #eda100; /* reforma + posse */
+    --accent:         #2a78d6;
+    --series-1:       #2a78d6;
+    --series-2:       #1baf7a;
+    --series-3:       #eda100;
     --good:           #0ca30c;
+    --goodbg:         rgba(12,163,12,0.08);
     --warning:        #b9790a;
+    --warnbg:         rgba(185,121,10,0.08);
     --critical:       #d03b3b;
+    --critbg:         rgba(208,59,59,0.08);
   }
   @media (prefers-color-scheme: dark) {
     :root:where(:not([data-theme="light"])) {
       color-scheme: dark;
       --surface-1:      #1a1a19;
+      --surface-2:      #232320;
       --page-plane:     #0d0d0d;
       --text-primary:   #ffffff;
       --text-secondary: #c3c2b7;
-      --text-muted:     #898781;
+      --text-muted:     #918f87;
       --gridline:       #2c2c2a;
-      --border:         rgba(255,255,255,0.10);
+      --border:         rgba(255,255,255,0.12);
+      --accent:         #3987e5;
       --series-1:       #3987e5;
-      --series-2:       #a06be8;
+      --series-2:       #199e70;
       --series-3:       #c98500;
-      --good:           #0ca30c;
+      --good:           #3fcf3f;
+      --goodbg:         rgba(63,207,63,0.10);
       --warning:        #fab219;
+      --warnbg:         rgba(250,178,25,0.10);
       --critical:       #e66767;
+      --critbg:         rgba(230,103,103,0.10);
     }
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
     margin: 0; padding: 0;
     background: var(--page-plane);
@@ -47,436 +57,895 @@
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     -webkit-text-size-adjust: 100%;
   }
-  .wrap { max-width: 560px; margin: 0 auto; padding: 16px 16px 48px; }
-  header { padding: 8px 0 16px; }
-  h1 { font-size: 19px; margin: 0 0 4px; line-height: 1.3; }
-  .subtitle { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 0 90px; }
+
+  header.topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--page-plane);
+    border-bottom: 1px solid var(--border);
+    padding-top: max(10px, env(safe-area-inset-top));
+  }
+  .topbar-inner { padding: 6px 16px 12px; }
+  .topbar-title { font-size: 17px; font-weight: 800; margin-bottom: 2px; }
+  .topbar-sub { font-size: 12px; color: var(--text-muted); }
+
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); flex: none; }
+
+  main { padding: 14px 16px 0; }
+  .tabpanel { display: none; }
+  .tabpanel.active { display: block; }
+  .subpanel { display: none; }
+  .subpanel.active { display: block; }
+
+  /* Bottom nav */
+  nav.bottomnav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+    background: var(--surface-1); border-top: 1px solid var(--border);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .bottomnav-inner {
+    max-width: 640px; margin: 0 auto; display: flex;
+  }
+  .navbtn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 9px 4px 8px; background: none; border: none; cursor: pointer;
+    color: var(--text-muted); font-size: 11px; font-weight: 600; font-family: inherit;
+  }
+  .navbtn .navicon { font-size: 20px; line-height: 1; position: relative; }
+  .navbtn.active { color: var(--accent); }
+  .navbtn .navicon .live-dot { position: absolute; top: -1px; right: -3px; width: 8px; height: 8px; border: 2px solid var(--surface-1); }
+
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 4px; font-size: 13.5px; font-weight: 700;
+    color: var(--accent); background: none; border: none; cursor: pointer; padding: 4px 0 12px;
+    font-family: inherit;
+  }
 
   .card {
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
-    margin-bottom: 14px;
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px; margin-bottom: 14px;
   }
-  .card h2 {
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--text-muted);
-    margin: 0 0 14px;
-    font-weight: 700;
+  .card h2.sec {
+    font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--text-muted); margin: 0 0 12px; font-weight: 700;
   }
+  h1.pagetitle { font-size: 20px; margin: 4px 0 2px; line-height: 1.3; }
+  .pagesub { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px; }
 
-  .field { margin-bottom: 18px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700;
+    padding: 4px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .02em;
+  }
+  .badge-live { background: var(--goodbg); color: var(--good); }
+  .badge-dead { background: var(--surface-2); color: var(--text-muted); }
+
+  table.kv { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.kv td { padding: 7px 0; border-bottom: 1px solid var(--gridline); vertical-align: top; }
+  table.kv td:first-child { color: var(--text-secondary); width: 42%; padding-right: 10px; }
+  table.kv td:last-child { text-align: right; font-weight: 600; }
+  table.kv tr:last-child td { border-bottom: none; }
+
+  table.datatable { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 6px; }
+  table.datatable th, table.datatable td { padding: 7px 6px; text-align: center; border-bottom: 1px solid var(--gridline); }
+  table.datatable th:first-child, table.datatable td:first-child { text-align: left; }
+  table.datatable th { background: var(--surface-2); font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
+  table.datatable tr.tot td { font-weight: 800; border-top: 2px solid var(--text-primary); border-bottom: none; }
+  .tablewrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  p.body { font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); margin: 0 0 10px; }
+  ul.bullets { margin: 0 0 10px; padding-left: 18px; font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); }
+  ul.bullets li { margin-bottom: 5px; }
+
+  .callout { display: flex; gap: 8px; padding: 10px 12px; border-radius: 10px; font-size: 12.5px; line-height: 1.55; margin: 8px 0; }
+  .callout.good { background: var(--goodbg); color: var(--good); }
+  .callout.warn { background: var(--warnbg); color: var(--warning); }
+  .callout.bad  { background: var(--critbg); color: var(--critical); }
+  .callout b { color: inherit; }
+
+  details.more summary {
+    cursor: pointer; font-size: 13px; font-weight: 700; color: var(--accent);
+    list-style: none; padding: 6px 0;
+  }
+  details.more summary::-webkit-details-marker { display: none; }
+  details.more summary::before { content: "▸ "; }
+  details.more[open] summary::before { content: "▾ "; }
+  details.more { margin-top: 4px; }
+
+  .contact-box { font-size: 12.5px; line-height: 1.7; color: var(--text-secondary); background: var(--surface-2); border-radius: 10px; padding: 10px 12px; }
+  .contact-box b { color: var(--text-primary); }
+
+  footer.src { font-size: 11px; color: var(--text-muted); line-height: 1.6; margin-top: 6px; }
+
+  /* Calculator specific */
+  .field { margin-bottom: 16px; }
   .field:last-child { margin-bottom: 4px; }
-  .field-label {
-    display: flex; justify-content: space-between; align-items: baseline;
-    margin-bottom: 8px;
-  }
-  .field-label span:first-child { font-size: 14px; color: var(--text-secondary); }
-  .field-value {
-    font-size: 17px; font-weight: 700; color: var(--text-primary);
-    font-variant-numeric: tabular-nums;
-  }
+  .field-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .field-label span:first-child { font-size: 13.5px; color: var(--text-secondary); }
+  .field-value { font-size: 16px; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; }
   input[type=range] {
     width: 100%; height: 32px; -webkit-appearance: none; appearance: none;
     background: transparent; margin: 0; touch-action: pan-y;
   }
-  input[type=range]::-webkit-slider-runnable-track {
-    height: 6px; border-radius: 3px; background: var(--gridline);
-  }
+  input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--gridline); }
   input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none; appearance: none;
-    width: 26px; height: 26px; border-radius: 50%;
-    background: var(--series-1); border: 3px solid var(--surface-1);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-    margin-top: -10px; cursor: pointer;
+    -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--series-1); border: 3px solid var(--surface-1); box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    margin-top: -9px; cursor: pointer;
   }
-  input[type=range]::-moz-range-track {
-    height: 6px; border-radius: 3px; background: var(--gridline);
-  }
+  input[type=range]::-moz-range-track { height: 6px; border-radius: 3px; background: var(--gridline); }
   input[type=range]::-moz-range-thumb {
-    width: 26px; height: 26px; border-radius: 50%;
-    background: var(--series-1); border: 3px solid var(--surface-1);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.25); cursor: pointer;
+    width: 24px; height: 24px; border-radius: 50%; background: var(--series-1);
+    border: 3px solid var(--surface-1); box-shadow: 0 1px 4px rgba(0,0,0,0.25); cursor: pointer;
   }
-  .range-ticks {
-    display: flex; justify-content: space-between;
-    font-size: 11px; color: var(--text-muted); margin-top: 2px;
+  .range-ticks { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
+  .numfield, select.selfield {
+    width: 100%; font-size: 14.5px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--page-plane); color: var(--text-primary); font-variant-numeric: tabular-nums;
   }
-  .numfield {
-    width: 100%; font-size: 15px; padding: 10px 12px;
-    border-radius: 10px; border: 1px solid var(--border);
-    background: var(--page-plane); color: var(--text-primary);
-    font-variant-numeric: tabular-nums;
-  }
-  select.numfield { appearance: none; -webkit-appearance: none; }
-
-  details.advanced summary {
-    cursor: pointer; font-size: 14px; font-weight: 600; color: var(--series-1);
-    list-style: none; padding: 4px 0;
-  }
-  details.advanced summary::-webkit-details-marker { display: none; }
-  details.advanced summary::before { content: "▸ "; }
-  details.advanced[open] summary::before { content: "▾ "; }
-  details.advanced .field { margin-top: 16px; }
-  details.advanced .field-group-title {
-    font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
-    color: var(--text-muted); margin: 18px 0 8px; font-weight: 700;
-  }
-  details.advanced .field-group-title:first-of-type { margin-top: 16px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .grid2 label { font-size: 12px; color: var(--text-muted); display:block; margin-bottom:4px; }
+  .grid2 label { font-size: 11.5px; color: var(--text-muted); display:block; margin-bottom:4px; }
+  .switchrow { display: flex; align-items: center; justify-content: space-between; padding: 4px 0 10px; }
+  .switchrow span { font-size: 14px; font-weight: 600; }
+  .switch { position: relative; width: 46px; height: 27px; flex: none; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider-tog { position: absolute; inset: 0; background: var(--gridline); border-radius: 27px; cursor: pointer; transition: .15s; }
+  .slider-tog::before { content: ""; position: absolute; width: 21px; height: 21px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .15s; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+  .switch input:checked + .slider-tog { background: var(--accent); }
+  .switch input:checked + .slider-tog::before { transform: translateX(19px); }
 
-  /* Result stat tiles */
   .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-  .stat-tile {
-    background: var(--surface-1); border: 1px solid var(--border);
-    border-radius: 14px; padding: 14px;
-  }
-  .stat-tile .stat-label {
-    font-size: 12px; color: var(--text-muted); margin-bottom: 6px;
-    display: flex; align-items: center; gap: 5px;
-  }
-  .stat-tile .stat-value {
-    font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums;
-    line-height: 1.15;
-  }
-  .stat-tile .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .stat-tile { background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+  .stat-tile .stat-label { font-size: 11.5px; color: var(--text-muted); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+  .stat-tile .stat-value { font-size: 21px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.15; }
   .status-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
-  .status-good    { background: var(--good); }
-  .status-warning { background: var(--warning); }
-  .status-critical{ background: var(--critical); }
-  .ink-good    { color: var(--good); }
-  .ink-warning { color: var(--warning); }
-  .ink-critical{ color: var(--critical); }
+  .status-good { background: var(--good); } .status-warning { background: var(--warning); } .status-critical{ background: var(--critical); }
+  .ink-good { color: var(--good); } .ink-warning { color: var(--warning); } .ink-critical{ color: var(--critical); }
 
-  .hero {
-    text-align: center; padding: 6px 0 14px;
-  }
-  .hero .hero-label { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
-  .hero .hero-value { font-size: 34px; font-weight: 800; font-variant-numeric: tabular-nums; }
-  .hero .hero-sub { font-size: 13px; margin-top: 4px; font-weight: 600; }
+  .hero { text-align: center; padding: 4px 0 14px; }
+  .hero .hero-label { font-size: 12.5px; color: var(--text-muted); margin-bottom: 4px; }
+  .hero .hero-value { font-size: 32px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .hero .hero-sub { font-size: 12.5px; margin-top: 4px; font-weight: 600; color: var(--text-secondary); }
 
-  /* stacked bar */
   .bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; margin: 10px 0; background: var(--gridline); }
   .bar > div { height: 100%; }
-  .legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--text-secondary); }
-  .legend .item { display: flex; align-items: center; gap: 6px; }
-  .legend .swatch { width: 10px; height: 10px; border-radius: 3px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 11.5px; color: var(--text-secondary); }
+  .legend .item { display: flex; align-items: center; gap: 5px; }
+  .legend .swatch { width: 9px; height: 9px; border-radius: 3px; }
 
-  table.breakdown { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
-  table.breakdown td { padding: 6px 0; border-bottom: 1px solid var(--gridline); }
-  table.breakdown td:last-child { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
-  table.breakdown tr.total td { border-bottom: none; border-top: 2px solid var(--text-primary); font-weight: 700; padding-top: 10px; }
-
-  .alert {
-    display: flex; gap: 8px; padding: 10px 12px; border-radius: 10px;
-    background: rgba(208,59,59,0.08); border: 1px solid rgba(208,59,59,0.25);
-    font-size: 12.5px; color: var(--text-primary); line-height: 1.5; margin-top: 10px;
-  }
-  .alert.warn { background: rgba(250,178,25,0.10); border-color: rgba(250,178,25,0.30); }
-
-  footer { font-size: 11px; color: var(--text-muted); line-height: 1.6; margin-top: 18px; text-align: center; }
+  .toppick { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 14px; border-radius:12px; background:var(--surface-2); margin-bottom:8px; cursor:pointer; border:1px solid var(--border); }
+  .toppick .name { font-size: 14px; font-weight: 700; }
+  .toppick .meta { font-size: 11.5px; color: var(--text-muted); margin-top:2px; }
+  .toppick .chev { color: var(--text-muted); font-size: 18px; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1>Apto Belle Horizonte — Leilão Caixa</h1>
-    <div class="subtitle">Valparaíso de Goiás/GO · 42,81 m² · avaliação R$ 225.000 · matrícula 90.551 · venda online direta (sem comissão de leiloeiro). Ajuste o lance e o prazo de venda para ver lucro e retorno estimados.</div>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-title">🏠 Leilões Caixa — Painel</div>
+      <div class="topbar-sub">Due diligence + calculadora de cenários, para revisar junto com o sócio</div>
+    </div>
   </header>
 
-  <div class="card">
-    <h2>Seus três números</h2>
+  <main>
 
-    <div class="field">
-      <div class="field-label">
-        <span>Preço de aquisição (lance)</span>
-        <span class="field-value" id="precoLabel">R$ 77.945</span>
-      </div>
-      <input type="range" id="precoSlider" min="70000" max="160000" step="500" value="77945">
-      <div class="range-ticks"><span>R$ 70k</span><span>R$ 160k</span></div>
-      <div style="margin-top:8px;">
-        <input type="number" class="numfield" id="precoInput" value="77945.34" step="500">
-      </div>
-      <div class="alert warn" id="lanceAlert" style="display:none;">⚠ Abaixo do lance/valor mínimo de venda (R$ 77.945,34) — não é um lance válido nesta venda online.</div>
-    </div>
+    <!-- ===================== GRAN ACRÓPOLIS ===================== -->
+    <section id="tab-gran" class="tabpanel active">
+      <span class="badge badge-live"><span class="live-dot"></span>Pendente — em análise</span>
+      <h1 class="pagetitle">Apto Gran Acrópolis IV</h1>
+      <div class="pagesub">Rua 8, Apto. 202, Bloco 44, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO · Matrícula 104.684 · Insc. 265086</div>
 
-    <div class="field">
-      <div class="field-label">
-        <span>Preço de venda estimado</span>
-        <span class="field-value" id="vendaLabel">R$ 150.000</span>
-      </div>
-      <input type="range" id="vendaSlider" min="100000" max="200000" step="1000" value="150000">
-      <div class="range-ticks"><span>R$ 100k (conservador)</span><span>R$ 200k (otimista)</span></div>
-      <div style="margin-top:8px;">
-        <input type="number" class="numfield" id="vendaInput" value="150000" step="1000">
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-label">
-        <span>Prazo até a venda</span>
-        <span class="field-value" id="prazoLabel">6 meses</span>
-      </div>
-      <input type="range" id="prazoSlider" min="1" max="24" step="1" value="6">
-      <div class="range-ticks"><span>1 mês</span><span>24 meses</span></div>
-    </div>
-
-    <details class="advanced">
-      <summary>Ajustar premissas avançadas</summary>
-
-      <div class="field-group-title">Custos na aquisição</div>
-      <div class="grid2">
-        <div><label>Comissão leiloeiro (%)</label><input type="number" class="numfield" id="comissaoInput" value="0" step="0.5"></div>
-        <div><label>ITBI (%)</label><input type="number" class="numfield" id="itbiInput" value="2" step="0.5"></div>
-        <div><label>Cartório / registro (R$)</label><input type="number" class="numfield" id="cartorioInput" value="2000" step="100"></div>
-        <div><label>Corretor / assessoria na aquisição (R$)</label><input type="number" class="numfield" id="corretorAquisicaoInput" value="0" step="100"></div>
-        <div><label>Outros custos (R$)</label><input type="number" class="numfield" id="outrosInput" value="0" step="100"></div>
+      <div class="card">
+        <h2 class="sec">Ficha do imóvel</h2>
+        <table class="kv">
+          <tr><td>Avaliação Caixa</td><td>R$ 165.000,00</td></tr>
+          <tr><td>Valor mínimo</td><td>R$ 84.033,11 (49,07% deságio)</td></tr>
+          <tr><td>Modalidade</td><td>Compra Direta / Venda Online</td></tr>
+          <tr><td>Pagamento aceito</td><td>Recursos próprios, FGTS, SBPE</td></tr>
+        </table>
       </div>
 
-      <div class="field-group-title">Dívidas propter rem (assumidas pelo comprador)</div>
-      <div class="grid2">
-        <div><label>Condomínio em atraso — dívida total (R$)</label><input type="number" class="numfield" id="condoInput" value="25000" step="500"></div>
-        <div><label>Limite de responsabilidade do comprador (% da avaliação)</label><input type="number" class="numfield" id="condoLimitePctInput" value="10" step="1"></div>
-        <div><label>Avaliação Caixa (R$)</label><input type="number" class="numfield" id="avaliacaoInput" value="225000" step="1000"></div>
-        <div><label>IPTU em atraso (R$)</label><input type="number" class="numfield" id="iptuInput" value="535.54" step="10"></div>
-      </div>
-      <div class="stat-sub" id="condoResumo" style="margin-top:6px;"></div>
-
-      <div class="field-group-title">Reforma e posse</div>
-      <div class="grid2">
-        <div><label>Reforma (R$)</label><input type="number" class="numfield" id="reformaInput" value="10000" step="500"></div>
-        <div><label>Condomínio + IPTU corrente (R$/mês)</label><input type="number" class="numfield" id="iptuMesInput" value="380" step="10"></div>
+      <div class="card">
+        <h2 class="sec">Matrícula e riscos</h2>
+        <p class="body">Prédio praticamente novo (habite-se 29/11/2023). Unidade vendida em 09/03/2023 por R$175.000 via Casa Verde e Amarela/FGTS; consolidação em nome da Caixa em 12/02/2025 por inadimplência (financiamento durou menos de 2 anos). Avaliação usada na consolidação (R$168.856,86) próxima da avaliação atual — sem a discrepância vista em outros casos.</p>
+        <div class="callout good">✓ Fora a alienação já baixada e a consolidação, não há outros ônus, ações ou restrições visíveis.</div>
+        <div class="callout warn">⚠ Já houve ao menos uma tentativa de leilão anterior sem sucesso (averbação de leilão negativo) — vale investigar se está ligado ao débito de condomínio não divulgado.</div>
+        <div class="callout warn">⚠ Situação de ocupação não confirmada.</div>
       </div>
 
-      <div class="field-group-title">Custos na venda e imposto de renda</div>
-      <div class="grid2">
-        <div><label>Corretagem na venda (%)</label><input type="number" class="numfield" id="corretagemInput" value="6" step="0.5"></div>
-        <div>
-          <label>Imposto de renda</label>
-          <select class="numfield" id="irTipoSelect">
-            <option value="15" selected>Pessoa física (15%)</option>
-            <option value="6">Pessoa jurídica (~6%, presumido)</option>
-            <option value="manual">Manual</option>
-          </select>
+      <div class="card">
+        <h2 class="sec">Dívidas</h2>
+        <table class="kv">
+          <tr><td>IPTU</td><td>R$ 523,34</td></tr>
+          <tr><td>Condomínio</td><td><b>A CONFIRMAR</b></td></tr>
+        </table>
+        <p class="body" style="margin-top:8px;font-size:12px;">Administradora: JK Exclusive — (61) 3798-9888 / contabil@jkexclusive.com.br. Contato ainda não realizado.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Comparáveis de mercado</h2>
+        <div class="tablewrap">
+        <table class="datatable">
+          <tr><th>Empreendimento</th><th>Área</th><th>Preço</th></tr>
+          <tr><td>Gran Acrópolis IV (mesmo prédio, ágio)</td><td>48,92 m²</td><td>≈R$129.000</td></tr>
+          <tr><td>Gran Acrópole IV</td><td>49 m²</td><td>R$119.000</td></tr>
+          <tr><td>Condomínio Acrópolis</td><td>44 m²</td><td>R$160.000</td></tr>
+          <tr><td>Região Marajó/Anhanguera</td><td>44-51 m²</td><td>R$110.000-190.900</td></tr>
+        </table>
+        </div>
+        <p class="body" style="margin-top:8px;">Valor de mercado realista estimado: <b>R$115.000 a R$155.000</b> — a avaliação da Caixa (R$165.000) parece um pouco acima do mercado local.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Cenários — financiado (SBPE, 20% entrada)</h2>
+        <p class="body">Entrada de 20% (≈R$16.807) sobre R$84.033,11, financiando ≈R$67.226 a 11,49%a.a.+TR, SAC, 360 meses.</p>
+        <div class="tablewrap">
+        <table class="datatable">
+          <tr><th></th><th>Conserv.<br>R$115k</th><th>Médio<br>R$135k</th><th>Otim.<br>R$155k</th></tr>
+          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 6 meses</td></tr>
+          <tr class="tot"><td>Lucro</td><td>R$4.983</td><td>R$20.783</td><td>R$36.583</td></tr>
+          <tr><td>Retorno</td><td>≈14,6%</td><td>≈60,9%</td><td>≈107,2%</td></tr>
+          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 12 meses</td></tr>
+          <tr class="tot"><td>Lucro</td><td>R$1.060</td><td>R$16.860</td><td>R$32.660</td></tr>
+          <tr><td>Retorno</td><td>≈2,7%</td><td>≈43,1%</td><td>≈83,4%</td></tr>
+        </table>
+        </div>
+        <p class="body">Financiar amplia o retorno % (efeito alavancagem) mas reduz a margem de segurança do cenário conservador de 12 meses (lucro cai a quase zero).</p>
+      </div>
+
+      <details class="more"><summary>Ver cenário à vista (menos provável)</summary>
+        <div class="tablewrap">
+        <table class="datatable">
+          <tr><th></th><th>Conserv.<br>R$115k</th><th>Médio<br>R$135k</th><th>Otim.<br>R$155k</th></tr>
+          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 6 meses</td></tr>
+          <tr class="tot"><td>Lucro</td><td>R$7.650</td><td>R$23.450</td><td>R$39.250</td></tr>
+          <tr><td>Retorno anual.</td><td>≈16,3%</td><td>≈53,9%</td><td>≈96,7%</td></tr>
+          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 12 meses</td></tr>
+          <tr class="tot"><td>Lucro</td><td>R$6.330</td><td>R$22.130</td><td>R$37.930</td></tr>
+          <tr><td>Retorno anual.</td><td>≈6,4%</td><td>≈22,4%</td><td>≈38,4%</td></tr>
+        </table>
+        </div>
+        <p class="body" style="margin-top:14px;font-weight:700;">Estresse — condomínio no teto (R$16.500)</p>
+        <div class="tablewrap">
+        <table class="datatable">
+          <tr><th></th><th>Conserv.</th><th>Médio</th><th>Otim.</th></tr>
+          <tr><td>Lucro (6m)</td><td class="ink-critical">−R$8.850</td><td>R$6.950</td><td>R$22.750</td></tr>
+          <tr><td>Lucro (12m)</td><td class="ink-critical">−R$10.170</td><td>R$5.630</td><td>R$21.430</td></tr>
+        </table>
+        </div>
+        <div class="callout good">✓ Mesmo no estresse, os cenários médio e otimista continuam positivos — margem de segurança melhor que a do Belle Horizonte.</div>
+      </details>
+
+      <details class="more"><summary>Ver recomendação completa</summary>
+        <p class="body">Oportunidade mais sólida que a do Belle Horizonte — imóvel novo, comparável direto no mesmo prédio, resiste bem ao estresse de condomínio. Antes de fechar: (1) confirmar dívida de condomínio com a JK Exclusive; (2) usar R$115-155k como referência de venda, não os R$165k da Caixa; (3) confirmar desocupação; (4) reforma leve de R$8.000 deve bastar; (5) vender em 6 meses rende mais por ano; (6) se financiar, confirmar com a agência o LTV real para investidor, não assumir a entrada mínima de 5%.</p>
+      </details>
+
+      <div class="card" id="granCalcCard">
+        <h2 class="sec">🧮 Calculadora deste imóvel</h2>
+
+        <div class="field">
+          <div class="field-label"><span>Preço de compra</span><span class="field-value" id="g_precoLabel">—</span></div>
+          <input type="range" id="g_precoSlider" min="0" max="1000000" step="500">
+          <div class="range-ticks"><span id="g_precoMinTick"></span><span id="g_precoMaxTick"></span></div>
+          <div style="margin-top:8px;"><input type="number" class="numfield" id="g_precoInput" step="500"></div>
+          <div class="callout warn" id="g_lanceAlert" style="display:none;">⚠ Abaixo do valor mínimo do anúncio para este imóvel.</div>
+        </div>
+        <div class="field">
+          <div class="field-label"><span>Prazo até a venda</span><span class="field-value" id="g_prazoLabel">6 meses</span></div>
+          <input type="range" id="g_prazoSlider" min="1" max="24" step="1" value="6">
+          <div class="range-ticks"><span>1 mês</span><span>24 meses</span></div>
+        </div>
+        <div class="field">
+          <div class="field-label"><span>Preço de venda estimado</span><span class="field-value" id="g_vendaLabel">—</span></div>
+          <input type="range" id="g_vendaSlider" min="0" max="1000000" step="1000">
+          <div class="range-ticks"><span id="g_vendaMinTick"></span><span id="g_vendaMaxTick"></span></div>
+        </div>
+
+        <div class="switchrow">
+          <span>Financiar (SAC)</span>
+          <label class="switch"><input type="checkbox" id="g_financiarToggle"><span class="slider-tog"></span></label>
+        </div>
+        <div id="g_financiarFields" style="display:none;">
+          <div class="grid2">
+            <div><label>Entrada (%)</label><input type="number" class="numfield" id="g_entradaInput" step="1"></div>
+            <div><label>Taxa (% a.a. + TR)</label><input type="number" class="numfield" id="g_taxaInput" step="0.1"></div>
+            <div><label>Prazo financiamento (meses)</label><input type="number" class="numfield" id="g_prazoFinInput" step="12"></div>
+            <div><label>Seguro MIP+DFI (%/mês do saldo)</label><input type="number" class="numfield" id="g_seguroInput" step="0.005"></div>
+          </div>
+        </div>
+
+        <details class="more"><summary>Ajustar premissas avançadas</summary>
+          <div class="grid2" style="margin-top:14px;">
+            <div><label>Reforma (R$)</label><input type="number" class="numfield" id="g_reformaInput" step="500"></div>
+            <div><label>Dívida condomínio a assumir (R$)</label><input type="number" class="numfield" id="g_condoDividaInput" step="500"></div>
+            <div><label>IPTU/tributos em atraso (R$)</label><input type="number" class="numfield" id="g_iptuAtrasoInput" step="50"></div>
+            <div><label>Condomínio+IPTU corrente (R$/mês)</label><input type="number" class="numfield" id="g_condoMesInput" step="10"></div>
+            <div><label>Comissão leiloeiro (%)</label><input type="number" class="numfield" id="g_comissaoInput" step="0.5"></div>
+            <div><label>ITBI (%)</label><input type="number" class="numfield" id="g_itbiInput" step="0.5"></div>
+            <div><label>Cartório/registro (R$)</label><input type="number" class="numfield" id="g_cartorioInput" step="100"></div>
+            <div><label>Outros custos fixos (R$)</label><input type="number" class="numfield" id="g_outrosInput" step="100"></div>
+            <div><label>Corretagem na venda (%)</label><input type="number" class="numfield" id="g_corretagemInput" step="0.5"></div>
+            <div><label>IR ganho de capital (%)</label><input type="number" class="numfield" id="g_irInput" step="1"></div>
+          </div>
+        </details>
+
+        <div class="hero">
+          <div class="hero-label">Lucro estimado</div>
+          <div class="hero-value" id="g_lucroValue">R$ 0</div>
+          <div class="hero-sub" id="g_retornoValue">0% no prazo</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-tile">
+            <div class="stat-label"><span class="status-dot" id="g_dotCaixa"></span>Caixa próprio total</div>
+            <div class="stat-value" id="g_caixaValue">R$ 0</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-label"><span class="status-dot" id="g_dotRetorno"></span>Retorno anualizado</div>
+            <div class="stat-value" id="g_retornoAnoValue">0%</div>
+          </div>
+        </div>
+        <div id="g_lucroAlert"></div>
+        <div class="bar" id="g_costBar"></div>
+        <div class="legend">
+          <div class="item"><span class="swatch" style="background:var(--series-1)"></span>Aquisição</div>
+          <div class="item"><span class="swatch" style="background:var(--series-2)"></span>Financiamento</div>
+          <div class="item"><span class="swatch" style="background:var(--series-3)"></span>Reforma+dívidas+IPTU</div>
+        </div>
+        <div class="tablewrap"><table class="datatable" id="g_breakdownTable" style="text-align:left;"></table></div>
+      </div>
+
+      <footer class="src">Fontes: matrícula 104.684, venda-imoveis.caixa.gov.br, "Como Comprar" (regras-VOL/comocomprar.pdf), IPTU Prefeitura Valparaíso de Goiás (insc. 265086), comparáveis de mercado, CNPJ 53.959.381/0001-05.</footer>
+    </section>
+
+    <!-- ===================== ENCERRADOS ===================== -->
+    <section id="tab-encerrados" class="tabpanel">
+
+      <div id="encerrados-list">
+        <h1 class="pagetitle">📁 Encerrados</h1>
+        <div class="pagesub">Leilões que já terminaram — mantidos aqui como referência do método.</div>
+
+        <div class="toppick" onclick="showEncerrado('colorado')">
+          <div>
+            <div class="name">Casa Mansões Colorado</div>
+            <div class="meta">Sobradinho/DF · avaliação R$ 1.035.000 · mínimo R$ 659.620,30</div>
+          </div>
+          <div class="chev">›</div>
+        </div>
+        <div class="toppick" onclick="showEncerrado('loja')">
+          <div>
+            <div class="name">Loja SBS Quadra 1</div>
+            <div class="meta">Brasília/DF · avaliação R$ 475.000 · mínimo R$ 131.601,89</div>
+          </div>
+          <div class="chev">›</div>
+        </div>
+        <div class="toppick" onclick="showEncerrado('belo')">
+          <div>
+            <div class="name">Apto Belle Horizonte</div>
+            <div class="meta">Valparaíso de Goiás/GO · avaliação R$ 225.000 · mínimo R$ 77.945,34</div>
+          </div>
+          <div class="chev">›</div>
         </div>
       </div>
-      <div class="field" id="irManualField" style="display:none; margin-top:10px;">
-        <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">Alíquota manual de IR (%)</label>
-        <input type="number" class="numfield" id="irManualInput" value="15" step="0.5">
-      </div>
-    </details>
-  </div>
 
-  <div class="card">
-    <h2>Resultado</h2>
-    <div class="hero">
-      <div class="hero-label">Lucro estimado</div>
-      <div class="hero-value" id="lucroValue">R$ 0</div>
-      <div class="hero-sub" id="retornoValue">0% em 0 meses</div>
+    <!-- ===================== COLORADO ===================== -->
+    <div id="sub-colorado" class="subpanel">
+      <button class="back-btn" onclick="backToEncerradosList()">‹ Encerrados</button>
+      <span class="badge badge-dead">Encerrado — leilão em 27/07/2026</span>
+      <h1 class="pagetitle">Casa Mansões Colorado</h1>
+      <div class="pagesub">Rodovia DF-150, Lote 28 Cj. P, Grande Colorado, Sobradinho/DF · Matrícula 18.011 · 7º Ofício RI/DF</div>
+
+      <div class="card">
+        <h2 class="sec">Ficha do imóvel</h2>
+        <table class="kv">
+          <tr><td>Avaliação Caixa</td><td>R$ 1.035.000,00</td></tr>
+          <tr><td>Valor mínimo (leilão)</td><td>R$ 659.620,30</td></tr>
+          <tr><td>Área construída / terreno</td><td>354,96 m² / 426,85 m²</td></tr>
+          <tr><td>Modalidade</td><td>Licitação Aberta (Lance Total)</td></tr>
+          <tr><td>Comissão leiloeiro</td><td>5% do lance</td></tr>
+          <tr><td>IPTU inscrição</td><td>49060899</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Matrícula e riscos</h2>
+        <p class="body">Consolidação de propriedade em nome da Caixa em 04/11/2024, por inadimplência da mutuária Janara Assunção no financiamento SFH (Av.10). Nenhuma penhora, hipoteca ativa ou ação judicial encontrada — histórico limpo de retomada padrão.</p>
+        <div class="callout warn">⚠ Certidão emitida em 17/03/2026, válida por apenas 30 dias — já vencida para a data do leilão. Pedir certidão atualizada antes de dar lance.</div>
+        <div class="callout warn">⚠ Averbação de leilões negativos "em tratamento" — pode atrasar o registro da transferência. Confirmar com o leiloeiro.</div>
+        <div class="callout good">✓ Nenhuma associação de moradores está averbada na matrícula — mas isso também gera incerteza sobre a exigibilidade formal de dívida condominial frente à Caixa.</div>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Débitos apurados</h2>
+        <table class="kv">
+          <tr><td>IPTU/TLP (oficial, Receita DF)</td><td>≈ R$ 3.388,24</td></tr>
+          <tr><td>Condomínio (AMCRMC)</td><td>≈ R$ 21.000,00 — relato informal do porteiro, <b>não confirmado</b></td></tr>
+        </table>
+        <p class="body" style="margin-top:8px;">Ambos os valores ficam bem abaixo do teto de 10% da avaliação (R$ 103.500) que definiria responsabilidade do comprador — mas o condomínio ainda carecia de confirmação documental com a associação (AMCRMC) antes do leilão.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Cenários (venda estimada R$ 1.100.000)</h2>
+        <div class="tablewrap">
+        <table class="datatable">
+          <tr><th></th><th>650k / 6m</th><th>650k / 1a</th><th>700k / 6m</th><th>700k / 1a</th></tr>
+          <tr><td>Caixa próprio</td><td>R$278-285k</td><td>R$326-336k</td><td>R$288-295k</td><td>R$338-349k</td></tr>
+          <tr class="tot"><td>Lucro</td><td>R$98-105k</td><td>R$57-67k</td><td>R$49-56k</td><td>R$6-17k</td></tr>
+          <tr><td>Retorno</td><td>≈34-38%</td><td>≈17-21%</td><td>≈17-19%</td><td>≈2-5%</td></tr>
+        </table>
+        </div>
+        <div class="callout warn">⚠ O cenário mais apertado (700k / 1 ano) deixa margem de segurança mínima (≈R$6-17 mil). Preço de venda de R$1,1M ainda não foi validado por comparáveis reais — maior fonte de incerteza.</div>
+      </div>
+
+      <details class="more"><summary>Ver avaliação da oportunidade</summary>
+        <p class="body"><b>A favor:</b> histórico de matrícula limpo; débitos apurados bem abaixo do teto de 10%; desconto relevante sobre a avaliação.</p>
+        <p class="body"><b>Pontos de atenção:</b> condomínio não confirmado documentalmente; certidão desatualizada; averbação de leilão negativo pendente; preço de venda-alvo (R$1,1M) não validado por comparáveis reais.</p>
+      </details>
+
+      <footer class="src">Fontes: matrícula 18.011 (venda-imoveis.caixa.gov.br), edital EA00190326CPVERE.PDF, leilaoimovel.com.br, consulta Receita/DF (14/07/2026).</footer>
     </div>
 
-    <div class="stat-row">
-      <div class="stat-tile">
-        <div class="stat-label"><span class="status-dot" id="dotCaixa"></span>Total desembolsado</div>
-        <div class="stat-value" id="caixaValue">R$ 0</div>
-        <div class="stat-sub">até a venda</div>
+    <!-- ===================== LOJA SBS ===================== -->
+    <div id="sub-loja" class="subpanel">
+      <button class="back-btn" onclick="backToEncerradosList()">‹ Encerrados</button>
+      <span class="badge badge-dead">Encerrado — leilão em 27/07/2026</span>
+      <h1 class="pagetitle">Loja SBS Quadra 1</h1>
+      <div class="pagesub">Edifício Seguradoras, SBS Quadra 1 Bloco K, Setor Bancário Sul, Brasília/DF · Matrícula 21117</div>
+
+      <div class="card">
+        <h2 class="sec">Ficha do imóvel</h2>
+        <table class="kv">
+          <tr><td>Avaliação Caixa</td><td>R$ 475.000,00 (≈R$6.250/m²)</td></tr>
+          <tr><td>Lance mínimo / atual</td><td>R$ 131.601,89</td></tr>
+          <tr><td>Área privativa</td><td>76 m²</td></tr>
+          <tr><td>Modalidade</td><td>Licitação Aberta (comissão 5%)</td></tr>
+        </table>
       </div>
-      <div class="stat-tile">
-        <div class="stat-label"><span class="status-dot" id="dotRetorno"></span>Retorno anualizado</div>
-        <div class="stat-value" id="retornoAnoValue">0%</div>
-        <div class="stat-sub">para comparar prazos diferentes</div>
+
+      <div class="card">
+        <h2 class="sec">Matrícula e riscos</h2>
+        <p class="body">Propriedade direta da Caixa desde 1982 (não é execução de mutuário) — sem histórico de alienação fiduciária ou disputa de posse.</p>
+        <div class="callout warn">⚠ Certidão anexada é de 13/10/2016 — quase 10 anos desatualizada. Pedir certidão nova antes de ofertar.</div>
+        <div class="callout bad">⚠ <b>Não existe divisão física entre as lojas do andar</b> — o comprador precisa demarcar a área conforme a matrícula, podendo envolver obra e negociação com vizinhos.</div>
+        <div class="callout warn">⚠ Financiamento SBPE provavelmente indisponível para uso comercial — compra à vista é o cenário mais realista.</div>
       </div>
+
+      <div class="card">
+        <h2 class="sec">Débitos e comparáveis</h2>
+        <table class="kv">
+          <tr><td>IPTU (oficial, Receita DF)</td><td>R$ 0,00 — nenhum débito</td></tr>
+          <tr><td>Condomínio</td><td>Não divulgado, <b>não confirmado</b></td></tr>
+          <tr><td>Comparáveis (SBS Q1)</td><td>≈R$ 8.230/m² → R$ 495-625 mil</td></tr>
+        </table>
+      </div>
+
+      <details class="more"><summary>Ver avaliação da oportunidade</summary>
+        <p class="body"><b>A favor:</b> desconto expressivo (≈20-28% do R$/m² dos comparáveis); localização institucional de alto padrão; nenhum débito de IPTU; menor risco de ocupação irregular por não ser execução de mutuário.</p>
+        <p class="body"><b>Pontos de atenção:</b> ausência de divisão física entre lojas do andar (maior risco prático); certidão de 2016; financiamento provavelmente indisponível; revenda de nicho, mais lenta.</p>
+      </details>
+
+      <footer class="src">Fontes: matrícula 21117, edital 0019/0326-CPVE/RE, lancetotal.com.br, consulta Receita/DF. Nenhum cenário financeiro de revenda foi modelado neste relatório original.</footer>
     </div>
 
-    <div id="lucroAlert"></div>
+    <!-- ===================== BELLE HORIZONTE ===================== -->
+    <div id="sub-belo" class="subpanel">
+      <button class="back-btn" onclick="backToEncerradosList()">‹ Encerrados</button>
+      <span class="badge badge-dead">Encerrado — leilão em 30/07/2026</span>
+      <h1 class="pagetitle">Apto Belle Horizonte</h1>
+      <div class="pagesub">Gleba 10 Rua E, Apto. 408 Bloco 10, Fazenda Saia Velha, Valparaíso de Goiás/GO · Matrícula 90.551</div>
 
-    <div class="bar" id="costBar"></div>
-    <div class="legend">
-      <div class="item"><span class="swatch" style="background:var(--series-1)"></span>Aquisição</div>
-      <div class="item"><span class="swatch" style="background:var(--series-2)"></span>Dívidas propter rem</div>
-      <div class="item"><span class="swatch" style="background:var(--series-3)"></span>Reforma + posse</div>
+      <div class="card">
+        <h2 class="sec">Ficha do imóvel</h2>
+        <table class="kv">
+          <tr><td>Avaliação Caixa</td><td>R$ 225.000,00</td></tr>
+          <tr><td>Valor mínimo</td><td>R$ 77.945,34</td></tr>
+          <tr><td>Área privativa</td><td>42,81 m²</td></tr>
+          <tr><td>Modalidade</td><td>Venda Online Caixa (sem comissão)</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Matrícula e riscos</h2>
+        <p class="body">Consolidação de propriedade em nome da Caixa em 14/08/2024, por inadimplência do casal financiado via Minha Casa Minha Vida/FGTS. Avaliação usada na consolidação (R$156.627,24) bem abaixo da avaliação atual do anúncio (R$225.000) — desconto anunciado de 65,36% deve ser relativizado.</p>
+        <div class="callout warn">⚠ Situação de ocupação não confirmada — pode exigir imissão de posse.</div>
+        <div class="callout good">✓ IPTU em atraso confirmado oficialmente: apenas R$ 535,54 — risco tributário baixo.</div>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Débito de condomínio — confirmado</h2>
+        <table class="kv">
+          <tr><td>Dívida total</td><td>R$ 25.000,00</td></tr>
+          <tr><td>Responsabilidade do comprador (teto 10%)</td><td>R$ 22.500,00</td></tr>
+          <tr><td>Responsabilidade da Caixa</td><td>R$ 2.500,00</td></tr>
+        </table>
+        <p class="body" style="margin-top:8px;">Valor informado pelo usuário — não verificado documentalmente com a administradora.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Cenários de revenda</h2>
+        <div class="tablewrap">
+        <table class="datatable">
+          <tr><th></th><th>Conservador<br>R$130k</th><th>Médio<br>R$150k</th><th>Otimista<br>R$170k</th></tr>
+          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 6 meses</td></tr>
+          <tr class="tot"><td>Lucro</td><td class="ink-critical">−R$394</td><td>R$15.406</td><td>R$31.206</td></tr>
+          <tr><td>Retorno anual.</td><td>≈−0,7%</td><td>≈28,1%</td><td>≈60,6%</td></tr>
+          <tr><td colspan="4" style="text-align:left;font-weight:700;background:var(--surface-2);">Posse 12 meses</td></tr>
+          <tr class="tot"><td>Lucro</td><td class="ink-critical">−R$2.674</td><td>R$13.126</td><td>R$28.926</td></tr>
+          <tr><td>Retorno anual.</td><td>≈−2,2%</td><td>≈11,0%</td><td>≈24,3%</td></tr>
+        </table>
+        </div>
+        <div class="callout bad">⚠ Com o condomínio incluído, o cenário conservador vira prejuízo nos dois prazos — ponto de equilíbrio (venda em 6m) fica em ≈R$130.500, praticamente no piso dos comparáveis.</div>
+      </div>
+
+      <details class="more"><summary>Ver recomendação completa</summary>
+        <p class="body">Deixou de ser oportunidade com margem folgada — só compensa claramente vendendo a R$150.000 ou mais. Evitar ofertar muito acima do mínimo (a R$100.000 já derrubaria o cenário médio para prejuízo). Prioridade: confirmar ocupação e o valor exato da dívida de condomínio com a administradora antes de ofertar.</p>
+      </details>
+
+      <footer class="src">Fontes: matrícula 90.551, venda-imoveis.caixa.gov.br, IPTU Prefeitura Valparaíso de Goiás (inscrição 131486), comparáveis de mercado regionais.</footer>
     </div>
 
-    <table class="breakdown" id="breakdownTable"></table>
-  </div>
+    </section>
 
-  <footer>
-    Modelo simplificado de apoio à decisão, compra à vista (sem financiamento). IR sobre ganho de capital calculado com custo de aquisição = arrematação + ITBI + cartório + corretor/assessoria + reforma (dívidas assumidas e custos de posse não entram na base do IR, apenas no caixa desembolsado). O condomínio em atraso segue a regra da Caixa: o comprador responde até um limite (% editável) da avaliação, e a Caixa paga o excedente. Valores de referência: lance mínimo R$ 77.945,34, condomínio em atraso R$ 25.000 (dívida total; comprador responde por até R$ 22.500, limite de 10% da avaliação de R$ 225.000), IPTU em atraso R$ 535,54 (confirmado na Prefeitura de Valparaíso de Goiás). Não substitui análise de advogado, contador ou despachante imobiliário.
-  </footer>
+    <!-- ===================== CALCULADORA ===================== -->
+    <section id="tab-calc" class="tabpanel">
+      <h1 class="pagetitle">Calculadora de cenários</h1>
+      <div class="pagesub">Escolha um imóvel para carregar as premissas do relatório, depois ajuste à vontade.</div>
+
+      <div class="card">
+        <h2 class="sec">Imóvel</h2>
+        <select class="selfield" id="presetSelect"></select>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Seus dois números</h2>
+        <div class="field">
+          <div class="field-label"><span>Preço de compra</span><span class="field-value" id="precoLabel">—</span></div>
+          <input type="range" id="precoSlider" min="0" max="1000000" step="500">
+          <div class="range-ticks"><span id="precoMinTick"></span><span id="precoMaxTick"></span></div>
+          <div style="margin-top:8px;"><input type="number" class="numfield" id="precoInput" step="500"></div>
+          <div class="callout warn" id="lanceAlert" style="display:none;">⚠ Abaixo do valor mínimo do anúncio/edital para este imóvel.</div>
+        </div>
+        <div class="field">
+          <div class="field-label"><span>Prazo até a venda</span><span class="field-value" id="prazoLabel">6 meses</span></div>
+          <input type="range" id="prazoSlider" min="1" max="24" step="1" value="6">
+          <div class="range-ticks"><span>1 mês</span><span>24 meses</span></div>
+        </div>
+        <div class="field">
+          <div class="field-label"><span>Preço de venda estimado</span><span class="field-value" id="vendaLabel">—</span></div>
+          <input type="range" id="vendaSlider" min="0" max="1000000" step="1000">
+          <div class="range-ticks"><span id="vendaMinTick"></span><span id="vendaMaxTick"></span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="switchrow">
+          <span>Financiar (SAC)</span>
+          <label class="switch"><input type="checkbox" id="financiarToggle"><span class="slider-tog"></span></label>
+        </div>
+        <div id="financiarFields" style="display:none;">
+          <div class="grid2">
+            <div><label>Entrada (%)</label><input type="number" class="numfield" id="entradaInput" value="20" step="1"></div>
+            <div><label>Taxa (% a.a. + TR)</label><input type="number" class="numfield" id="taxaInput" value="11.49" step="0.1"></div>
+            <div><label>Prazo financiamento (meses)</label><input type="number" class="numfield" id="prazoFinInput" value="360" step="12"></div>
+            <div><label>Seguro MIP+DFI (%/mês do saldo)</label><input type="number" class="numfield" id="seguroInput" value="0.035" step="0.005"></div>
+          </div>
+        </div>
+
+        <details class="more"><summary>Ajustar premissas avançadas</summary>
+          <div class="grid2" style="margin-top:14px;">
+            <div><label>Reforma (R$)</label><input type="number" class="numfield" id="reformaInput" step="500"></div>
+            <div><label>Dívida condomínio a assumir (R$)</label><input type="number" class="numfield" id="condoDividaInput" step="500"></div>
+            <div><label>IPTU/tributos em atraso (R$)</label><input type="number" class="numfield" id="iptuAtrasoInput" step="50"></div>
+            <div><label>Condomínio+IPTU corrente (R$/mês)</label><input type="number" class="numfield" id="condoMesInput" step="10"></div>
+            <div><label>Comissão leiloeiro (%)</label><input type="number" class="numfield" id="comissaoInput" step="0.5"></div>
+            <div><label>ITBI (%)</label><input type="number" class="numfield" id="itbiInput" value="2" step="0.5"></div>
+            <div><label>Cartório/registro (R$)</label><input type="number" class="numfield" id="cartorioInput" step="100"></div>
+            <div><label>Outros custos fixos (R$)</label><input type="number" class="numfield" id="outrosInput" step="100"></div>
+            <div><label>Corretagem na venda (%)</label><input type="number" class="numfield" id="corretagemInput" value="6" step="0.5"></div>
+            <div><label>IR ganho de capital (%)</label><input type="number" class="numfield" id="irInput" value="15" step="1"></div>
+          </div>
+        </details>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Resultado</h2>
+        <div class="hero">
+          <div class="hero-label">Lucro estimado</div>
+          <div class="hero-value" id="lucroValue">R$ 0</div>
+          <div class="hero-sub" id="retornoValue">0% no prazo</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-tile">
+            <div class="stat-label"><span class="status-dot" id="dotCaixa"></span>Caixa próprio total</div>
+            <div class="stat-value" id="caixaValue">R$ 0</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-label"><span class="status-dot" id="dotRetorno"></span>Retorno anualizado</div>
+            <div class="stat-value" id="retornoAnoValue">0%</div>
+          </div>
+        </div>
+        <div id="lucroAlert"></div>
+        <div class="bar" id="costBar"></div>
+        <div class="legend">
+          <div class="item"><span class="swatch" style="background:var(--series-1)"></span>Aquisição</div>
+          <div class="item"><span class="swatch" style="background:var(--series-2)"></span>Financiamento</div>
+          <div class="item"><span class="swatch" style="background:var(--series-3)"></span>Reforma+dívidas+IPTU</div>
+        </div>
+        <div class="tablewrap"><table class="datatable" id="breakdownTable" style="text-align:left;"></table></div>
+      </div>
+
+      <footer class="src">Modelo simplificado de apoio à decisão, unificando a metodologia usada nos 4 relatórios (ver CLAUDE.md do projeto). Financiamento SAC com taxa/prazo editáveis; seguro MIP/DFI aproximado sobre saldo devedor. IR 15% padrão sobre ganho de capital (base = aquisição+ITBI+cartório+reforma). Não substitui análise de advogado, contador ou despachante imobiliário.</footer>
+    </section>
+
+  </main>
 </div>
 
+<nav class="bottomnav">
+  <div class="bottomnav-inner">
+    <button class="navbtn active" data-tab="gran">
+      <span class="navicon">🏢<span class="live-dot"></span></span>Gran Acrópolis
+    </button>
+    <button class="navbtn" data-tab="encerrados">
+      <span class="navicon">📁</span>Encerrados
+    </button>
+    <button class="navbtn" data-tab="calc">
+      <span class="navicon">🧮</span>Calculadora
+    </button>
+  </div>
+</nav>
+
 <script>
+// ---------- tab switching ----------
+function showTab(id) {
+  document.querySelectorAll('.tabpanel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.navbtn').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelector('.navbtn[data-tab="' + id + '"]').classList.add('active');
+  if (id === 'encerrados') backToEncerradosList();
+  window.scrollTo({top:0, behavior:'instant'});
+}
+document.querySelectorAll('.navbtn').forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+
+function showEncerrado(id) {
+  document.getElementById('encerrados-list').style.display = 'none';
+  document.querySelectorAll('#tab-encerrados .subpanel').forEach(p => p.classList.remove('active'));
+  document.getElementById('sub-' + id).classList.add('active');
+  window.scrollTo({top:0, behavior:'instant'});
+}
+function backToEncerradosList() {
+  document.querySelectorAll('#tab-encerrados .subpanel').forEach(p => p.classList.remove('active'));
+  document.getElementById('encerrados-list').style.display = 'block';
+}
+
+// ---------- calculator ----------
+const PRESETS = {
+  gran: {
+    label: "Apto Gran Acrópolis IV (pendente)",
+    P_min: 84033.11, P_max: 165000, P_default: 84033.11,
+    V_min: 100000, V_max: 175000, V_default: 135000,
+    reforma: 8000, condoDivida: 0, iptuAtraso: 523.34, condoMes: 220,
+    comissaoPct: 0, itbiPct: 2, cartorio: 2000, outros: 0,
+    corretagemPct: 6, irPct: 15,
+    financiar: false, entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+  },
+  colorado: {
+    label: "Casa Mansões Colorado (encerrado)",
+    P_min: 659620.30, P_max: 950000, P_default: 700000,
+    V_min: 900000, V_max: 1300000, V_default: 1100000,
+    reforma: 117500, condoDivida: 21000, iptuAtraso: 3388.24, condoMes: 0,
+    comissaoPct: 5, itbiPct: 2, cartorio: 8500, outros: 4000,
+    corretagemPct: 6, irPct: 15,
+    financiar: false, entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+  },
+  loja: {
+    label: "Loja SBS Quadra 1 (encerrado)",
+    P_min: 131601.89, P_max: 450000, P_default: 131601.89,
+    V_min: 400000, V_max: 650000, V_default: 495000,
+    reforma: 0, condoDivida: 0, iptuAtraso: 0, condoMes: 0,
+    comissaoPct: 5, itbiPct: 2, cartorio: 2000, outros: 0,
+    corretagemPct: 6, irPct: 15,
+    financiar: false, entradaPct: 100, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+  },
+  belo: {
+    label: "Apto Belle Horizonte (encerrado)",
+    P_min: 77945.34, P_max: 190000, P_default: 77945.34,
+    V_min: 110000, V_max: 190000, V_default: 150000,
+    reforma: 10000, condoDivida: 22500, iptuAtraso: 535.54, condoMes: 380,
+    comissaoPct: 0, itbiPct: 2, cartorio: 2000, outros: 0,
+    corretagemPct: 6, irPct: 15,
+    financiar: false, entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+  },
+};
+
+const el = id => document.getElementById(id);
+const g = (prefix, id) => document.getElementById(prefix + id);
+const presetSelect = el('presetSelect');
+Object.keys(PRESETS).forEach(k => {
+  const o = document.createElement('option');
+  o.value = k; o.textContent = PRESETS[k].label;
+  presetSelect.appendChild(o);
+});
+
 function fmtBRL(v) {
   const neg = v < 0;
   v = Math.round(Math.abs(v));
-  const s = v.toLocaleString('pt-BR');
-  return (neg ? '-R$ ' : 'R$ ') + s;
+  return (neg ? '-R$ ' : 'R$ ') + v.toLocaleString('pt-BR');
 }
-function fmtPct(v) {
-  return (v >= 0 ? '' : '') + v.toFixed(1).replace('.', ',') + '%';
+function fmtPct(v) { return v.toFixed(1).replace('.', ',') + '%'; }
+
+function loadPreset(prefix, key, overrides) {
+  const p = Object.assign({}, PRESETS[key], overrides || {});
+  g(prefix,'precoSlider').min = Math.max(0, p.P_min * 0.6);
+  g(prefix,'precoSlider').max = p.P_max;
+  g(prefix,'precoSlider').value = p.P_default;
+  g(prefix,'precoInput').value = p.P_default;
+  g(prefix,'precoMinTick').textContent = fmtBRL(p.P_min);
+  g(prefix,'precoMaxTick').textContent = fmtBRL(p.P_max);
+  g(prefix,'lanceAlert').dataset.min = p.P_min;
+
+  g(prefix,'vendaSlider').min = p.V_min;
+  g(prefix,'vendaSlider').max = p.V_max;
+  g(prefix,'vendaSlider').value = p.V_default;
+  g(prefix,'vendaMinTick').textContent = fmtBRL(p.V_min);
+  g(prefix,'vendaMaxTick').textContent = fmtBRL(p.V_max);
+
+  g(prefix,'reformaInput').value = p.reforma;
+  g(prefix,'condoDividaInput').value = p.condoDivida;
+  g(prefix,'iptuAtrasoInput').value = p.iptuAtraso;
+  g(prefix,'condoMesInput').value = p.condoMes;
+  g(prefix,'comissaoInput').value = p.comissaoPct;
+  g(prefix,'itbiInput').value = p.itbiPct;
+  g(prefix,'cartorioInput').value = p.cartorio;
+  g(prefix,'outrosInput').value = p.outros;
+  g(prefix,'corretagemInput').value = p.corretagemPct;
+  g(prefix,'irInput').value = p.irPct;
+
+  g(prefix,'financiarToggle').checked = p.financiar;
+  g(prefix,'financiarFields').style.display = p.financiar ? 'block' : 'none';
+  g(prefix,'entradaInput').value = p.entradaPct;
+  g(prefix,'taxaInput').value = p.taxaAA;
+  g(prefix,'prazoFinInput').value = p.prazoFin;
+  g(prefix,'seguroInput').value = p.seguroPct;
+
+  compute(prefix);
 }
+presetSelect.addEventListener('change', () => loadPreset('', presetSelect.value));
 
-const el = id => document.getElementById(id);
-
-const precoSlider = el('precoSlider'), precoInput = el('precoInput');
-const vendaSlider = el('vendaSlider'), vendaInput = el('vendaInput');
-const prazoSlider = el('prazoSlider');
-const irTipoSelect = el('irTipoSelect'), irManualField = el('irManualField');
-
-function syncPrecoFromSlider() { precoInput.value = precoSlider.value; compute(); }
-function syncPrecoFromInput() {
-  let v = parseFloat(precoInput.value) || 0;
-  precoSlider.value = Math.min(Math.max(v, precoSlider.min), precoSlider.max);
-  compute();
+function bindCalc(prefix) {
+  const precoSlider = g(prefix,'precoSlider'), precoInput = g(prefix,'precoInput');
+  precoSlider.addEventListener('input', () => { precoInput.value = precoSlider.value; compute(prefix); });
+  precoInput.addEventListener('input', () => {
+    let v = parseFloat(precoInput.value) || 0;
+    precoSlider.value = Math.min(Math.max(v, precoSlider.min), precoSlider.max);
+    compute(prefix);
+  });
+  g(prefix,'prazoSlider').addEventListener('input', () => compute(prefix));
+  g(prefix,'vendaSlider').addEventListener('input', () => compute(prefix));
+  g(prefix,'financiarToggle').addEventListener('change', () => {
+    g(prefix,'financiarFields').style.display = g(prefix,'financiarToggle').checked ? 'block' : 'none';
+    compute(prefix);
+  });
+  ['entradaInput','taxaInput','prazoFinInput','seguroInput','reformaInput','condoDividaInput',
+   'iptuAtrasoInput','condoMesInput','comissaoInput','itbiInput','cartorioInput','outrosInput',
+   'corretagemInput','irInput'].forEach(id => g(prefix,id).addEventListener('input', () => compute(prefix)));
 }
-precoSlider.addEventListener('input', syncPrecoFromSlider);
-precoInput.addEventListener('input', syncPrecoFromInput);
+bindCalc('');
+bindCalc('g_');
 
-function syncVendaFromSlider() { vendaInput.value = vendaSlider.value; compute(); }
-function syncVendaFromInput() {
-  let v = parseFloat(vendaInput.value) || 0;
-  vendaSlider.value = Math.min(Math.max(v, vendaSlider.min), vendaSlider.max);
-  compute();
-}
-vendaSlider.addEventListener('input', syncVendaFromSlider);
-vendaInput.addEventListener('input', syncVendaFromInput);
-
-prazoSlider.addEventListener('input', compute);
-
-irTipoSelect.addEventListener('input', () => {
-  irManualField.style.display = irTipoSelect.value === 'manual' ? 'block' : 'none';
-  compute();
-});
-
-['comissaoInput','itbiInput','cartorioInput','corretorAquisicaoInput','outrosInput',
- 'condoInput','condoLimitePctInput','avaliacaoInput','iptuInput',
- 'reformaInput','iptuMesInput','corretagemInput','irManualInput']
- .forEach(id => el(id).addEventListener('input', compute));
-
-function compute() {
+function compute(prefix) {
+  const precoInput = g(prefix,'precoInput');
   const P = parseFloat(precoInput.value) || 0;
-  const meses = parseInt(prazoSlider.value, 10);
-  const V = parseFloat(vendaInput.value) || 0;
-  const comissaoPct = parseFloat(el('comissaoInput').value) / 100 || 0;
-  const itbiPct = parseFloat(el('itbiInput').value) / 100 || 0;
-  const cartorio = parseFloat(el('cartorioInput').value) || 0;
-  const corretorAquisicao = parseFloat(el('corretorAquisicaoInput').value) || 0;
-  const outros = parseFloat(el('outrosInput').value) || 0;
-  const condoTotal = parseFloat(el('condoInput').value) || 0;
-  const condoLimitePct = parseFloat(el('condoLimitePctInput').value) / 100 || 0;
-  const avaliacao = parseFloat(el('avaliacaoInput').value) || 0;
-  const iptuAtraso = parseFloat(el('iptuInput').value) || 0;
-  const reforma = parseFloat(el('reformaInput').value) || 0;
-  const iptuMes = parseFloat(el('iptuMesInput').value) || 0;
-  const corretagemPct = parseFloat(el('corretagemInput').value) / 100 || 0;
-  const irPct = (irTipoSelect.value === 'manual'
-    ? parseFloat(el('irManualInput').value) || 0
-    : parseFloat(irTipoSelect.value)) / 100;
+  const meses = parseInt(g(prefix,'prazoSlider').value, 10);
+  const V = parseFloat(g(prefix,'vendaSlider').value) || 0;
+  const financiar = g(prefix,'financiarToggle').checked;
+  const entradaPct = financiar ? (parseFloat(g(prefix,'entradaInput').value) / 100 || 1) : 1;
+  const taxaAA = parseFloat(g(prefix,'taxaInput').value) / 100 || 0;
+  const prazoFin = parseInt(g(prefix,'prazoFinInput').value, 10) || 360;
+  const seguroMensal = (parseFloat(g(prefix,'seguroInput').value) || 0) / 100;
+  const reforma = parseFloat(g(prefix,'reformaInput').value) || 0;
+  const condoDivida = parseFloat(g(prefix,'condoDividaInput').value) || 0;
+  const iptuAtraso = parseFloat(g(prefix,'iptuAtrasoInput').value) || 0;
+  const condoMes = parseFloat(g(prefix,'condoMesInput').value) || 0;
+  const comissaoPct = (parseFloat(g(prefix,'comissaoInput').value) || 0) / 100;
+  const itbiPct = (parseFloat(g(prefix,'itbiInput').value) || 0) / 100;
+  const cartorio = parseFloat(g(prefix,'cartorioInput').value) || 0;
+  const outros = parseFloat(g(prefix,'outrosInput').value) || 0;
+  const corretagemPct = (parseFloat(g(prefix,'corretagemInput').value) || 0) / 100;
+  const irPct = (parseFloat(g(prefix,'irInput').value) || 0) / 100;
 
-  // labels
-  el('precoLabel').textContent = fmtBRL(P);
-  el('prazoLabel').textContent = meses + (meses === 1 ? ' mês' : ' meses');
-  el('vendaLabel').textContent = fmtBRL(V);
-  el('lanceAlert').style.display = P < 77945.34 ? 'flex' : 'none';
+  g(prefix,'precoLabel').textContent = fmtBRL(P);
+  g(prefix,'prazoLabel').textContent = meses + (meses === 1 ? ' mês' : ' meses');
+  g(prefix,'vendaLabel').textContent = fmtBRL(V);
+  const pmin = parseFloat(g(prefix,'lanceAlert').dataset.min || 0);
+  g(prefix,'lanceAlert').style.display = P < pmin ? 'flex' : 'none';
 
-  // aquisição (à vista, sem financiamento)
+  const entrada = P * entradaPct;
   const comissaoLeiloeiro = P * comissaoPct;
   const itbi = P * itbiPct;
-  const subtotalAquisicao = P + comissaoLeiloeiro + itbi + cartorio + corretorAquisicao + outros;
+  const subtotalAquisicao = entrada + comissaoLeiloeiro + itbi + cartorio + outros;
 
-  // condomínio: comprador responde até um limite (% da avaliação); a Caixa paga o excedente
-  const condoLimite = avaliacao * condoLimitePct;
-  const condoComprador = Math.min(condoTotal, condoLimite);
-  const condoCaixa = Math.max(condoTotal - condoLimite, 0);
-  el('condoResumo').textContent =
-    'Dívida total ' + fmtBRL(condoTotal) + ' · limite do comprador ' + fmtBRL(condoLimite) +
-    ' → comprador paga ' + fmtBRL(condoComprador) +
-    (condoCaixa > 0 ? ' · Caixa paga o excedente de ' + fmtBRL(condoCaixa) : '');
-
-  // dívidas propter rem assumidas pelo comprador
-  const subtotalDividas = condoComprador + iptuAtraso;
-
-  // reforma + posse
-  const iptuCorrenteTotal = iptuMes * meses;
-  const subtotalReformaPosse = reforma + iptuCorrenteTotal;
-
-  const totalDesembolsado = subtotalAquisicao + subtotalDividas + subtotalReformaPosse;
-
-  // venda
-  const corretagem = V * corretagemPct;
-  const custoBaseIR = P + comissaoLeiloeiro + itbi + cartorio + corretorAquisicao + reforma;
-  const ganho = Math.max(V - custoBaseIR, 0);
-  const ir = ganho * irPct;
-  const liquidoVenda = V - corretagem - ir;
-
-  const lucro = liquidoVenda - totalDesembolsado;
-  const retorno = totalDesembolsado > 0 ? (lucro / totalDesembolsado) * 100 : 0;
-  const retornoAno = totalDesembolsado > 0
-    ? (Math.pow(1 + lucro / totalDesembolsado, 12 / meses) - 1) * 100
-    : 0;
-
-  // render hero
-  el('lucroValue').textContent = fmtBRL(lucro);
-  el('lucroValue').className = 'hero-value ' + (lucro >= 0 ? '' : 'ink-critical');
-  el('retornoValue').textContent = fmtPct(retorno) + ' em ' + meses + (meses === 1 ? ' mês' : ' meses');
-
-  el('caixaValue').textContent = fmtBRL(totalDesembolsado);
-  el('retornoAnoValue').textContent = fmtPct(retornoAno);
-
-  // status coloring
-  let statusRetorno = 'good';
-  if (lucro < 0) { statusRetorno = 'critical'; }
-  else if (retornoAno < 8) { statusRetorno = 'critical'; }
-  else if (retornoAno < 20) { statusRetorno = 'warning'; }
-  else { statusRetorno = 'good'; }
-
-  el('dotCaixa').className = 'status-dot status-' + (P < 77945.34 ? 'warning' : 'good');
-  el('dotRetorno').className = 'status-dot status-' + statusRetorno;
-  el('retornoAnoValue').className = 'stat-value ink-' + statusRetorno;
-
-  const alertBox = el('lucroAlert');
-  alertBox.innerHTML = '';
-  if (lucro < 0) {
-    alertBox.innerHTML = '<div class="alert">⚠ Nesse cenário o resultado é <strong>prejuízo</strong> — reveja o preço de venda, o prazo ou o valor do lance.</div>';
-  } else if (statusRetorno === 'warning') {
-    alertBox.innerHTML = '<div class="alert warn">⚠ Margem apertada: o débito de condomínio (' + fmtBRL(condoComprador) + ' de responsabilidade do comprador) já consome boa parte da folga — qualquer imprevisto pode zerar o lucro.</div>';
+  let custoFinanciamento = 0, saldoDevedor = 0, mesesPagos = 0;
+  if (financiar) {
+    const financiado = P - entrada;
+    const amortConst = financiado / prazoFin;
+    const iMensal = Math.pow(1 + taxaAA, 1/12) - 1;
+    let saldo = financiado, totalJuros = 0, totalSeguro = 0;
+    mesesPagos = Math.min(meses, prazoFin);
+    for (let k = 0; k < mesesPagos; k++) {
+      totalJuros += saldo * iMensal;
+      totalSeguro += saldo * seguroMensal;
+      saldo -= amortConst;
+    }
+    saldoDevedor = Math.max(saldo, 0);
+    custoFinanciamento = totalJuros + totalSeguro;
   }
 
-  // cost bar
-  const total = subtotalAquisicao + subtotalDividas + subtotalReformaPosse;
-  const pctAq = total > 0 ? (subtotalAquisicao / total) * 100 : 0;
-  const pctDividas = total > 0 ? (subtotalDividas / total) * 100 : 0;
-  const pctReforma = total > 0 ? 100 - pctAq - pctDividas : 0;
-  el('costBar').innerHTML =
-    '<div style="width:' + pctAq.toFixed(1) + '%;background:var(--series-1)"></div>' +
-    '<div style="width:' + pctDividas.toFixed(1) + '%;background:var(--series-2)"></div>' +
-    '<div style="width:' + pctReforma.toFixed(1) + '%;background:var(--series-3)"></div>';
+  const custoCorrente = condoMes * meses;
+  const subtotalCarrego = custoFinanciamento + condoDivida + iptuAtraso + custoCorrente + reforma;
+  const caixaProprioTotal = subtotalAquisicao + subtotalCarrego;
 
-  // breakdown table
+  const corretagem = V * corretagemPct;
+  const custoBaseIR = P + comissaoLeiloeiro + itbi + cartorio + reforma;
+  const ganho = Math.max(V - custoBaseIR, 0);
+  const ir = ganho * irPct;
+  const liquidoVenda = V - corretagem - saldoDevedor - ir;
+
+  const lucro = liquidoVenda - caixaProprioTotal;
+  const retorno = caixaProprioTotal > 0 ? (lucro / caixaProprioTotal) * 100 : 0;
+  const retornoAno = caixaProprioTotal > 0 ? (Math.pow(1 + lucro / caixaProprioTotal, 12 / meses) - 1) * 100 : 0;
+
+  g(prefix,'lucroValue').textContent = fmtBRL(lucro);
+  g(prefix,'lucroValue').className = 'hero-value ' + (lucro >= 0 ? '' : 'ink-critical');
+  g(prefix,'retornoValue').textContent = fmtPct(retorno) + ' em ' + meses + (meses === 1 ? ' mês' : ' meses');
+  g(prefix,'caixaValue').textContent = fmtBRL(caixaProprioTotal);
+  g(prefix,'retornoAnoValue').textContent = fmtPct(retornoAno);
+
+  let statusRetorno = 'good';
+  if (lucro < 0) statusRetorno = 'critical';
+  else if (retornoAno < 8) statusRetorno = 'critical';
+  else if (retornoAno < 20) statusRetorno = 'warning';
+  g(prefix,'dotCaixa').className = 'status-dot status-' + (P < pmin ? 'warning' : 'good');
+  g(prefix,'dotRetorno').className = 'status-dot status-' + statusRetorno;
+  g(prefix,'retornoAnoValue').className = 'stat-value ink-' + statusRetorno;
+
+  const alertBox = g(prefix,'lucroAlert');
+  alertBox.innerHTML = '';
+  if (lucro < 0) {
+    alertBox.innerHTML = '<div class="callout bad">⚠ Nesse cenário o resultado é <b>prejuízo</b> — reveja preço de venda, prazo ou valor de compra.</div>';
+  } else if (statusRetorno === 'warning') {
+    alertBox.innerHTML = '<div class="callout warn">⚠ Margem apertada: qualquer imprevisto pode zerar o lucro.</div>';
+  }
+
+  const total = subtotalAquisicao + custoFinanciamento + (condoDivida + iptuAtraso + custoCorrente + reforma);
+  const pctAq = total > 0 ? (subtotalAquisicao / total) * 100 : 0;
+  const pctFin = total > 0 ? (custoFinanciamento / total) * 100 : 0;
+  const pctObra = total > 0 ? 100 - pctAq - pctFin : 0;
+  g(prefix,'costBar').innerHTML =
+    '<div style="width:' + pctAq.toFixed(1) + '%;background:var(--series-1)"></div>' +
+    '<div style="width:' + pctFin.toFixed(1) + '%;background:var(--series-2)"></div>' +
+    '<div style="width:' + pctObra.toFixed(1) + '%;background:var(--series-3)"></div>';
+
   const rows = [
-    ['Subtotal aquisição (lance + ITBI + cartório + corretor + outros)', subtotalAquisicao],
-    ['Condomínio em atraso (comprador, limitado)', condoComprador],
-    ['IPTU em atraso', iptuAtraso],
+    ['Subtotal aquisição', subtotalAquisicao],
+    financiar ? ['Financiamento (juros+seguro, ' + mesesPagos + ' m)', custoFinanciamento] : null,
+    ['Dívida condomínio + IPTU em atraso', condoDivida + iptuAtraso],
+    ['Condomínio+IPTU corrente (' + meses + ' m)', custoCorrente],
     ['Reforma', reforma],
-    ['Condomínio + IPTU corrente (' + meses + ' meses)', iptuCorrenteTotal],
-    ['Total desembolsado', totalDesembolsado],
+    ['Caixa próprio total', caixaProprioTotal],
     ['Preço de venda', V],
     ['(-) Corretagem', -corretagem],
+    financiar ? ['(-) Quitação saldo devedor', -saldoDevedor] : null,
     ['(-) IR ganho de capital', -ir],
     ['Líquido da venda', liquidoVenda],
     ['LUCRO', lucro],
-  ];
-  el('breakdownTable').innerHTML = rows.map((r) => {
-    const isTotal = r[0] === 'Total desembolsado' || r[0] === 'LUCRO' || r[0] === 'Líquido da venda';
-    return '<tr class="' + (isTotal ? 'total' : '') + '"><td>' + r[0] + '</td><td>' + fmtBRL(r[1]) + '</td></tr>';
+  ].filter(Boolean);
+  g(prefix,'breakdownTable').innerHTML = rows.map(r => {
+    const isTotal = ['Caixa próprio total','LUCRO','Líquido da venda'].includes(r[0]);
+    return '<tr' + (isTotal ? ' class="tot"' : '') + '><td>' + r[0] + '</td><td style="text-align:right;">' + fmtBRL(r[1]) + '</td></tr>';
   }).join('');
 }
 
-compute();
+loadPreset('', 'gran');
+loadPreset('g_', 'gran', { financiar: true });
 </script>
 </body>
 </html>
