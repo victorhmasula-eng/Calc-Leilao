@@ -422,6 +422,26 @@
       </div>
     </section>
 
+    <!-- ===================== RANKING ===================== -->
+    <section id="tab-ranking" class="tabpanel">
+      <h1 class="pagetitle">🏆 Ranking de oportunidades</h1>
+      <div class="pagesub">Comparação automática, com preço de compra e venda padrão de cada imóvel — pensando como um gestor buscando o melhor retorno com o menor risco.</div>
+
+      <div class="card" id="rankingTopPick"></div>
+
+      <div class="card">
+        <div class="tablewrap">
+          <table class="datatable" id="rankingTable" style="text-align:left;">
+            <thead>
+              <tr><th>#</th><th>Imóvel</th><th>Lucro 6m</th><th>Retorno a.a.</th><th>Risco</th></tr>
+            </thead>
+            <tbody id="rankingTbody"></tbody>
+          </table>
+        </div>
+        <p class="body" style="margin-top:10px;font-size:11px;color:var(--text-muted);">Ranking calculado com preço de compra e venda padrão (assumidos) de cada imóvel, entrada e prazo de financiamento padrão, lucro projetado em 6 meses. Risco = quantidade de valores ainda não confirmados (condomínio, IPTU) que afetam o cálculo — quanto mais alto, menos confiável é o número. Imóveis descartados ou já comprados aparecem por último, fora da disputa. Ajuste os valores "a confirmar" na aba Imóvel para refinar o ranking.</p>
+      </div>
+    </section>
+
   </main>
 </div>
 
@@ -432,6 +452,9 @@
     </button>
     <button class="navbtn" data-tab="lista">
       <span class="navicon">📋</span>Lista
+    </button>
+    <button class="navbtn" data-tab="ranking">
+      <span class="navicon">🏆</span>Ranking
     </button>
   </div>
 </nav>
@@ -510,6 +533,7 @@ function showTab(id) {
   document.querySelectorAll('.navbtn').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
   document.querySelector('.navbtn[data-tab="' + id + '"]').classList.add('active');
+  if (id === 'ranking') renderRanking();
   window.scrollTo({top:0, behavior:'instant'});
 }
 document.querySelectorAll('.navbtn').forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
@@ -518,6 +542,7 @@ document.querySelectorAll('.navbtn').forEach(t => t.addEventListener('click', ()
 const PROP_ORDER = ['gran','ap102','colorado','loja','belo'];
 const PROPS = {
   gran: {
+    link: null,
     title: "AP202 - Gran Acrópolis IV",
     subtitle: "Rua 8, Apto. 202, Bloco 44, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO · Matrícula 104.684 · Insc. 265086",
     avaliacao: "R$ 165.000,00",
@@ -548,6 +573,7 @@ const PROPS = {
     unconfirmed: ['condoDivida', 'condoMes'],
   },
   ap102: {
+    link: "https://venda-imoveis.caixa.gov.br/sistema/detalhe-imovel.asp?hdnimovel=08787717219031",
     title: "AP102 - Gran Acrópolis IV",
     subtitle: "Rua 8, Apto. 102, Bloco 22, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO · Matrícula 104.556 · Insc. 264956",
     avaliacao: "R$ 168.000,00",
@@ -576,6 +602,7 @@ const PROPS = {
     unconfirmed: ['condoDivida', 'condoMes'],
   },
   colorado: {
+    link: null,
     title: "Casa Mansões Colorado",
     subtitle: "Rodovia DF-150, Lote 28 Cj. P, Grande Colorado, Sobradinho/DF · Matrícula 18.011 · 7º Ofício RI/DF",
     avaliacao: "R$ 1.035.000,00",
@@ -601,6 +628,7 @@ const PROPS = {
     unconfirmed: ['condoDivida'],
   },
   loja: {
+    link: null,
     title: "Loja SBS Quadra 1",
     subtitle: "Edifício Seguradoras, SBS Quadra 1 Bloco K, Setor Bancário Sul, Brasília/DF · Matrícula 21117",
     avaliacao: "R$ 475.000,00 (≈R$6.250/m²)",
@@ -626,6 +654,7 @@ const PROPS = {
     unconfirmed: ['condoDivida', 'condoMes'],
   },
   belo: {
+    link: null,
     title: "Apto Belle Horizonte",
     subtitle: "Gleba 10 Rua E, Apto. 408 Bloco 10, Fazenda Saia Velha, Valparaíso de Goiás/GO · Matrícula 90.551",
     avaliacao: "R$ 225.000,00",
@@ -690,6 +719,9 @@ function renderProperty(key) {
   el('prop-subtitle').textContent = p.subtitle;
 
   const condoMesCell = unc.includes('condoMes') ? editableCell(key, 'condoMes', p.condoMes, 10) : p.condoMensal;
+  const linkCell =
+    '<input type="text" class="numfield link-field" data-key="' + key + '" value="' + (p.link || '') + '" placeholder="Colar link do anúncio" style="text-align:left;font-size:12px;width:100%;">' +
+    (p.link ? '<div style="margin-top:6px;text-align:right;"><a href="' + p.link + '" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700;font-size:12.5px;">Abrir anúncio ↗</a></div>' : '');
 
   el('prop-ficha-table').innerHTML =
     '<tr><td>Avaliação Caixa</td><td>' + p.avaliacao + '</td></tr>' +
@@ -698,7 +730,8 @@ function renderProperty(key) {
     '<tr><td>Modalidade</td><td>' + p.modalidade + '</td></tr>' +
     '<tr><td>Pagamento aceito</td><td>' + p.pagamento + '</td></tr>' +
     '<tr><td>Endereço</td><td>' + p.endereco + '</td></tr>' +
-    '<tr><td>Última venda</td><td>' + p.ultimaVenda + '</td></tr>';
+    '<tr><td>Última venda</td><td>' + p.ultimaVenda + '</td></tr>' +
+    '<tr><td>Link do anúncio</td><td>' + linkCell + '</td></tr>';
 
   if (p.comparaveis.length) {
     el('prop-comp-table').innerHTML = '<tr><th>Empreendimento</th><th>Área</th><th>Preço</th></tr>' +
@@ -724,6 +757,17 @@ function renderProperty(key) {
 
   loadPreset(key);
   bindEditableFields();
+  bindLinkFields();
+}
+
+function bindLinkFields() {
+  document.querySelectorAll('.link-field').forEach(inp => {
+    inp.addEventListener('change', () => {
+      const key = inp.dataset.key;
+      PROPS[key].link = inp.value.trim() || null;
+      renderProperty(key);
+    });
+  });
 }
 
 function bindEditableFields() {
@@ -948,6 +992,103 @@ function compute() {
     const isTotal = ['Caixa próprio total','LUCRO','Líquido da venda'].includes(r[0]);
     return '<tr' + (isTotal ? ' class="tot"' : '') + '><td>' + r[0] + '</td><td style="text-align:right;">' + fmtBRL(r[1]) + '</td></tr>';
   }).join('');
+}
+
+// ---------- ranking (gestor de imobiliária) ----------
+// Reimplementa a fórmula de compute() de forma pura (sem ler o DOM), para poder
+// simular qualquer imóvel usando seus valores padrão (e edições já feitas nos campos "a confirmar").
+function computeForProperty(p, P, V, meses, entradaPctInput) {
+  const entradaPct = entradaPctInput / 100;
+  const taxaAA = p.taxaAA / 100;
+  const prazoFin = p.prazoFin;
+  const seguroMensal = p.seguroPct / 100;
+  const comissaoPct = p.comissaoPct / 100;
+  const itbiPct = p.itbiPct / 100;
+  const corretagemPct = p.corretagemPct / 100;
+  const irPct = p.irPct / 100;
+
+  const entrada = P * entradaPct;
+  const comissaoLeiloeiro = P * comissaoPct;
+  const itbi = P * itbiPct;
+  const subtotalAquisicao = entrada + comissaoLeiloeiro + itbi + p.cartorio + p.outros;
+
+  const financiado = P - entrada;
+  const amortConst = financiado / prazoFin;
+  const iMensal = Math.pow(1 + taxaAA, 1/12) - 1;
+  let saldo = financiado, totalJuros = 0, totalSeguro = 0;
+  const mesesPagos = Math.min(meses, prazoFin);
+  for (let k = 0; k < mesesPagos; k++) {
+    totalJuros += saldo * iMensal;
+    totalSeguro += saldo * seguroMensal;
+    saldo -= amortConst;
+  }
+  const saldoDevedor = Math.max(saldo, 0);
+  const custoFinanciamento = totalJuros + totalSeguro;
+
+  const custoCorrente = p.condoMes * meses;
+  const caixaProprioTotal = subtotalAquisicao + custoFinanciamento + p.condoDivida + p.iptuAtraso + custoCorrente + p.reforma;
+
+  const corretagem = V * corretagemPct;
+  const custoBaseIR = P + comissaoLeiloeiro + itbi + p.cartorio + p.reforma;
+  const ganho = Math.max(V - custoBaseIR, 0);
+  const ir = ganho * irPct;
+  const liquidoVenda = V - corretagem - saldoDevedor - ir;
+
+  const lucro = liquidoVenda - caixaProprioTotal;
+  const retorno = caixaProprioTotal > 0 ? (lucro / caixaProprioTotal) * 100 : 0;
+  const retornoAno = caixaProprioTotal > 0 ? (Math.pow(1 + lucro / caixaProprioTotal, 12 / meses) - 1) * 100 : 0;
+  return { lucro, retorno, retornoAno, caixaProprioTotal };
+}
+
+const RISCO_LABEL = { baixo: 'Baixo', medio: 'Médio', alto: 'Alto' };
+const RISCO_CLASS = { baixo: 'ink-good', medio: 'ink-warning', alto: 'ink-critical' };
+function riscoNivel(count) {
+  if (count <= 0) return 'baixo';
+  if (count <= 2) return 'medio';
+  return 'alto';
+}
+
+function renderRanking() {
+  const ranked = PROP_ORDER.map(key => {
+    const p = PROPS[key];
+    const r6 = computeForProperty(p, p.P_default, p.V_default, 6, p.entradaPct);
+    const r12 = computeForProperty(p, p.P_default, p.V_default, 12, p.entradaPct);
+    const riscoCount = (p.unconfirmed || []).length;
+    const status = propStatus[key];
+    let score = r6.retornoAno - riscoCount * 10;
+    if (status === 'descartado') score -= 1000;
+    if (status === 'comprado') score -= 500;
+    return { key, p, r6, r12, riscoCount, status, score };
+  }).sort((a, b) => b.score - a.score);
+
+  const top = ranked.find(r => r.status === 'analise') || ranked[0];
+  el('rankingTopPick').innerHTML =
+    '<h2 class="sec">🥇 Recomendação do gestor</h2>' +
+    '<p class="body" style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">' + top.p.title + '</p>' +
+    '<p class="body">Com preço de compra e venda padrão, lucro projetado de <b>' + fmtBRL(top.r6.lucro) + '</b> em 6 meses (retorno anualizado ≈' + fmtPct(top.r6.retornoAno) + ') — o melhor equilíbrio entre retorno e risco entre os imóveis ainda em análise.' +
+    (top.riscoCount > 0 ? ' Atenção: este número ainda depende de ' + top.riscoCount + ' valor(es) não confirmado(s) (condomínio/IPTU) — confirme na aba Imóvel para refinar.' : '') +
+    '</p>';
+
+  el('rankingTbody').innerHTML = ranked.map((r, i) => {
+    const outOfRace = r.status !== 'analise';
+    return '<tr style="' + (outOfRace ? 'opacity:.55;' : '') + '">' +
+      '<td>' + (i + 1) + 'º</td>' +
+      '<td><a href="#" class="ranking-link" data-key="' + r.key + '" style="color:var(--accent);font-weight:700;text-decoration:none;">' + r.p.title + '</a>' +
+        '<div style="font-size:10.5px;color:var(--text-muted);">' + STATUS_LABEL[r.status] + '</div></td>' +
+      '<td class="' + (r.r6.lucro >= 0 ? 'ink-good' : 'ink-critical') + '">' + fmtBRL(r.r6.lucro) + '</td>' +
+      '<td>' + fmtPct(r.r6.retornoAno) + '</td>' +
+      '<td class="' + RISCO_CLASS[riscoNivel(r.riscoCount)] + '">' + RISCO_LABEL[riscoNivel(r.riscoCount)] + '</td>' +
+    '</tr>';
+  }).join('');
+
+  el('rankingTbody').querySelectorAll('.ranking-link').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      propSelect.value = a.dataset.key;
+      renderProperty(a.dataset.key);
+      showTab('imovel');
+    });
+  });
 }
 
 // ---------- lista ----------
