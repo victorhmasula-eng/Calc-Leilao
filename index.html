@@ -7,82 +7,119 @@
 <style>
   :root {
     color-scheme: light;
-    --surface-1:      #fcfcfb;
-    --surface-2:      #f2f1ec;
-    --page-plane:     #f9f9f7;
-    --text-primary:   #0b0b0b;
-    --text-secondary: #52514e;
-    --text-muted:     #898781;
-    --gridline:       #e1e0d9;
-    --border:         rgba(11,11,11,0.10);
+    --bg-grad:        linear-gradient(180deg, #bfe0f5 0%, #dce3e6 30%, #ead9d0 55%, #f6cf9e 80%, #f8c37e 100%);
+    --surface-1:      rgba(255,255,255,0.52);
+    --surface-2:      rgba(255,255,255,0.68);
+    --page-plane:     #ecdfc9;
+    --text-primary:   #1a1408;
+    --text-secondary: #4a3f33;
+    --text-muted:     #8a7c68;
+    --gridline:       rgba(26,20,8,0.12);
+    --border:         rgba(26,20,8,0.14);
     --accent:         #2a78d6;
     --series-1:       #2a78d6;
     --series-2:       #1baf7a;
     --series-3:       #eda100;
     --good:           #0ca30c;
-    --goodbg:         rgba(12,163,12,0.08);
+    --goodbg:         rgba(12,163,12,0.12);
     --warning:        #b9790a;
-    --warnbg:         rgba(185,121,10,0.08);
+    --warnbg:         rgba(185,121,10,0.12);
     --critical:       #d03b3b;
-    --critbg:         rgba(208,59,59,0.08);
+    --critbg:         rgba(208,59,59,0.12);
+    --blur:           16px;
   }
   @media (prefers-color-scheme: dark) {
     :root:where(:not([data-theme="light"])) {
       color-scheme: dark;
-      --surface-1:      #1a1a19;
-      --surface-2:      #232320;
-      --page-plane:     #0d0d0d;
+      --bg-grad:        linear-gradient(180deg, #171b26 0%, #202a40 20%, #273658 38%, #4a5570 58%, #8b8078 78%, #c1aa7e 100%);
+      --surface-1:      rgba(18,20,30,0.42);
+      --surface-2:      rgba(18,20,30,0.58);
+      --page-plane:     #171b26;
       --text-primary:   #ffffff;
-      --text-secondary: #c3c2b7;
-      --text-muted:     #918f87;
-      --gridline:       #2c2c2a;
-      --border:         rgba(255,255,255,0.12);
-      --accent:         #3987e5;
-      --series-1:       #3987e5;
+      --text-secondary: #d8d3c8;
+      --text-muted:     #a89f8f;
+      --gridline:       rgba(255,255,255,0.14);
+      --border:         rgba(255,255,255,0.16);
+      --accent:         #59a0f5;
+      --series-1:       #59a0f5;
       --series-2:       #199e70;
       --series-3:       #c98500;
       --good:           #3fcf3f;
-      --goodbg:         rgba(63,207,63,0.10);
+      --goodbg:         rgba(63,207,63,0.14);
       --warning:        #fab219;
-      --warnbg:         rgba(250,178,25,0.10);
+      --warnbg:         rgba(250,178,25,0.14);
       --critical:       #e66767;
-      --critbg:         rgba(230,103,103,0.10);
+      --critbg:         rgba(230,103,103,0.14);
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --surface-1:      #1a1a19;
-    --surface-2:      #232320;
-    --page-plane:     #0d0d0d;
+    --bg-grad:        linear-gradient(180deg, #171b26 0%, #202a40 20%, #273658 38%, #4a5570 58%, #8b8078 78%, #c1aa7e 100%);
+    --surface-1:      rgba(18,20,30,0.42);
+    --surface-2:      rgba(18,20,30,0.58);
+    --page-plane:     #171b26;
     --text-primary:   #ffffff;
-    --text-secondary: #c3c2b7;
-    --text-muted:     #918f87;
-    --gridline:       #2c2c2a;
-    --border:         rgba(255,255,255,0.12);
-    --accent:         #3987e5;
-    --series-1:       #3987e5;
+    --text-secondary: #d8d3c8;
+    --text-muted:     #a89f8f;
+    --gridline:       rgba(255,255,255,0.14);
+    --border:         rgba(255,255,255,0.16);
+    --accent:         #59a0f5;
+    --series-1:       #59a0f5;
     --series-2:       #199e70;
     --series-3:       #c98500;
     --good:           #3fcf3f;
-    --goodbg:         rgba(63,207,63,0.10);
+    --goodbg:         rgba(63,207,63,0.14);
     --warning:        #fab219;
-    --warnbg:         rgba(250,178,25,0.10);
+    --warnbg:         rgba(250,178,25,0.14);
     --critical:       #e66767;
-    --critbg:         rgba(230,103,103,0.10);
+    --critbg:         rgba(230,103,103,0.14);
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body {
-    margin: 0; padding: 0;
+  html {
     background: var(--page-plane);
+  }
+  body {
+    margin: 0; padding: 0;
+    background: transparent;
     color: var(--text-primary);
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     -webkit-text-size-adjust: 100%;
+  }
+  #bgLayer {
+    position: fixed; inset: 0; z-index: -2;
+    background: var(--bg-grad);
+  }
+  #starsLayer {
+    position: fixed; inset: 0; z-index: -1;
+    overflow: hidden; pointer-events: none;
+    opacity: 0; transition: opacity .5s ease;
+  }
+  #starsLayer.visible { opacity: 1; }
+  .star {
+    position: absolute; background: #fff; border-radius: 50%;
+    animation: twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
+  .comet {
+    position: absolute; height: 2px; width: 130px; border-radius: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 100%);
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.85));
+    transform-origin: left center;
+    animation: cometmove 1.8s linear forwards;
+  }
+  @keyframes cometmove {
+    0%   { transform: translate(0,0) rotate(var(--ang)); opacity: 0; }
+    8%   { opacity: 1; }
+    88%  { opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) rotate(var(--ang)); opacity: 0; }
   }
   .wrap { max-width: 640px; margin: 0 auto; padding: 0 0 90px; }
 
   header.topbar {
     position: sticky; top: 0; z-index: 20;
-    background: var(--page-plane);
+    background: var(--surface-1);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
     border-bottom: 1px solid var(--border);
     padding-top: max(10px, env(safe-area-inset-top));
   }
@@ -104,7 +141,10 @@
   /* Bottom nav */
   nav.bottomnav {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
-    background: var(--surface-1); border-top: 1px solid var(--border);
+    background: var(--surface-1);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border-top: 1px solid var(--border);
     padding-bottom: env(safe-area-inset-bottom);
   }
   .bottomnav-inner {
@@ -120,6 +160,8 @@
 
   .card {
     background: var(--surface-1); border: 1px solid var(--border);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
     border-radius: 14px; padding: 16px; margin-bottom: 14px;
   }
   .card h2.sec {
@@ -193,7 +235,7 @@
   .range-ticks { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
   .numfield, select.selfield {
     width: 100%; font-size: 14.5px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
-    background: var(--page-plane); color: var(--text-primary); font-variant-numeric: tabular-nums;
+    background: var(--surface-2); color: var(--text-primary); font-variant-numeric: tabular-nums;
   }
   select.selfield-sm { font-size: 12.5px; padding: 6px 8px; border-radius: 8px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -204,7 +246,7 @@
   .seg button.active { background: var(--accent); color: #fff; }
 
   .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-  .stat-tile { background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+  .stat-tile { background: var(--surface-2); border: 1px solid var(--border); backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur)); border-radius: 14px; padding: 14px; }
   .stat-tile .stat-label { font-size: 11.5px; color: var(--text-muted); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
   .stat-tile .stat-value { font-size: 21px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.15; }
   .status-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
@@ -224,6 +266,8 @@
 </style>
 </head>
 <body>
+<div id="bgLayer" aria-hidden="true"></div>
+<div id="starsLayer" aria-hidden="true"></div>
 <div class="wrap">
   <header class="topbar">
     <div class="topbar-inner">
@@ -259,6 +303,7 @@
 
       <div class="card">
         <h2 class="sec">Dívidas</h2>
+        <div class="callout warn" id="prop-edit-hint" style="display:none;">⚠ Campos marcados "a confirmar" são editáveis — digite o valor real assim que souber e a calculadora abaixo recalcula automaticamente.</div>
         <table class="kv" id="prop-dividas-table"></table>
         <p class="body" id="prop-dividas-note" style="margin-top:8px;font-size:12px;"></p>
       </div>
@@ -300,6 +345,8 @@
           <div class="field-label"><span>Preço de venda estimado</span><span class="field-value" id="vendaLabel">—</span></div>
           <input type="range" id="vendaSlider" min="0" max="1000000" step="1000">
           <div class="range-ticks"><span id="vendaMinTick"></span><span id="vendaMaxTick"></span></div>
+          <div style="margin-top:8px;"><input type="number" class="numfield" id="vendaInput" step="1000"></div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">O controle desliza dentro da faixa acima, mas você pode digitar qualquer valor no campo.</div>
         </div>
 
         <details class="more"><summary>Ajustar premissas avançadas</summary>
@@ -399,7 +446,9 @@ function currentEffectiveTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 function updateThemeBtn() {
-  themeBtn.textContent = currentEffectiveTheme() === 'dark' ? '☀️' : '🌙';
+  const isDark = currentEffectiveTheme() === 'dark';
+  themeBtn.textContent = isDark ? '☀️' : '🌙';
+  document.getElementById('starsLayer').classList.toggle('visible', isDark);
 }
 themeBtn.addEventListener('click', () => {
   const next = currentEffectiveTheme() === 'dark' ? 'light' : 'dark';
@@ -407,6 +456,53 @@ themeBtn.addEventListener('click', () => {
   updateThemeBtn();
 });
 updateThemeBtn();
+
+// ---------- starfield + comets ----------
+function rand(min, max) { return Math.random() * (max - min) + min; }
+
+function buildStars(count) {
+  const layer = document.getElementById('starsLayer');
+  layer.querySelectorAll('.star').forEach(s => s.remove());
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = rand(0, 100) + '%';
+    s.style.top = rand(0, 100) + '%';
+    const size = rand(1, 2.6);
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.animationDuration = rand(2, 5) + 's';
+    s.style.animationDelay = rand(0, 5) + 's';
+    layer.appendChild(s);
+  }
+}
+buildStars(70);
+
+function spawnComet() {
+  if (currentEffectiveTheme() !== 'dark') return;
+  const layer = document.getElementById('starsLayer');
+  const c = document.createElement('div');
+  c.className = 'comet';
+  const fromLeftEdge = Math.random() < 0.5;
+  const startX = fromLeftEdge ? rand(-10, 40) : rand(60, 110);
+  const startY = rand(0, 55);
+  const angleDeg = fromLeftEdge ? rand(15, 30) : (180 + rand(15, 30));
+  const dist = Math.max(window.innerWidth, 600) * 1.4;
+  const rad = angleDeg * Math.PI / 180;
+  const dx = Math.cos(rad) * dist;
+  const dy = Math.sin(rad) * dist;
+  c.style.left = startX + '%';
+  c.style.top = startY + '%';
+  c.style.setProperty('--ang', angleDeg + 'deg');
+  c.style.setProperty('--dx', dx + 'px');
+  c.style.setProperty('--dy', dy + 'px');
+  layer.appendChild(c);
+  setTimeout(() => c.remove(), 2000);
+}
+function scheduleComet() {
+  setTimeout(() => { spawnComet(); scheduleComet(); }, rand(12000, 22000));
+}
+scheduleComet();
 
 // ---------- tab switching ----------
 function showTab(id) {
@@ -444,11 +540,12 @@ const PROPS = {
     dividasNote: "Administradora: JK Exclusive — (61) 3798-9888 / contabil@jkexclusive.com.br. Contato ainda não realizado.",
     fontes: "matrícula 104.684, venda-imoveis.caixa.gov.br, \"Como Comprar\" (regras-VOL/comocomprar.pdf), IPTU Prefeitura Valparaíso de Goiás (insc. 265086), comparáveis de mercado, CNPJ 53.959.381/0001-05.",
     P_min: 84033.11, P_max: 165000, P_default: 84033.11,
-    V_min: 100000, V_max: 175000, V_default: 135000,
+    V_min: 70000, V_max: 220000, V_default: 135000,
     reforma: 8000, condoDivida: 0, iptuAtraso: 523.34, condoMes: 220,
     comissaoPct: 0, itbiPct: 2, cartorio: 2000, outros: 0,
     corretagemPct: 6, irPct: 15,
     entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+    unconfirmed: ['condoDivida', 'condoMes'],
   },
   ap102: {
     title: "AP102 - Gran Acrópolis IV",
@@ -471,11 +568,12 @@ const PROPS = {
     dividasNote: "IPTU confirmado oficialmente na Prefeitura de Valparaíso de Goiás (insc. 264956): guia 5.121.374, dívida do ano 2026, venc. 10/04/2026. Condomínio: mesma administradora do AP202, JK Exclusive — (61) 3798-9888 / contabil@jkexclusive.com.br. Teto de responsabilidade do comprador (10% da avaliação): R$16.800.",
     fontes: "venda-imoveis.caixa.gov.br (anúncio AP102), comparáveis públicos (spyleiloes.com.br, loft.com.br), IPTU Prefeitura Valparaíso de Goiás (insc. 264956, guia 5.121.374, consultado 02/08/2026). Matrícula 104.556 e dívida de condomínio ainda não verificadas diretamente.",
     P_min: 89600.30, P_max: 195000, P_default: 89600.30,
-    V_min: 130000, V_max: 220000, V_default: 165000,
+    V_min: 90000, V_max: 260000, V_default: 165000,
     reforma: 10000, condoDivida: 0, iptuAtraso: 373.83, condoMes: 280,
     comissaoPct: 0, itbiPct: 2, cartorio: 2000, outros: 0,
     corretagemPct: 6, irPct: 15,
     entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+    unconfirmed: ['condoDivida', 'condoMes'],
   },
   colorado: {
     title: "Casa Mansões Colorado",
@@ -495,11 +593,12 @@ const PROPS = {
     dividasNote: "Ambos os valores ficam abaixo do teto de 10% da avaliação (R$103.500).",
     fontes: "matrícula 18.011 (venda-imoveis.caixa.gov.br), edital EA00190326CPVERE.PDF, leilaoimovel.com.br, consulta Receita/DF (14/07/2026).",
     P_min: 659620.30, P_max: 950000, P_default: 700000,
-    V_min: 900000, V_max: 1300000, V_default: 1100000,
+    V_min: 650000, V_max: 1500000, V_default: 1100000,
     reforma: 117500, condoDivida: 21000, iptuAtraso: 3388.24, condoMes: 0,
     comissaoPct: 5, itbiPct: 2, cartorio: 8500, outros: 4000,
     corretagemPct: 6, irPct: 15,
     entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+    unconfirmed: ['condoDivida'],
   },
   loja: {
     title: "Loja SBS Quadra 1",
@@ -519,11 +618,12 @@ const PROPS = {
     dividasNote: null,
     fontes: "matrícula 21117, edital 0019/0326-CPVE/RE, lancetotal.com.br, consulta Receita/DF. Nenhum cenário financeiro de revenda foi modelado no relatório original.",
     P_min: 131601.89, P_max: 450000, P_default: 131601.89,
-    V_min: 400000, V_max: 650000, V_default: 495000,
+    V_min: 250000, V_max: 800000, V_default: 495000,
     reforma: 0, condoDivida: 0, iptuAtraso: 0, condoMes: 0,
     comissaoPct: 5, itbiPct: 2, cartorio: 2000, outros: 0,
     corretagemPct: 6, irPct: 15,
     entradaPct: 100, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+    unconfirmed: ['condoDivida', 'condoMes'],
   },
   belo: {
     title: "Apto Belle Horizonte",
@@ -543,11 +643,12 @@ const PROPS = {
     dividasNote: null,
     fontes: "matrícula 90.551, venda-imoveis.caixa.gov.br, IPTU Prefeitura Valparaíso de Goiás (inscrição 131486), comparáveis de mercado regionais.",
     P_min: 77945.34, P_max: 190000, P_default: 77945.34,
-    V_min: 110000, V_max: 190000, V_default: 150000,
+    V_min: 70000, V_max: 260000, V_default: 150000,
     reforma: 10000, condoDivida: 22500, iptuAtraso: 535.54, condoMes: 380,
     comissaoPct: 0, itbiPct: 2, cartorio: 2000, outros: 0,
     corretagemPct: 6, irPct: 15,
     entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+    unconfirmed: ['condoDivida', 'condoMes'],
   },
 };
 
@@ -574,18 +675,26 @@ function fmtBRL(v) {
 }
 function fmtPct(v) { return v.toFixed(1).replace('.', ',') + '%'; }
 
+function editableCell(key, field, currentVal, step) {
+  return '<input type="number" class="numfield editable-field" data-key="' + key + '" data-field="' + field + '" value="' + currentVal + '" step="' + step + '" style="width:130px;text-align:right;display:inline-block;"> ' +
+    '<span style="font-size:11px;color:var(--warning);white-space:nowrap;">a confirmar — edite</span>';
+}
+
 function renderProperty(key) {
   const p = PROPS[key];
+  const unc = p.unconfirmed || [];
   const status = propStatus[key];
   el('prop-badge').className = 'badge ' + STATUS_CLASS[status];
   el('prop-badge').innerHTML = '<span class="live-dot"></span>' + STATUS_LABEL[status];
   el('prop-title').textContent = p.title;
   el('prop-subtitle').textContent = p.subtitle;
 
+  const condoMesCell = unc.includes('condoMes') ? editableCell(key, 'condoMes', p.condoMes, 10) : p.condoMensal;
+
   el('prop-ficha-table').innerHTML =
     '<tr><td>Avaliação Caixa</td><td>' + p.avaliacao + '</td></tr>' +
     '<tr><td>Valor mínimo</td><td>' + p.valorMinimo + '</td></tr>' +
-    '<tr><td>Condomínio (mensal)</td><td>' + p.condoMensal + '</td></tr>' +
+    '<tr><td>Condomínio (mensal)</td><td>' + condoMesCell + '</td></tr>' +
     '<tr><td>Modalidade</td><td>' + p.modalidade + '</td></tr>' +
     '<tr><td>Pagamento aceito</td><td>' + p.pagamento + '</td></tr>' +
     '<tr><td>Endereço</td><td>' + p.endereco + '</td></tr>' +
@@ -600,16 +709,38 @@ function renderProperty(key) {
   el('prop-comp-note').textContent = p.comparaveisNote || '';
   el('prop-comp-note').style.display = p.comparaveisNote ? 'block' : 'none';
 
+  const iptuCell = unc.includes('iptuAtraso') ? editableCell(key, 'iptuAtraso', p.iptuAtraso, 10) : p.dividasIPTU;
+  const condoDividaCell = unc.includes('condoDivida') ? editableCell(key, 'condoDivida', p.condoDivida, 500) : p.dividasCondominio;
+
   el('prop-dividas-table').innerHTML =
-    '<tr><td>IPTU</td><td>' + p.dividasIPTU + '</td></tr>' +
-    '<tr><td>Condomínio</td><td>' + p.dividasCondominio + '</td></tr>' +
+    '<tr><td>IPTU</td><td>' + iptuCell + '</td></tr>' +
+    '<tr><td>Condomínio</td><td>' + condoDividaCell + '</td></tr>' +
     (p.dividasOutros ? '<tr><td>Outros</td><td>' + p.dividasOutros + '</td></tr>' : '');
   el('prop-dividas-note').textContent = p.dividasNote || '';
   el('prop-dividas-note').style.display = p.dividasNote ? 'block' : 'none';
+  el('prop-edit-hint').style.display = unc.length ? 'flex' : 'none';
 
   el('prop-fontes').textContent = 'Fontes: ' + p.fontes;
 
   loadPreset(key);
+  bindEditableFields();
+}
+
+function bindEditableFields() {
+  document.querySelectorAll('.editable-field').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const key = inp.dataset.key;
+      const field = inp.dataset.field;
+      const val = parseFloat(inp.value) || 0;
+      PROPS[key][field] = val;
+      if (propSelect.value === key) {
+        if (field === 'condoDivida') el('condoDividaInput').value = val;
+        if (field === 'condoMes') el('condoMesInput').value = val;
+        if (field === 'iptuAtraso') el('iptuAtrasoInput').value = val;
+        compute();
+      }
+    });
+  });
 }
 
 // ---------- calculator ----------
@@ -650,6 +781,7 @@ function loadPreset(key) {
   el('vendaSlider').min = p.V_min;
   el('vendaSlider').max = p.V_max;
   el('vendaSlider').value = p.V_default;
+  el('vendaInput').value = p.V_default;
   el('vendaMinTick').textContent = fmtBRL(p.V_min);
   el('vendaMaxTick').textContent = fmtBRL(p.V_max);
 
@@ -690,7 +822,13 @@ function bindCalc() {
   el('entradaSlider').addEventListener('input', () => { syncEntradaAbsFromPct(); compute(); });
   el('entradaAbsInput').addEventListener('input', () => { syncEntradaPctFromAbs(); compute(); });
   el('prazoSlider').addEventListener('input', () => compute());
-  el('vendaSlider').addEventListener('input', () => compute());
+  const vendaSlider = el('vendaSlider'), vendaInput = el('vendaInput');
+  vendaSlider.addEventListener('input', () => { vendaInput.value = vendaSlider.value; compute(); });
+  vendaInput.addEventListener('input', () => {
+    let v = parseFloat(vendaInput.value) || 0;
+    vendaSlider.value = Math.min(Math.max(v, vendaSlider.min), vendaSlider.max);
+    compute();
+  });
   ['taxaInput','prazoFinInput','seguroInput','reformaInput','condoDividaInput',
    'iptuAtrasoInput','condoMesInput','comissaoInput','itbiInput','cartorioInput','outrosInput',
    'corretagemInput','irInput'].forEach(id => el(id).addEventListener('input', () => compute()));
@@ -701,7 +839,7 @@ function compute() {
   const precoInput = el('precoInput');
   const P = parseFloat(precoInput.value) || 0;
   const meses = parseInt(el('prazoSlider').value, 10);
-  const V = parseFloat(el('vendaSlider').value) || 0;
+  const V = parseFloat(el('vendaInput').value) || 0;
   const entradaPct = parseFloat(el('entradaSlider').value) / 100 || 1;
   const taxaAA = parseFloat(el('taxaInput').value) / 100 || 0;
   const prazoFin = parseInt(el('prazoFinInput').value, 10) || 360;
