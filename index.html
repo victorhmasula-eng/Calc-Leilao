@@ -263,6 +263,25 @@
   .legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 11.5px; color: var(--text-secondary); }
   .legend .item { display: flex; align-items: center; gap: 5px; }
   .legend .swatch { width: 9px; height: 9px; border-radius: 3px; }
+
+  .maplink, .doclink { display: inline-flex; align-items: center; gap: 5px; color: var(--accent); font-weight: 700; font-size: 12.5px; text-decoration: none; }
+  .maplink:hover, .doclink:hover { text-decoration: underline; }
+  .confirm-chip { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 6px; margin-left: 6px; vertical-align: middle; }
+  .confirm-chip.yes { background: var(--goodbg); color: var(--good); }
+  .confirm-chip.no { background: var(--warnbg); color: var(--warning); }
+
+  .countdown-wrap { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+  .countdown-unit { flex: 1; min-width: 60px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 6px; text-align: center; }
+  .countdown-unit .num { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .countdown-unit .lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .countdown-expired { font-size: 13px; font-weight: 700; color: var(--text-muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; text-align: center; }
+  .countdown-noprazo { font-size: 13px; font-weight: 700; color: var(--good); background: var(--goodbg); border-radius: 10px; padding: 10px 12px; text-align: center; }
+
+  .riscos-list { padding-left: 18px; margin: 6px 0; font-size: 13px; line-height: 1.6; color: var(--text-primary); }
+  .riscos-list li { margin-bottom: 4px; }
+  .portais-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .portais-list a { font-size: 12px; padding: 5px 10px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); color: var(--accent); font-weight: 700; text-decoration: none; }
+  .portais-list a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -299,6 +318,7 @@
         <h2 class="sec" style="margin-top:16px;">Comparáveis de mercado</h2>
         <div class="tablewrap"><table class="datatable" id="prop-comp-table"></table></div>
         <p class="body" id="prop-comp-note" style="margin-top:8px;"></p>
+        <div class="portais-list" id="prop-portais-list"></div>
       </div>
 
       <div class="card">
@@ -306,6 +326,30 @@
         <div class="callout warn" id="prop-edit-hint" style="display:none;">⚠ Campos marcados "a confirmar" são editáveis — digite o valor real assim que souber e a calculadora abaixo recalcula automaticamente.</div>
         <table class="kv" id="prop-dividas-table"></table>
         <p class="body" id="prop-dividas-note" style="margin-top:8px;font-size:12px;"></p>
+      </div>
+
+      <div class="card" id="prop-admin-card">
+        <h2 class="sec">Administradora do condomínio</h2>
+        <table class="kv" id="prop-admin-table"></table>
+      </div>
+
+      <div class="card" id="prop-local-card">
+        <h2 class="sec">Localização e documentos</h2>
+        <table class="kv" id="prop-local-table"></table>
+      </div>
+
+      <div class="card" id="prop-closing-card">
+        <h2 class="sec">Encerramento do lote</h2>
+        <div id="prop-closing-widget"></div>
+        <p class="body" id="prop-closing-note" style="margin-top:8px;font-size:12px;"></p>
+      </div>
+
+      <div class="card" id="prop-historico-card">
+        <h2 class="sec">Histórico do imóvel</h2>
+        <table class="kv" id="prop-historico-table"></table>
+        <div id="prop-averbacao-callout"></div>
+        <h2 class="sec" style="margin-top:16px;">Riscos jurídicos</h2>
+        <p class="body" id="prop-riscos-text" style="font-size:13px;"></p>
       </div>
 
       <div class="card" id="calcCard">
@@ -550,15 +594,32 @@ const PROPS = {
     condoMensal: "≈ R$ 220,00/mês — estimativa não confirmada",
     modalidade: "Compra Direta / Venda Online",
     pagamento: "Recursos próprios, FGTS, SBPE",
-    endereco: "Rua 8, Apto. 202, Bloco 44, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO",
+    endereco: "Rua 8, Apto. 202, Bloco 44, Res. Gran Acrópolis IV, Chácaras e Mansões Santa Maria, Valparaíso de Goiás/GO",
     ultimaVenda: "R$ 175.000,00 em 09/03/2023 (Casa Verde e Amarela/FGTS)",
+    mapsQuery: "Residencial Gran Acrópolis IV, Rua 8, Chácaras e Mansões Santa Maria, Valparaíso de Goiás, GO",
+    mapsNota: "Não encontramos coordenada exata do prédio (link abre busca por endereço/nome do condomínio) — confira se o pino bate com a foto do anúncio antes de usar.",
+    administradora: { nome: "JK Exclusive", telefone: "(61) 3798-9888", email: "contabil@jkexclusive.com.br", cnpj: "53.959.381/0001-05", confirmado: true },
+    iptuCheckLink: "https://nfe.valparaisodegoias.go.gov.br/IPTU_Index.aspx?Origem=Menu",
+    edital: { aplicavel: false, texto: "Compra Direta / Venda Online — não tem edital individual por imóvel, é regida pelo regulamento geral da Caixa.", link: "https://venda-imoveis.caixa.gov.br/editais/regras-VOL/comocomprar.pdf?v=01" },
+    matriculaInfo: { cartorio: "Cartório de Registro de Imóveis e Anexos de Valparaíso de Goiás/GO (CNS 02.615-3)", telefone: "(61) 3669-9600", nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
+    leiloeiro: { aplicavel: false, nota: "Compra Direta/Venda Online — venda direta pela própria Caixa, sem leiloeiro." },
+    closing: { tipo: "sem_prazo", nota: "Compra Direta/Venda Online — sem data fixa de encerramento, disponível até ser vendido ou remanejado de modalidade." },
+    historicoResumo: "Prédio novo — habite-se em 29/11/2023. Unidade vendida originalmente em 09/03/2023 por R$175.000 via Casa Verde e Amarela/FGTS. Consolidação de propriedade em nome da Caixa em 12/02/2025 por inadimplência (financiamento durou menos de 2 anos).",
+    leilaoAnterior: "Há indício de tentativa de leilão anterior sem sucesso (averbação de leilão negativo na matrícula) — data e valor não encontrados publicamente. A CONFIRMAR via certidão atualizada do cartório.",
+    averbacaoNegativa: { status: true, nota: "Constava na análise original como averbação de leilão negativo anterior — detalhes (data/valor) não confirmados." },
+    riscosJuridicos: "Nenhum processo judicial ou pendência pública encontrada em busca aberta (via WebSearch, não substitui consulta processual formal). Recomenda-se: (1) consulta nominal ao mutuário anterior no TJGO antes do arremate, (2) confirmação da situação de ocupação do imóvel.",
     comparaveis: [
-      ["Gran Acrópolis IV (mesmo prédio, ágio)", "48,92 m²", "≈R$129.000"],
-      ["Gran Acrópole IV", "49 m²", "R$119.000"],
-      ["Condomínio Acrópolis", "44 m²", "R$160.000"],
-      ["Região Marajó/Anhanguera", "44-51 m²", "R$110.000-190.900"],
+      ["Rua 8, 2 quartos, mesmo bairro (VivaReal)", "48 m²", "R$ 80.468", "https://www.vivareal.com.br/imovel/apartamento-2-quartos-chacaras-e-mansoes-santa-maria-valparaiso-de-goias-com-garagem-48m2-venda-RS80468-id-2891108484/"],
+      ["Rua 8, 2 quartos, mesmo bairro (VivaReal)", "47 m²", "R$ 60.663", "https://www.vivareal.com.br/imovel/apartamento-2-quartos-chacaras-e-mansoes-santa-maria-valparaiso-de-goias-com-garagem-47m2-venda-RS60663-id-2894954827/"],
+      ["Rua 4, mesmo bairro (Loft)", "44 m²", "R$ 205.000", "https://loft.com.br/imovel/apartamento-rua-4-chacaras-e-mansoes-santa-maria-valparaiso-de-goias-2-quartos-44m2/2smb67nm"],
+      ["Rua 4, mesmo bairro (Loft)", "44 m²", "R$ 195.000", "https://loft.com.br/imovel/apartamento-rua-4-chacaras-e-mansoes-santa-maria-valparaiso-de-goias-2-quartos-44m2/f6hooruv"],
     ],
-    comparaveisNote: "Valor de mercado realista estimado: R$115.000 a R$155.000 — a avaliação da Caixa (R$165.000) parece um pouco acima do mercado local.",
+    comparaveisNote: "Levantamento (ago/2026) mostrou grande variação de preço no bairro — de R$60 mil a R$205 mil para unidades de 44-48 m², provavelmente misturando imóveis de origem judicial/leilão com venda de mercado. Faixa realista estimada permanece R$115.000 a R$155.000 — a avaliação da Caixa (R$165.000) parece um pouco acima do mercado local.",
+    outrosPortais: [
+      ["ZapImóveis (busca no bairro)", "https://www.zapimoveis.com.br/venda/apartamentos/go+valparaiso-de-goias++ch-e-mansoes-sta-maria/"],
+      ["VivaReal (busca no bairro)", "https://www.vivareal.com.br/venda/goias/valparaiso-de-goias/bairros/chacaras-e-mansoes-santa-maria/"],
+      ["Chaves na Mão (busca no bairro)", "https://www.chavesnamao.com.br/imoveis/go-valparaiso-de-goias/chacaras-e-mansoes-santa-maria/"],
+    ],
     dividasIPTU: "R$ 523,34",
     dividasCondominio: "A CONFIRMAR",
     dividasOutros: null,
@@ -581,18 +642,36 @@ const PROPS = {
     condoMensal: "≈ R$ 280,00/mês — estimativa não confirmada",
     modalidade: "Venda Online",
     pagamento: "Recursos próprios, FGTS, SBPE",
-    endereco: "Rua 8, Apto. 102, Bloco 22, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO",
+    endereco: "Rua 8, s/n, Apto 102, Bl 22, Ch 37, Qd 08, Vg 112, Chácaras e Mansões Santa Maria, CEP 72875-256, Valparaíso de Goiás/GO",
     ultimaVenda: "A CONFIRMAR (texto completo da matrícula ainda não extraído)",
+    mapsQuery: "Residencial Gran Acrópolis IV Bloco 22, Rua 8, Chácaras e Mansões Santa Maria, Valparaíso de Goiás, GO",
+    mapsNota: "Não encontramos coordenada exata do prédio (link abre busca por endereço/nome do condomínio) — confira se o pino bate com a foto do anúncio antes de usar.",
+    administradora: { nome: "JK Exclusive", telefone: "(61) 3798-9888", email: "contabil@jkexclusive.com.br", cnpj: "53.959.381/0001-05", confirmado: true },
+    iptuCheckLink: "https://nfe.valparaisodegoias.go.gov.br/IPTU_Index.aspx?Origem=Menu",
+    edital: { aplicavel: false, texto: "Venda Online — não tem edital individual por imóvel, é regida pelo regulamento geral da Caixa.", link: "https://venda-imoveis.caixa.gov.br/editais/regras-VOL/comocomprar.pdf?v=01" },
+    matriculaInfo: { cartorio: "Cartório de Registro de Imóveis e Anexos de Valparaíso de Goiás/GO (CNS 02.615-3)", telefone: "(61) 3669-9600", nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
+    leiloeiro: { aplicavel: false, nota: "Venda Online — venda direta pela própria Caixa, sem leiloeiro." },
+    closing: { tipo: "sem_prazo", nota: "Venda Online — anúncio não mostra data de encerramento; geralmente fica disponível até ser vendido." },
+    historicoResumo: "Mesma incorporação do AP202 (Gran Acrópolis IV), mesmo CNPJ de condomínio (53.959.381/0001-05). Incorporadora possivelmente Asteri Construções e Incorporações SPE Ltda (CNPJ 27.140.152/0003-08) — não confirmado se é exatamente a construtora deste bloco. Histórico individual da unidade (venda original, consolidação) ainda não extraído da matrícula.",
+    leilaoAnterior: "O anúncio oficial da Caixa mostra situação \"Averbado\", indicando leilão(ões) anterior(es) sem sucesso — datas e valores não encontrados publicamente. Nota: outra unidade do mesmo prédio (Apto 201, Bloco 22) está em leilão ativo com sessão em 26/08/2026, avaliação R$180.000, lance atual R$106.667,03 — não é esta unidade, apenas referência do padrão do empreendimento.",
+    averbacaoNegativa: { status: true, nota: "Confirmado \"Averbado\" no campo de situação do próprio anúncio oficial da Caixa." },
+    riscosJuridicos: "Nenhum processo judicial específico encontrado em busca aberta. Situação de ocupação não confirmada. Recomenda-se consulta processual nominal antes do arremate.",
     comparaveis: [
-      ["Gran Acrópolis IV (outro bloco)", "56,37 m²", "R$180.000"],
-      ["Gran Acrópolis IV (outro bloco)", "100,23 m²", "N/D"],
+      ["Rua 8, 2 quartos, mesmo bairro (VivaReal)", "69 m²", "R$ 88.533", "https://www.vivareal.com.br/imovel/apartamento-2-quartos-chacaras-e-mansoes-santa-maria-valparaiso-de-goias-com-garagem-69m2-venda-RS88533-id-2894952351/"],
+      ["Rua 8, 2 quartos, mesmo bairro (VivaReal)", "75 m²", "R$ 120.640", "https://www.vivareal.com.br/imovel/apartamento-2-quartos-chacaras-e-mansoes-santa-maria-valparaiso-de-goias-com-garagem-75m2-venda-RS120640-id-2894959562/"],
+      ["Apto 201, mesmo prédio — em leilão ativo 26/08/2026 (SpyLeilões)", "100,23 m²", "Aval. R$180.000 / lance R$106.667", "https://spyleiloes.com.br/imoveis-leilao/go/valparaiso-de-goias/condominio/residencial-gran-acropolis-iv"],
     ],
-    comparaveisNote: "Faixa estimada aplicando a faixa de R$/m² do prédio (≈R$2.350-3.170/m²) aos 68,67 m² desta unidade: R$161.000 a R$218.000 — faixa larga e pouco confiável por falta de comparável do mesmo tamanho.",
+    comparaveisNote: "Faixa estimada aplicando a faixa de R$/m² do prédio aos 68,67 m² desta unidade: R$161.000 a R$218.000 — faixa larga, mas parcialmente sustentada pelos comparáveis reais acima.",
+    outrosPortais: [
+      ["ZapImóveis (busca no bairro)", "https://www.zapimoveis.com.br/venda/apartamentos/go+valparaiso-de-goias++ch-e-mansoes-sta-maria/"],
+      ["VivaReal (busca no bairro)", "https://www.vivareal.com.br/venda/goias/valparaiso-de-goias/bairros/chacaras-e-mansoes-santa-maria/"],
+      ["DFimoveis (busca na cidade)", "https://www.dfimoveis.com.br/venda/df/valparaiso-de-goias/apartamento"],
+    ],
     dividasIPTU: "R$ 373,83",
     dividasCondominio: "A CONFIRMAR",
     dividasOutros: null,
     dividasNote: "IPTU confirmado oficialmente na Prefeitura de Valparaíso de Goiás (insc. 264956): guia 5.121.374, dívida do ano 2026, venc. 10/04/2026. Condomínio: mesma administradora do AP202, JK Exclusive — (61) 3798-9888 / contabil@jkexclusive.com.br. Teto de responsabilidade do comprador (10% da avaliação): R$16.800.",
-    fontes: "venda-imoveis.caixa.gov.br (anúncio AP102), comparáveis públicos (spyleiloes.com.br, loft.com.br), IPTU Prefeitura Valparaíso de Goiás (insc. 264956, guia 5.121.374, consultado 02/08/2026). Matrícula 104.556 e dívida de condomínio ainda não verificadas diretamente.",
+    fontes: "venda-imoveis.caixa.gov.br (anúncio AP102), comparáveis públicos (spyleiloes.com.br, loft.com.br, vivareal.com.br), IPTU Prefeitura Valparaíso de Goiás (insc. 264956, guia 5.121.374, consultado 02/08/2026). Matrícula 104.556 e dívida de condomínio ainda não verificadas diretamente.",
     P_min: 89600.30, P_max: 195000, P_default: 89600.30,
     V_min: 90000, V_max: 260000, V_default: 165000,
     reforma: 10000, condoDivida: 0, iptuAtraso: 373.83, condoMes: 280,
@@ -602,7 +681,7 @@ const PROPS = {
     unconfirmed: ['condoDivida', 'condoMes'],
   },
   colorado: {
-    link: null,
+    link: "https://www.leilaoimovel.com.br/imovel/df/sobradinho/residencial-mansoes-colorado-3-quartos-2-vagas-na-garagem-area-de-servico-2-wc-sala-imovel-caixa-economica-federal-cef-2788919-1444417596998-venda-direta-caixa",
     title: "Casa Mansões Colorado",
     subtitle: "Rodovia DF-150, Lote 28 Cj. P, Grande Colorado, Sobradinho/DF · Matrícula 18.011 · 7º Ofício RI/DF",
     avaliacao: "R$ 1.035.000,00",
@@ -610,15 +689,36 @@ const PROPS = {
     condoMensal: "N/A — sem associação de moradores averbada na matrícula",
     modalidade: "Licitação Aberta (Lance Total) · comissão leiloeiro 5%",
     pagamento: "A CONFIRMAR (não especificado no anúncio coletado)",
-    endereco: "Rodovia DF-150, Lote 28 Cj. P, Grande Colorado, Sobradinho/DF",
+    endereco: "Rodovia DF-150, Nº S/N, Lote 28 Cj. P, Grande Colorado, CEP 73105-905, Sobradinho/DF",
     ultimaVenda: "A CONFIRMAR",
-    comparaveis: [],
-    comparaveisNote: "Comparáveis de mercado não foram coletados nesta análise; o preço de venda estimado (R$1.100.000) usado nos cenários não foi validado por comparáveis reais — maior fonte de incerteza.",
+    mapsQuery: "Condomínio Mansões Colorado, Rodovia DF-150, Grande Colorado, Sobradinho, DF",
+    mapsNota: "O próprio anúncio do leiloeiro informa \"sem geolocalização\" — link abre busca por endereço/nome do condomínio, confira contra a foto do anúncio.",
+    administradora: { nome: "Associação Mansões Colorado (AMCRMC) — nome não confirmado oficialmente", telefone: "não encontrado", email: null, confirmado: false },
+    iptuCheckLink: "https://ww1.receita.fazenda.df.gov.br/cidadao/consulta/imoveis/iptu-tlp/FichaCadastral",
+    edital: { aplicavel: true, texto: "Edital EA00190326CPVERE.PDF — Licitação Aberta, sessão em 27/07/2026 às 10h.", link: "https://venda-imoveis.caixa.gov.br/editais/EA00190326CPVERE.PDF" },
+    matriculaInfo: { cartorio: "7º Ofício de Registro de Imóveis do DF (Sobradinho)", telefone: null, nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
+    leiloeiro: { aplicavel: true, nome: "\"Lance Total\" (listado via leilaoimovel.com.br)", link: "https://www.leilaoimovel.com.br/imovel/df/sobradinho/residencial-mansoes-colorado-3-quartos-2-vagas-na-garagem-area-de-servico-2-wc-sala-imovel-caixa-economica-federal-cef-2788919-1444417596998-venda-direta-caixa", confirmado: false, nota: "leilaoimovel.com.br é um portal agregador (Auket Tecnologia Imobiliária, CNPJ 35.523.642/0001-50), não o leiloeiro oficial. \"Lance Total\" não encontrado no cadastro de leiloeiros da JUCIS-DF — esta modalidade (Licitação Aberta/Venda Direta) é conduzida pela própria Caixa (CEVEN), sem leiloeiro público tradicional." },
+    closing: { tipo: "data_fixa", data: "2026-07-27T10:00:00", nota: "Sessão em 27/07/2026 às 10h — já encerrada." },
+    historicoResumo: "Consolidação de propriedade em nome da Caixa em 04/11/2024, por inadimplência da mutuária Janara Assunção em financiamento SFH. Nenhum registro público adicional encontrado sobre o histórico de compra/venda anterior.",
+    leilaoAnterior: "Não encontrado registro de tentativas de leilão anteriores para este imóvel — a sessão de 27/07/2026 aparenta ser a única encontrada nas fontes pesquisadas.",
+    averbacaoNegativa: { status: true, nota: "Averbação de leilões negativos constava \"em tratamento\" na análise original — pode atrasar o registro da transferência." },
+    riscosJuridicos: "Certidão usada na análise original estava vencida (emitida 17/03/2026, válida 30 dias) — pedir certidão atualizada antes de qualquer lance. Averbação de leilões negativos \"em tratamento\". Nenhum processo judicial nominal encontrado em busca aberta.",
+    comparaveis: [
+      ["Mesmo condomínio Mansões Colorado (DFimoveis)", "380 m²", "R$ 1.250.000", "https://www.dfimoveis.com.br/imovel/casa-condominio-4-quartos-venda-grande-colorado-sobradinho-df-condominio-mansoes-colorado-1360711"],
+      ["Cond. Serra Dourada II, Grande Colorado (DFimoveis)", "167 m²", "R$ 570.000", "https://www.dfimoveis.com.br/imovel/casa-condominio-4-quartos-venda-grande-colorado-sobradinho-df-rodovia-df-150-1238090"],
+      ["Cond. Beija Flor, Grande Colorado (DFimoveis)", "250 m²", "R$ 690.000", "https://www.dfimoveis.com.br/imovel/casa-condominio-4-quartos-venda-grande-colorado-sobradinho-df-rodovia-df-150-1235983"],
+    ],
+    comparaveisNote: "Comparável dentro do mesmo condomínio (380 m², R$1.250.000) fica acima da avaliação Caixa (R$1.035.000) e bem acima do mínimo do leilão (R$659.620,30) — dá algum suporte ao preço de venda estimado de R$1.100.000 usado nos cenários, mas ainda vale validar com um corretor local antes de decidir.",
+    outrosPortais: [
+      ["Wimoveis (busca no condomínio)", "https://www.wimoveis.com.br/venda/casas/df/sobradinho/grande-colorado"],
+      ["Trovit (busca no condomínio)", "https://imoveis.trovit.com.br/casa-condominio-mansoes-colorado"],
+      ["62 Imóveis (busca no condomínio)", "https://www.62imoveis.com.br/venda/df/sobradinho/casa/padrao/4-quartos?endereco=condominio-mansoes-colorado"],
+    ],
     dividasIPTU: "≈ R$ 3.388,24 (oficial, Receita DF)",
     dividasCondominio: "≈ R$ 21.000,00 (AMCRMC) — não confirmado, relato informal do porteiro",
     dividasOutros: null,
     dividasNote: "Ambos os valores ficam abaixo do teto de 10% da avaliação (R$103.500).",
-    fontes: "matrícula 18.011 (venda-imoveis.caixa.gov.br), edital EA00190326CPVERE.PDF, leilaoimovel.com.br, consulta Receita/DF (14/07/2026).",
+    fontes: "matrícula 18.011 (venda-imoveis.caixa.gov.br), edital EA00190326CPVERE.PDF, leilaoimovel.com.br, consulta Receita/DF (14/07/2026), DFimoveis (comparáveis).",
     P_min: 659620.30, P_max: 950000, P_default: 700000,
     V_min: 650000, V_max: 1500000, V_default: 1100000,
     reforma: 117500, condoDivida: 21000, iptuAtraso: 3388.24, condoMes: 0,
@@ -628,7 +728,7 @@ const PROPS = {
     unconfirmed: ['condoDivida'],
   },
   loja: {
-    link: null,
+    link: "https://www.leilaoimovel.com.br/imovel/df/brasilia/comercial-setor-bancario-sul-nao-existe-divisao-entre-as-lojas-do-andar-o-comprador-deve-veri-imovel-caixa-economica-federal-cef-594177-10137654-venda-direta-caixa",
     title: "Loja SBS Quadra 1",
     subtitle: "Edifício Seguradoras, SBS Quadra 1 Bloco K, Setor Bancário Sul, Brasília/DF · Matrícula 21117",
     avaliacao: "R$ 475.000,00 (≈R$6.250/m²)",
@@ -636,15 +736,35 @@ const PROPS = {
     condoMensal: "Não divulgado, não confirmado",
     modalidade: "Licitação Aberta · comissão 5%",
     pagamento: "Financiamento SBPE provavelmente indisponível (uso comercial) — compra à vista mais realista",
-    endereco: "Edifício Seguradoras, SBS Quadra 1 Bloco K, Setor Bancário Sul, Brasília/DF",
+    endereco: "SBS Quadra 1, Bloco K, Edifício Seguradoras, Setor Bancário Sul, Brasília/DF",
     ultimaVenda: "N/A — propriedade direta da Caixa desde 1982 (não é execução de mutuário)",
-    comparaveis: [["SBS Quadra 1 (mesmo padrão)", "76 m² (referência)", "≈R$8.230/m² → R$495-625 mil"]],
-    comparaveisNote: null,
+    mapsQuery: null,
+    mapsCoords: "-15.79601,-47.91278",
+    mapsNota: "Coordenada via CEP oficial do Edifício Seguradoras (dado IBGE) — mais confiável que os demais imóveis, mas ainda confira contra a foto do anúncio.",
+    administradora: { nome: "Não divulgado, não confirmado (imóvel comercial)", telefone: null, email: null, confirmado: false },
+    iptuCheckLink: "https://ww1.receita.fazenda.df.gov.br/cidadao/consulta/imoveis/iptu-tlp/FichaCadastral",
+    edital: { aplicavel: true, texto: "Edital 0019/0326-CPVE/RE, sessão em 27/07/2026 às 10h — seção específica do DF dentro do PDF não confirmada na leitura automática.", link: "https://venda-imoveis.caixa.gov.br/editais/EA00190326CPVERE.PDF" },
+    matriculaInfo: { cartorio: "Cartório de Registro de Imóveis competente de Brasília/DF (ofício específico não identificado)", telefone: null, nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
+    leiloeiro: { aplicavel: true, nome: "\"Lance Total\" (listado via leilaoimovel.com.br)", link: "https://www.leilaoimovel.com.br/imovel/df/brasilia/comercial-setor-bancario-sul-nao-existe-divisao-entre-as-lojas-do-andar-o-comprador-deve-veri-imovel-caixa-economica-federal-cef-594177-10137654-venda-direta-caixa", confirmado: false, nota: "leilaoimovel.com.br é um portal agregador, não o leiloeiro oficial. \"Lance Total\" não encontrado no cadastro de leiloeiros da JUCIS-DF (pode estar registrado na JUCESP — não verificado)." },
+    closing: { tipo: "data_fixa", data: "2026-07-27T10:00:00", nota: "Sessão em 27/07/2026 às 10h — já encerrada." },
+    historicoResumo: "Propriedade direta da Caixa desde 1982 — não é execução de mutuário nem alienação fiduciária.",
+    leilaoAnterior: "Não encontrado registro de tentativas de leilão anteriores para esta loja.",
+    averbacaoNegativa: { status: false, nota: "Não identificada nas fontes pesquisadas (não é confirmação de ausência)." },
+    riscosJuridicos: "Risco principal conhecido: não existe divisão física entre as lojas do mesmo andar — o comprador precisa demarcar a área conforme a matrícula, podendo envolver obra e negociação com vizinhos (confirmado no próprio anúncio do leiloeiro). Certidão utilizada na análise original estava desatualizada (13/10/2016).",
+    comparaveis: [
+      ["Mesmo prédio — Ed. Seguradoras (DFimoveis)", "26,12 m²", "R$ 125.000", "https://www.dfimoveis.com.br/imovel/sala-0-quartos-venda-asa-sul-brasilia-df-sbs-quadra-01-bloco-k-lote-29-1337995"],
+      ["Sala comercial, Setor Bancário/Comercial Sul (VivaReal)", "124 m²", "R$ 720.000", "https://www.vivareal.com.br/imovel/sala-comercial-asa-sul-brasilia-124m2-venda-RS720000-id-2710027774/"],
+      ["Sala comercial (VivaReal)", "27 m²", "R$ 80.000", "https://www.vivareal.com.br/imovel/sala-comercial-asa-sul-brasilia-27m2-venda-RS80000-id-2877582175/"],
+    ],
+    comparaveisNote: "O comparável no mesmo prédio (26,12 m² por R$125.000, ≈R$4.785/m²) é a referência mais confiável — abaixo da estimativa de R$8.230/m² usada antes; vale revisar a faixa de venda para baixo.",
+    outrosPortais: [
+      ["ZapImóveis (busca por loja/salão na Asa Sul)", "https://www.zapimoveis.com.br/venda/loja-salao/df+brasilia++asa-sul/"],
+    ],
     dividasIPTU: "R$ 0,00 (nenhum débito, oficial Receita DF)",
     dividasCondominio: "Não divulgado, não confirmado",
     dividasOutros: null,
     dividasNote: null,
-    fontes: "matrícula 21117, edital 0019/0326-CPVE/RE, lancetotal.com.br, consulta Receita/DF. Nenhum cenário financeiro de revenda foi modelado no relatório original.",
+    fontes: "matrícula 21117, edital 0019/0326-CPVE/RE, leilaoimovel.com.br, consulta Receita/DF, DFimoveis e VivaReal (comparáveis).",
     P_min: 131601.89, P_max: 450000, P_default: 131601.89,
     V_min: 250000, V_max: 800000, V_default: 495000,
     reforma: 0, condoDivida: 0, iptuAtraso: 0, condoMes: 0,
@@ -662,15 +782,29 @@ const PROPS = {
     condoMensal: "≈ R$ 380,00/mês — estimativa não confirmada",
     modalidade: "Venda Online Caixa (sem comissão)",
     pagamento: "Recursos próprios, FGTS, SBPE",
-    endereco: "Gleba 10 Rua E, Apto. 408 Bloco 10, Fazenda Saia Velha, Valparaíso de Goiás/GO",
+    endereco: "Rua K, S/N, Gleba 10, Apto. 408 Bloco 10, Loteamento Fazenda Saia Velha, CEP 72879-899, Valparaíso de Goiás/GO",
     ultimaVenda: "A CONFIRMAR (consolidação por inadimplência MCMV/FGTS em 14/08/2024)",
-    comparaveis: [],
-    comparaveisNote: "Comparáveis regionais não tabulados neste relatório; ponto de equilíbrio de venda em 6 meses ≈R$130.500 (praticamente no piso dos comparáveis observados).",
+    mapsQuery: "Condomínio Residencial Belle Horizonte, Rua E, Parque Esplanada I, Fazenda Saia Velha, Valparaíso de Goiás, GO",
+    mapsNota: "Não encontramos coordenada exata do prédio — link abre busca por endereço/nome do condomínio, confira contra a foto do anúncio (anúncio original já não está mais no ar, leilão encerrado).",
+    administradora: { nome: "MRV Prime Projeto Goiás I Incorporações SPE Ltda (incorporadora) — provavelmente NÃO é a administradora predial atual", telefone: "(31) 3615-8052 / (31) 3615-8838", email: "tributario@mrv.com.br", confirmado: false },
+    iptuCheckLink: "https://nfe.valparaisodegoias.go.gov.br/IPTU_Index.aspx?Origem=Menu",
+    edital: { aplicavel: false, texto: "Venda Online — não tem edital individual por imóvel, é regida pelo regulamento geral da Caixa.", link: "https://venda-imoveis.caixa.gov.br/editais/regras-VOL/comocomprar.pdf?v=01" },
+    matriculaInfo: { cartorio: "Cartório de Registro de Imóveis e Anexos de Valparaíso de Goiás/GO (CNS 02.615-3)", telefone: "(61) 3669-9600", nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
+    leiloeiro: { aplicavel: false, nota: "Venda Online — venda direta pela própria Caixa, sem leiloeiro." },
+    closing: { tipo: "data_fixa", data: "2026-07-30T23:59:00", nota: "Encerrado em 30/07/2026 (horário exato não encontrado — usado 23:59 como estimativa)." },
+    historicoResumo: "Consolidação de propriedade em nome da Caixa em 14/08/2024, por inadimplência do casal financiado via Minha Casa Minha Vida/FGTS. Avaliação usada na consolidação: R$156.627,24 — bem abaixo dos R$225.000 do anúncio.",
+    leilaoAnterior: "Não encontrado registro de tentativas de leilão anteriores para esta unidade específica.",
+    averbacaoNegativa: { status: false, nota: "Não identificada nas fontes pesquisadas (não é confirmação de ausência)." },
+    riscosJuridicos: "Situação de ocupação não confirmada — pode exigir imissão de posse. Nenhum processo judicial nominal encontrado em busca aberta.",
+    comparaveis: [
+      ["Residencial Belle Horizonte (Wimoveis)", "45 m²", "R$ 160.000", "https://www.wimoveis.com.br/venda/apartamentos/padrao/go/valparaiso-de-goias/parque-esplanada-i"],
+    ],
+    comparaveisNote: "Comparável direto no mesmo condomínio (45 m², R$160.000) — próximo dos R$150.000 usados como cenário médio. Ponto de equilíbrio de venda em 6 meses ≈R$130.500 (praticamente no piso dos comparáveis observados).",
     dividasIPTU: "R$ 535,54 (confirmado oficialmente)",
     dividasCondominio: "R$ 25.000,00 (informado pelo usuário, não confirmado documentalmente) — teto do comprador R$22.500, Caixa R$2.500",
     dividasOutros: null,
     dividasNote: null,
-    fontes: "matrícula 90.551, venda-imoveis.caixa.gov.br, IPTU Prefeitura Valparaíso de Goiás (inscrição 131486), comparáveis de mercado regionais.",
+    fontes: "matrícula 90.551, venda-imoveis.caixa.gov.br, IPTU Prefeitura Valparaíso de Goiás (inscrição 131486), Wimoveis (comparável), Diário Cidade (dados do condomínio).",
     P_min: 77945.34, P_max: 190000, P_default: 77945.34,
     V_min: 70000, V_max: 260000, V_default: 150000,
     reforma: 10000, condoDivida: 22500, iptuAtraso: 535.54, condoMes: 380,
@@ -735,12 +869,23 @@ function renderProperty(key) {
 
   if (p.comparaveis.length) {
     el('prop-comp-table').innerHTML = '<tr><th>Empreendimento</th><th>Área</th><th>Preço</th></tr>' +
-      p.comparaveis.map(c => '<tr><td>' + c[0] + '</td><td>' + c[1] + '</td><td>' + c[2] + '</td></tr>').join('');
+      p.comparaveis.map(c => {
+        const nome = c[3] ? '<a href="' + c[3] + '" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700;">' + c[0] + ' ↗</a>' : c[0];
+        return '<tr><td>' + nome + '</td><td>' + c[1] + '</td><td>' + c[2] + '</td></tr>';
+      }).join('');
   } else {
     el('prop-comp-table').innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Nenhum comparável coletado</td></tr>';
   }
   el('prop-comp-note').textContent = p.comparaveisNote || '';
   el('prop-comp-note').style.display = p.comparaveisNote ? 'block' : 'none';
+
+  if (p.outrosPortais && p.outrosPortais.length) {
+    el('prop-portais-list').innerHTML = p.outrosPortais.map(o => '<a href="' + o[1] + '" target="_blank" rel="noopener">' + o[0] + ' ↗</a>').join('');
+    el('prop-portais-list').style.display = 'flex';
+  } else {
+    el('prop-portais-list').innerHTML = '';
+    el('prop-portais-list').style.display = 'none';
+  }
 
   const iptuCell = unc.includes('iptuAtraso') ? editableCell(key, 'iptuAtraso', p.iptuAtraso, 10) : p.dividasIPTU;
   const condoDividaCell = unc.includes('condoDivida') ? editableCell(key, 'condoDivida', p.condoDivida, 500) : p.dividasCondominio;
@@ -753,11 +898,110 @@ function renderProperty(key) {
   el('prop-dividas-note').style.display = p.dividasNote ? 'block' : 'none';
   el('prop-edit-hint').style.display = unc.length ? 'flex' : 'none';
 
+  // ---- Administradora ----
+  const adm = p.administradora || {};
+  const admChip = '<span class="confirm-chip ' + (adm.confirmado ? 'yes">confirmado' : 'no">não confirmado') + '</span>';
+  el('prop-admin-table').innerHTML =
+    '<tr><td>Nome</td><td>' + (adm.nome || 'não encontrado') + admChip + '</td></tr>' +
+    '<tr><td>Telefone</td><td>' + (adm.telefone || 'não encontrado') + '</td></tr>' +
+    (adm.email ? '<tr><td>E-mail</td><td>' + adm.email + '</td></tr>' : '') +
+    (adm.cnpj ? '<tr><td>CNPJ</td><td>' + adm.cnpj + '</td></tr>' : '');
+
+  // ---- Localização e documentos ----
+  let mapsUrl = '';
+  if (p.mapsCoords) mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + p.mapsCoords;
+  else if (p.mapsQuery) mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(p.mapsQuery);
+  const mapsCell = mapsUrl ?
+    '<a class="maplink" href="' + mapsUrl + '" target="_blank" rel="noopener">📍 Abrir no Google Maps ↗</a>' +
+    (p.mapsNota ? '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">' + p.mapsNota + '</div>' : '')
+    : 'não encontrado';
+
+  const ed = p.edital || {};
+  const editalCell = ed.aplicavel ?
+    (ed.texto || '') + (ed.link ? '<div style="margin-top:4px;"><a class="doclink" href="' + ed.link + '" target="_blank" rel="noopener">📄 Abrir edital ↗</a></div>' : '')
+    : (ed.texto || 'Não aplicável a esta modalidade.') + (ed.link ? '<div style="margin-top:4px;"><a class="doclink" href="' + ed.link + '" target="_blank" rel="noopener">📄 Regras da modalidade ↗</a></div>' : '');
+
+  const mat = p.matriculaInfo || {};
+  const matriculaCell = 'Cartório competente: ' + (mat.cartorio || 'não encontrado') +
+    (mat.telefone ? ' — ' + mat.telefone : '') +
+    (mat.nota ? '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">' + mat.nota + '</div>' : '');
+
+  const lei = p.leiloeiro || {};
+  let leiloeiroCell;
+  if (!lei.aplicavel) {
+    leiloeiroCell = lei.nota || 'Não aplicável a esta modalidade.';
+  } else {
+    const leiChip = '<span class="confirm-chip ' + (lei.confirmado ? 'yes">cadastro confirmado' : 'no">cadastro não confirmado') + '</span>';
+    leiloeiroCell = (lei.nome || 'não encontrado') + leiChip +
+      (lei.link ? '<div style="margin-top:4px;"><a class="doclink" href="' + lei.link + '" target="_blank" rel="noopener">🔨 Abrir no site do leiloeiro ↗</a></div>' : '') +
+      (lei.nota ? '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">' + lei.nota + '</div>' : '');
+  }
+
+  el('prop-local-table').innerHTML =
+    '<tr><td>Localização GPS</td><td>' + mapsCell + '</td></tr>' +
+    '<tr><td>IPTU em atraso</td><td><a class="doclink" href="' + p.iptuCheckLink + '" target="_blank" rel="noopener">🔎 Checar no site oficial ↗</a></td></tr>' +
+    '<tr><td>Edital do leilão</td><td>' + editalCell + '</td></tr>' +
+    '<tr><td>Matrícula</td><td>' + matriculaCell + '</td></tr>' +
+    '<tr><td>Leiloeiro oficial</td><td>' + leiloeiroCell + '</td></tr>';
+
+  // ---- Encerramento / cronômetro ----
+  renderClosingWidget(p.closing);
+  el('prop-closing-note').textContent = (p.closing && p.closing.nota) || '';
+  el('prop-closing-note').style.display = (p.closing && p.closing.nota) ? 'block' : 'none';
+
+  // ---- Histórico e riscos ----
+  el('prop-historico-table').innerHTML =
+    '<tr><td>Histórico do imóvel</td><td>' + (p.historicoResumo || 'não encontrado') + '</td></tr>' +
+    '<tr><td>Leilão(ões) anterior(es)</td><td>' + (p.leilaoAnterior || 'não encontrado') + '</td></tr>';
+
+  const averb = p.averbacaoNegativa || {};
+  if (averb.status) {
+    el('prop-averbacao-callout').innerHTML = '<div class="callout bad">⚠ <b>Averbação de leilão negativo:</b> ' + (averb.nota || 'confirmada.') + '</div>';
+  } else if (averb.nota) {
+    el('prop-averbacao-callout').innerHTML = '<div class="callout good">✓ <b>Sem averbação de leilão negativo identificada.</b> ' + averb.nota + '</div>';
+  } else {
+    el('prop-averbacao-callout').innerHTML = '';
+  }
+  el('prop-riscos-text').textContent = p.riscosJuridicos || 'não avaliado';
+
   el('prop-fontes').textContent = 'Fontes: ' + p.fontes;
 
   loadPreset(key);
   bindEditableFields();
   bindLinkFields();
+}
+
+// ---- Cronômetro regressivo de encerramento do lote ----
+let closingTimerInterval = null;
+function renderClosingWidget(closing) {
+  if (closingTimerInterval) { clearInterval(closingTimerInterval); closingTimerInterval = null; }
+  const wrap = el('prop-closing-widget');
+  if (!closing || closing.tipo === 'sem_prazo') {
+    wrap.innerHTML = '<div class="countdown-noprazo">♾️ Sem prazo fixo de encerramento (Compra Direta / Venda Online)</div>';
+    return;
+  }
+  const target = new Date(closing.data).getTime();
+  function tick() {
+    const now = Date.now();
+    const diff = target - now;
+    if (diff <= 0) {
+      wrap.innerHTML = '<div class="countdown-expired">⏱ Encerrado em ' + new Date(target).toLocaleString('pt-BR') + '</div>';
+      if (closingTimerInterval) { clearInterval(closingTimerInterval); closingTimerInterval = null; }
+      return;
+    }
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const mins = Math.floor((diff / (1000 * 60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+    wrap.innerHTML = '<div class="countdown-wrap">' +
+      '<div class="countdown-unit"><div class="num">' + days + '</div><div class="lbl">dias</div></div>' +
+      '<div class="countdown-unit"><div class="num">' + hours + '</div><div class="lbl">horas</div></div>' +
+      '<div class="countdown-unit"><div class="num">' + mins + '</div><div class="lbl">min</div></div>' +
+      '<div class="countdown-unit"><div class="num">' + secs + '</div><div class="lbl">seg</div></div>' +
+      '</div>';
+  }
+  tick();
+  closingTimerInterval = setInterval(tick, 1000);
 }
 
 function bindLinkFields() {
