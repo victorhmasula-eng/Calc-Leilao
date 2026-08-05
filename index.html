@@ -600,6 +600,7 @@ const PROPS = {
     mapsNota: "Não encontramos coordenada exata do prédio (link abre busca por endereço/nome do condomínio) — confira se o pino bate com a foto do anúncio antes de usar.",
     administradora: { nome: "JK Exclusive", telefone: "(61) 3798-9888", email: "contabil@jkexclusive.com.br", cnpj: "53.959.381/0001-05", confirmado: true },
     iptuCheckLink: "https://nfe.valparaisodegoias.go.gov.br/IPTU_Index.aspx?Origem=Menu",
+    iptuInscricao: "265086",
     edital: { aplicavel: false, texto: "Compra Direta / Venda Online — não tem edital individual por imóvel, é regida pelo regulamento geral da Caixa.", link: "https://venda-imoveis.caixa.gov.br/editais/regras-VOL/comocomprar.pdf?v=01" },
     matriculaInfo: { cartorio: "Cartório de Registro de Imóveis e Anexos de Valparaíso de Goiás/GO (CNS 02.615-3)", telefone: "(61) 3669-9600", nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
     leiloeiro: { aplicavel: false, nota: "Compra Direta/Venda Online — venda direta pela própria Caixa, sem leiloeiro." },
@@ -648,6 +649,7 @@ const PROPS = {
     mapsNota: "Não encontramos coordenada exata do prédio (link abre busca por endereço/nome do condomínio) — confira se o pino bate com a foto do anúncio antes de usar.",
     administradora: { nome: "JK Exclusive", telefone: "(61) 3798-9888", email: "contabil@jkexclusive.com.br", cnpj: "53.959.381/0001-05", confirmado: true },
     iptuCheckLink: "https://nfe.valparaisodegoias.go.gov.br/IPTU_Index.aspx?Origem=Menu",
+    iptuInscricao: "264956",
     edital: { aplicavel: false, texto: "Venda Online — não tem edital individual por imóvel, é regida pelo regulamento geral da Caixa.", link: "https://venda-imoveis.caixa.gov.br/editais/regras-VOL/comocomprar.pdf?v=01" },
     matriculaInfo: { cartorio: "Cartório de Registro de Imóveis e Anexos de Valparaíso de Goiás/GO (CNS 02.615-3)", telefone: "(61) 3669-9600", nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
     leiloeiro: { aplicavel: false, nota: "Venda Online — venda direta pela própria Caixa, sem leiloeiro." },
@@ -695,6 +697,7 @@ const PROPS = {
     mapsNota: "O próprio anúncio do leiloeiro informa \"sem geolocalização\" — link abre busca por endereço/nome do condomínio, confira contra a foto do anúncio.",
     administradora: { nome: "Associação Mansões Colorado (AMCRMC) — nome não confirmado oficialmente", telefone: "não encontrado", email: null, confirmado: false },
     iptuCheckLink: "https://ww1.receita.fazenda.df.gov.br/cidadao/consulta/imoveis/iptu-tlp/FichaCadastral",
+    iptuInscricao: null, // não encontrado inscrição imobiliária DF para este imóvel nas fontes pesquisadas
     edital: { aplicavel: true, texto: "Edital EA00190326CPVERE.PDF — Licitação Aberta, sessão em 27/07/2026 às 10h.", link: "https://venda-imoveis.caixa.gov.br/editais/EA00190326CPVERE.PDF" },
     matriculaInfo: { cartorio: "7º Ofício de Registro de Imóveis do DF (Sobradinho)", telefone: null, nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
     leiloeiro: { aplicavel: true, nome: "\"Lance Total\" (listado via leilaoimovel.com.br)", link: "https://www.leilaoimovel.com.br/imovel/df/sobradinho/residencial-mansoes-colorado-3-quartos-2-vagas-na-garagem-area-de-servico-2-wc-sala-imovel-caixa-economica-federal-cef-2788919-1444417596998-venda-direta-caixa", confirmado: false, nota: "leilaoimovel.com.br é um portal agregador (Auket Tecnologia Imobiliária, CNPJ 35.523.642/0001-50), não o leiloeiro oficial. \"Lance Total\" não encontrado no cadastro de leiloeiros da JUCIS-DF — esta modalidade (Licitação Aberta/Venda Direta) é conduzida pela própria Caixa (CEVEN), sem leiloeiro público tradicional." },
@@ -743,6 +746,7 @@ const PROPS = {
     mapsNota: "Coordenada via CEP oficial do Edifício Seguradoras (dado IBGE) — mais confiável que os demais imóveis, mas ainda confira contra a foto do anúncio.",
     administradora: { nome: "Não divulgado, não confirmado (imóvel comercial)", telefone: null, email: null, confirmado: false },
     iptuCheckLink: "https://ww1.receita.fazenda.df.gov.br/cidadao/consulta/imoveis/iptu-tlp/FichaCadastral",
+    iptuInscricao: null, // não encontrado inscrição imobiliária DF para este imóvel nas fontes pesquisadas
     edital: { aplicavel: true, texto: "Edital 0019/0326-CPVE/RE, sessão em 27/07/2026 às 10h — seção específica do DF dentro do PDF não confirmada na leitura automática.", link: "https://venda-imoveis.caixa.gov.br/editais/EA00190326CPVERE.PDF" },
     matriculaInfo: { cartorio: "Cartório de Registro de Imóveis competente de Brasília/DF (ofício específico não identificado)", telefone: null, nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
     leiloeiro: { aplicavel: true, nome: "\"Lance Total\" (listado via leilaoimovel.com.br)", link: "https://www.leilaoimovel.com.br/imovel/df/brasilia/comercial-setor-bancario-sul-nao-existe-divisao-entre-as-lojas-do-andar-o-comprador-deve-veri-imovel-caixa-economica-federal-cef-594177-10137654-venda-direta-caixa", confirmado: false, nota: "leilaoimovel.com.br é um portal agregador, não o leiloeiro oficial. \"Lance Total\" não encontrado no cadastro de leiloeiros da JUCIS-DF (pode estar registrado na JUCESP — não verificado)." },
@@ -788,6 +792,7 @@ const PROPS = {
     mapsNota: "Não encontramos coordenada exata do prédio — link abre busca por endereço/nome do condomínio, confira contra a foto do anúncio (anúncio original já não está mais no ar, leilão encerrado).",
     administradora: { nome: "MRV Prime Projeto Goiás I Incorporações SPE Ltda (incorporadora) — provavelmente NÃO é a administradora predial atual", telefone: "(31) 3615-8052 / (31) 3615-8838", email: "tributario@mrv.com.br", confirmado: false },
     iptuCheckLink: "https://nfe.valparaisodegoias.go.gov.br/IPTU_Index.aspx?Origem=Menu",
+    iptuInscricao: "131486",
     edital: { aplicavel: false, texto: "Venda Online — não tem edital individual por imóvel, é regida pelo regulamento geral da Caixa.", link: "https://venda-imoveis.caixa.gov.br/editais/regras-VOL/comocomprar.pdf?v=01" },
     matriculaInfo: { cartorio: "Cartório de Registro de Imóveis e Anexos de Valparaíso de Goiás/GO (CNS 02.615-3)", telefone: "(61) 3669-9600", nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
     leiloeiro: { aplicavel: false, nota: "Venda Online — venda direta pela própria Caixa, sem leiloeiro." },
@@ -828,6 +833,7 @@ const PROPS = {
     mapsNota: "Não encontramos coordenada exata do bloco (link abre busca por endereço/nome do condomínio) — confira se o pino bate com a foto do anúncio antes de usar.",
     administradora: { nome: "JK Exclusive", telefone: "(61) 3798-9888", email: "contabil@jkexclusive.com.br", cnpj: "53.959.381/0001-05", confirmado: true },
     iptuCheckLink: "https://nfe.valparaisodegoias.go.gov.br/IPTU_Index.aspx?Origem=Menu",
+    iptuInscricao: "014730000800020000",
     edital: { aplicavel: false, texto: "Venda Online — não tem edital individual por imóvel, é regida pelo regulamento geral da Caixa.", link: "https://venda-imoveis.caixa.gov.br/editais/regras-VOL/comocomprar.pdf?v=01" },
     matriculaInfo: { cartorio: "Cartório de Registro de Imóveis e Anexos de Valparaíso de Goiás/GO (CNS 02.615-3)", telefone: "(61) 3669-9600", nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
     leiloeiro: { aplicavel: false, nota: "Venda Online — venda direta pela própria Caixa, sem leiloeiro." },
@@ -936,11 +942,15 @@ function renderProperty(key) {
     el('prop-portais-list').style.display = 'none';
   }
 
-  const iptuCell = unc.includes('iptuAtraso') ? editableCell(key, 'iptuAtraso', p.iptuAtraso, 10) : p.dividasIPTU;
+  const iptuCellVal = unc.includes('iptuAtraso') ? editableCell(key, 'iptuAtraso', p.iptuAtraso, 10) : p.dividasIPTU;
+  const iptuInscCell = p.iptuInscricao
+    ? '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Nº de cadastro/inscrição: <b style="color:var(--text-secondary);">' + p.iptuInscricao + '</b></div>'
+    : '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Nº de cadastro/inscrição: não encontrado</div>';
+  const iptuCell = iptuCellVal + iptuInscCell;
   const condoDividaCell = unc.includes('condoDivida') ? editableCell(key, 'condoDivida', p.condoDivida, 500) : p.dividasCondominio;
 
   el('prop-dividas-table').innerHTML =
-    '<tr><td>IPTU</td><td>' + iptuCell + '</td></tr>' +
+    '<tr><td>IPTU em atraso</td><td>' + iptuCell + '</td></tr>' +
     '<tr><td>Condomínio</td><td>' + condoDividaCell + '</td></tr>' +
     (p.dividasOutros ? '<tr><td>Outros</td><td>' + p.dividasOutros + '</td></tr>' : '');
   el('prop-dividas-note').textContent = p.dividasNote || '';
