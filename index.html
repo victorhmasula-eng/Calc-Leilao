@@ -583,7 +583,7 @@ function showTab(id) {
 document.querySelectorAll('.navbtn').forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
 
 // ---------- property data ----------
-const PROP_ORDER = ['gran','ap102','colorado','loja','belo'];
+const PROP_ORDER = ['gran','ap102','gran302','colorado','loja','belo'];
 const PROPS = {
   gran: {
     link: null,
@@ -813,9 +813,58 @@ const PROPS = {
     entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
     unconfirmed: ['condoDivida', 'condoMes'],
   },
+  gran302: {
+    link: "https://venda-imoveis.caixa.gov.br/sistema/detalhe-imovel.asp?hdnimovel=8787715578697",
+    title: "AP302 - Gran Acrópolis IV",
+    subtitle: "Rua 8, Apto. 302, Bloco 07, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO · Matrícula 104.473 · Insc. 014730000800020000",
+    avaliacao: "R$ 128.000,00",
+    valorMinimo: "R$ 64.878,59 (49,31% deságio)",
+    condoMensal: "≈ R$ 220,00/mês — estimativa não confirmada (mesma administradora do AP202/AP102)",
+    modalidade: "Venda Online",
+    pagamento: "Recursos próprios, FGTS",
+    endereco: "Rua 8, s/n, Apto 302, Bl 07, Ch 37, Qd 08, Vg 47, Chácaras e Mansões Santa Maria, CEP 72875-256, Valparaíso de Goiás/GO",
+    ultimaVenda: "A CONFIRMAR (data de construção/entrega e consolidação pela Caixa não encontradas nas fontes pesquisadas)",
+    mapsQuery: "Residencial Gran Acrópolis IV Bloco 07, Rua 8, Chácaras e Mansões Santa Maria, Valparaíso de Goiás, GO",
+    mapsNota: "Não encontramos coordenada exata do bloco (link abre busca por endereço/nome do condomínio) — confira se o pino bate com a foto do anúncio antes de usar.",
+    administradora: { nome: "JK Exclusive", telefone: "(61) 3798-9888", email: "contabil@jkexclusive.com.br", cnpj: "53.959.381/0001-05", confirmado: true },
+    iptuCheckLink: "https://nfe.valparaisodegoias.go.gov.br/IPTU_Index.aspx?Origem=Menu",
+    edital: { aplicavel: false, texto: "Venda Online — não tem edital individual por imóvel, é regida pelo regulamento geral da Caixa.", link: "https://venda-imoveis.caixa.gov.br/editais/regras-VOL/comocomprar.pdf?v=01" },
+    matriculaInfo: { cartorio: "Cartório de Registro de Imóveis e Anexos de Valparaíso de Goiás/GO (CNS 02.615-3)", telefone: "(61) 3669-9600", nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
+    leiloeiro: { aplicavel: false, nota: "Venda Online — venda direta pela própria Caixa, sem leiloeiro." },
+    closing: { tipo: "sem_prazo", nota: "Venda Online — anúncio não mostra data de encerramento; geralmente fica disponível até ser vendido." },
+    historicoResumo: "Mesma incorporação do AP202/AP102 (Gran Acrópolis IV). Incorporadora identificada: Asteri Construções e Incorporações SPE Ltda (CNPJ 27.140.152/0003-08). Data de construção/entrega e data de consolidação da propriedade pela Caixa (inadimplência) desta unidade específica não encontradas — A CONFIRMAR via matrícula 104.473.",
+    leilaoAnterior: "Não encontrado registro público específico desta unidade (Apto 302, Bloco 07) — datas, praças ou valores de leilões anteriores. O status \"Averbado\" no anúncio da Caixa indica tentativa(s) anterior(es) sem comprador, mas os detalhes precisam ser confirmados no cartório.",
+    averbacaoNegativa: { status: true, nota: "Confirmado \"Averbado\" no campo de situação do próprio anúncio oficial da Caixa — formaliza que a dívida do mutuário anterior foi extinta e a propriedade consolidada em nome da Caixa; pode acrescentar burocracia/tempo à transferência." },
+    riscosJuridicos: "Busca aberta (WebSearch) não encontrou processo judicial nominal ligado ao endereço nem confirmação da situação de ocupação (ocupado x desocupado). Recomenda-se certidão de distribuição cível formal (TJGO, comarca de Valparaíso de Goiás) e confirmação direta com a Caixa sobre ocupação antes de dar lance.",
+    comparaveis: [
+      ["Apto 201, mesmo condomínio — em leilão ativo 26/08/2026 (SpyLeilões)", "100,23 m²", "Aval. R$180.000 / mín. R$106.667", "https://spyleiloes.com.br/imoveis-leilao/go/valparaiso-de-goias/condominio/residencial-gran-acropolis-iv"],
+      ["Rua 8, 2 quartos, mesmo bairro (VivaReal)", "46 m²", "R$ 56.571", "https://www.vivareal.com.br/imovel/apartamento-2-quartos-chacaras-e-mansoes-santa-maria-valparaiso-de-goias-com-garagem-46m2-venda-RS56571-id-2883423905/"],
+      ["Rua 8, 2 quartos, mesmo bairro (VivaReal)", "48 m²", "R$ 73.922", "https://www.vivareal.com.br/imovel/apartamento-2-quartos-chacaras-e-mansoes-santa-maria-valparaiso-de-goias-com-garagem-48m2-venda-RS73922-id-2891110181/"],
+      ["Rua 8, 2 quartos, mesmo bairro (VivaReal)", "48 m²", "R$ 93.539", "https://www.vivareal.com.br/imovel/apartamento-2-quartos-chacaras-e-mansoes-santa-maria-valparaiso-de-goias-com-garagem-48m2-venda-RS93539-id-2897403673/"],
+      ["Rua 8, 2 quartos, mesmo bairro (VivaReal)", "48 m²", "R$ 80.468", "https://www.vivareal.com.br/imovel/apartamento-2-quartos-chacaras-e-mansoes-santa-maria-valparaiso-de-goias-com-garagem-48m2-venda-RS80468-id-2891108484/"],
+    ],
+    comparaveisNote: "Comparáveis de 46-48 m²/2 quartos na Rua 8 (mesmo bairro) variam de R$49.842 a R$93.539 — a avaliação da Caixa (R$128.000) está no topo/acima dessa faixa, enquanto o valor mínimo de venda (R$64.878,59) fica dentro da faixa observada. Não confirmado se os anúncios do VivaReal são dentro do próprio Gran Acrópolis IV ou apenas na mesma rua/bairro.",
+    outrosPortais: [
+      ["ZapImóveis (busca no bairro)", "https://www.zapimoveis.com.br/venda/apartamentos/go+valparaiso-de-goias++ch-e-mansoes-sta-maria/"],
+      ["VivaReal (busca no bairro)", "https://www.vivareal.com.br/venda/goias/valparaiso-de-goias/bairros/chacaras-e-mansoes-santa-maria/"],
+      ["Chaves na Mão (busca no bairro)", "https://www.chavesnamao.com.br/imoveis/go-valparaiso-de-goias/chacaras-e-mansoes-santa-maria/"],
+    ],
+    dividasIPTU: "A CONFIRMAR",
+    dividasCondominio: "R$ 9.800,00 (informado pelo usuário)",
+    dividasOutros: null,
+    dividasNote: "Dívida de condomínio informada diretamente por você: R$9.800,00. IPTU ainda não checado no portal oficial (inscrição 014730000800020000) — link disponível acima para conferência. Administradora: JK Exclusive — (61) 3798-9888 / contabil@jkexclusive.com.br.",
+    fontes: "matrícula 104.473, venda-imoveis.caixa.gov.br (anúncio AP302), spyleiloes.com.br e vivareal.com.br (comparáveis), econodata.com.br (incorporadora), multiprimeimoveis.com.br (averbação de leilão negativo). IPTU e condomínio mensal ainda não verificados oficialmente.",
+    P_min: 64878.59, P_max: 128000, P_default: 64878.59,
+    V_min: 50000, V_max: 190000, V_default: 95000,
+    reforma: 8000, condoDivida: 9800, iptuAtraso: 0, condoMes: 220,
+    comissaoPct: 0, itbiPct: 2, cartorio: 2000, outros: 0,
+    corretagemPct: 6, irPct: 15,
+    entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+    unconfirmed: ['iptuAtraso', 'condoMes'],
+  },
 };
 
-let propStatus = { gran: 'analise', ap102: 'analise', colorado: 'descartado', loja: 'descartado', belo: 'descartado' };
+let propStatus = { gran: 'analise', ap102: 'analise', gran302: 'analise', colorado: 'descartado', loja: 'descartado', belo: 'descartado' };
 const STATUS_LABEL = { analise: 'Em análise', descartado: 'Descartado', comprado: 'Comprado' };
 const STATUS_CLASS = { analise: 'badge-progress', descartado: 'badge-dead', comprado: 'badge-live' };
 const STATUS_DOT   = { analise: 'status-warning', descartado: 'status-muted', comprado: 'status-good' };
