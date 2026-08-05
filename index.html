@@ -834,6 +834,7 @@ const PROPS = {
     administradora: { nome: "JK Exclusive", telefone: "(61) 3798-9888", email: "contabil@jkexclusive.com.br", cnpj: "53.959.381/0001-05", confirmado: true },
     iptuCheckLink: "https://nfe.valparaisodegoias.go.gov.br/IPTU_Index.aspx?Origem=Menu",
     iptuInscricao: "014730000800020000",
+    iptuInscricaoNota: "Este é o número de \"Inscrição Imobiliária\" (18 dígitos) do próprio anúncio da Caixa — formato diferente do Cadastro Imobiliário municipal (6 dígitos, como nas outras unidades do mesmo prédio: 265086/264956) usado no portal da Prefeitura. O campo do portal não aceitou este número. Alternativas: consultar no portal por CPF/CNPJ usando o CNPJ da Caixa Econômica Federal (00.360.305/0001-04), ou ligar direto pra Prefeitura com o endereço/matrícula 104.473.",
     edital: { aplicavel: false, texto: "Venda Online — não tem edital individual por imóvel, é regida pelo regulamento geral da Caixa.", link: "https://venda-imoveis.caixa.gov.br/editais/regras-VOL/comocomprar.pdf?v=01" },
     matriculaInfo: { cartorio: "Cartório de Registro de Imóveis e Anexos de Valparaíso de Goiás/GO (CNS 02.615-3)", telefone: "(61) 3669-9600", nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
     leiloeiro: { aplicavel: false, nota: "Venda Online — venda direta pela própria Caixa, sem leiloeiro." },
@@ -944,7 +945,8 @@ function renderProperty(key) {
 
   const iptuCellVal = unc.includes('iptuAtraso') ? editableCell(key, 'iptuAtraso', p.iptuAtraso, 10) : p.dividasIPTU;
   const iptuInscCell = p.iptuInscricao
-    ? '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Nº de cadastro/inscrição: <b style="color:var(--text-secondary);">' + p.iptuInscricao + '</b></div>'
+    ? '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Nº de cadastro/inscrição: <b style="color:var(--text-secondary);">' + p.iptuInscricao + '</b></div>' +
+      (p.iptuInscricaoNota ? '<div style="font-size:11px;color:var(--warning);margin-top:4px;">⚠ ' + p.iptuInscricaoNota + '</div>' : '')
     : '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Nº de cadastro/inscrição: não encontrado</div>';
   const iptuCell = iptuCellVal + iptuInscCell;
   const condoDividaCell = unc.includes('condoDivida') ? editableCell(key, 'condoDivida', p.condoDivida, 500) : p.dividasCondominio;
@@ -996,9 +998,14 @@ function renderProperty(key) {
       (lei.nota ? '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">' + lei.nota + '</div>' : '');
   }
 
+  const iptuInscCellLocal = p.iptuInscricao
+    ? '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Nº de cadastro/inscrição: <b style="color:var(--text-secondary);">' + p.iptuInscricao + '</b></div>' +
+      (p.iptuInscricaoNota ? '<div style="font-size:11px;color:var(--warning);margin-top:4px;max-width:260px;">⚠ ' + p.iptuInscricaoNota + '</div>' : '')
+    : '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Nº de cadastro/inscrição: não encontrado</div>';
+
   el('prop-local-table').innerHTML =
     '<tr><td>Localização GPS</td><td>' + mapsCell + '</td></tr>' +
-    '<tr><td>IPTU em atraso</td><td><a class="doclink" href="' + p.iptuCheckLink + '" target="_blank" rel="noopener">🔎 Checar no site oficial ↗</a></td></tr>' +
+    '<tr><td>IPTU em atraso</td><td><a class="doclink" href="' + p.iptuCheckLink + '" target="_blank" rel="noopener">🔎 Checar no site oficial ↗</a>' + iptuInscCellLocal + '</td></tr>' +
     '<tr><td>Edital do leilão</td><td>' + editalCell + '</td></tr>' +
     '<tr><td>Matrícula</td><td>' + matriculaCell + '</td></tr>' +
     '<tr><td>Leiloeiro oficial</td><td>' + leiloeiroCell + '</td></tr>';
