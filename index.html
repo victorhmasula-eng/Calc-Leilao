@@ -282,6 +282,29 @@
   .portais-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
   .portais-list a { font-size: 12px; padding: 5px 10px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); color: var(--accent); font-weight: 700; text-decoration: none; }
   .portais-list a:hover { text-decoration: underline; }
+
+  .doc-row { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .doc-row:last-child { border-bottom: none; }
+  .doc-row .doc-icon { font-size: 18px; flex: none; }
+  .doc-row .doc-name-input { flex: 1; min-width: 0; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; font-size: 13px; color: var(--text-primary); font-family: inherit; }
+  .doc-row .doc-actions { display: flex; gap: 6px; flex: none; }
+  .doc-btn { border: 1px solid var(--border); background: var(--surface-2); border-radius: 8px; padding: 7px 10px; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--accent); text-decoration: none; font-family: inherit; display: inline-flex; align-items: center; }
+  .doc-btn.danger { color: var(--critical); }
+  .doc-empty { font-size: 12.5px; color: var(--text-muted); padding: 8px 0; }
+  .doc-upload-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border: none; border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .doc-note { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .contact-grid label { font-size: 11.5px; color: var(--text-muted); display: block; margin-bottom: 4px; }
+  .contact-grid input { width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 9px; font-size: 13px; color: var(--text-primary); font-family: inherit; box-sizing: border-box; }
+  .contact-block { margin-bottom: 14px; }
+  .contact-block:last-child { margin-bottom: 0; }
+  .contact-block-title { font-size: 12.5px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; }
+
+  .nav-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .nav-row a { flex: 1; min-width: 140px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; }
+  .nav-row a.maps-btn { background: var(--accent); color: #fff; }
+  .nav-row a.waze-btn { background: #33ccff; color: #06263a; }
 </style>
 </head>
 <body>
@@ -466,24 +489,123 @@
       </div>
     </section>
 
-    <!-- ===================== RANKING ===================== -->
-    <section id="tab-ranking" class="tabpanel">
-      <h1 class="pagetitle">🏆 Ranking de oportunidades</h1>
-      <div class="pagesub">Comparação automática, com preço de compra e venda padrão de cada imóvel — pensando como um gestor buscando o melhor retorno com o menor risco.</div>
-
-      <div class="card" id="rankingTopPick"></div>
+    <!-- ===================== AP302 (imóvel arrematado) ===================== -->
+    <section id="tab-ap302" class="tabpanel">
+      <span class="badge badge-live"><span class="live-dot"></span>Comprado</span>
+      <h1 class="pagetitle">🔑 AP302 — Gran Acrópolis IV</h1>
+      <div class="pagesub">Imóvel arrematado — dados, contatos e documentos deste apartamento específico.</div>
 
       <div class="card">
-        <div class="tablewrap">
-          <table class="datatable" id="rankingTable" style="text-align:left;">
-            <thead>
-              <tr><th>#</th><th>Imóvel</th><th>Lucro 6m</th><th>Retorno a.a.</th><th>Risco</th></tr>
-            </thead>
-            <tbody id="rankingTbody"></tbody>
-          </table>
+        <h2 class="sec">Dados do arremate</h2>
+        <div class="contact-grid">
+          <div>
+            <label>Valor de arremataçao (R$)</label>
+            <input type="number" class="numfield" id="ap302_valorArremate" step="500">
+          </div>
+          <div>
+            <label>Condomínio mensal (R$)</label>
+            <input type="number" class="numfield" id="ap302_condoMes" step="10">
+          </div>
         </div>
-        <p class="body" style="margin-top:10px;font-size:11px;color:var(--text-muted);">Ranking calculado com preço de compra e venda padrão (assumidos) de cada imóvel, entrada e prazo de financiamento padrão, lucro projetado em 6 meses. Risco = quantidade de valores ainda não confirmados (condomínio, IPTU) que afetam o cálculo — quanto mais alto, menos confiável é o número. Imóveis descartados ou já comprados aparecem por último, fora da disputa. Ajuste os valores "a confirmar" na aba Imóvel para refinar o ranking.</p>
+        <p class="doc-note" id="ap302_arremateNote"></p>
       </div>
+
+      <div class="card">
+        <h2 class="sec">Endereço e localização</h2>
+        <table class="kv" id="ap302-endereco-table"></table>
+        <div class="nav-row">
+          <a class="maps-btn" id="ap302_mapsLink" href="#" target="_blank" rel="noopener">📍 Google Maps</a>
+          <a class="waze-btn" id="ap302_wazeLink" href="#" target="_blank" rel="noopener">🚗 Waze</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Comparáveis de mercado</h2>
+        <div class="tablewrap"><table class="datatable" id="ap302-comp-table"></table></div>
+        <p class="body" id="ap302-comp-note" style="margin-top:8px;"></p>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Dívidas</h2>
+        <div class="callout warn">⚠ Os valores abaixo são compartilhados com a aba Imóvel — editar aqui atualiza a calculadora nos dois lugares.</div>
+        <table class="kv" id="ap302-dividas-table"></table>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">Contatos</h2>
+        <div class="contact-block">
+          <div class="contact-block-title">Síndico</div>
+          <div class="contact-grid">
+            <div><label>Nome</label><input type="text" id="ap302_sindicoNome" placeholder="Nome do síndico"></div>
+            <div><label>Telefone</label><input type="text" id="ap302_sindicoTel" placeholder="(61) 9xxxx-xxxx"></div>
+          </div>
+        </div>
+        <div class="contact-block">
+          <div class="contact-block-title">Portaria</div>
+          <div class="contact-grid">
+            <div><label>Telefone</label><input type="text" id="ap302_portariaTel" placeholder="(61) 9xxxx-xxxx"></div>
+          </div>
+        </div>
+        <div class="contact-block">
+          <div class="contact-block-title">Corretor</div>
+          <div class="contact-grid">
+            <div><label>Nome</label><input type="text" id="ap302_corretorNome" placeholder="Nome do corretor"></div>
+            <div><label>Telefone</label><input type="text" id="ap302_corretorTel" placeholder="(61) 9xxxx-xxxx"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">🧮 Calculadora deste imóvel</h2>
+        <div class="field">
+          <div class="field-label"><span>Entrada</span><span class="field-value" id="ap302_entradaLabel">20%</span></div>
+          <input type="range" id="ap302_entradaSlider" min="5" max="100" step="1" value="20">
+          <div class="range-ticks"><span>5%</span><span>100%</span></div>
+        </div>
+        <div class="field">
+          <div class="field-label"><span>Valor de arremataçao</span></div>
+          <input type="number" class="numfield" id="ap302_calcPreco" step="500">
+        </div>
+        <div class="field">
+          <div class="field-label"><span>Valor da reforma</span></div>
+          <input type="number" class="numfield" id="ap302_calcReforma" step="500">
+        </div>
+        <div class="field">
+          <div class="field-label"><span>Prazo até a venda</span><span class="field-value" id="ap302_prazoLabel">6 meses</span></div>
+          <input type="range" id="ap302_calcPrazo" min="1" max="24" step="1" value="6">
+          <div class="range-ticks"><span>1 mês</span><span>24 meses</span></div>
+        </div>
+        <div class="field">
+          <div class="field-label"><span>Preço de venda estimado</span></div>
+          <input type="number" class="numfield" id="ap302_calcVenda" step="1000">
+        </div>
+
+        <div class="hero">
+          <div class="hero-label">Lucro estimado</div>
+          <div class="hero-value" id="ap302_lucroValue">R$ 0</div>
+          <div class="hero-sub" id="ap302_retornoValue">0% no prazo</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-tile">
+            <div class="stat-label">Caixa próprio total</div>
+            <div class="stat-value" id="ap302_caixaValue">R$ 0</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-label">Retorno anualizado</div>
+            <div class="stat-value" id="ap302_retornoAnoValue">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="sec">📎 Documentos</h2>
+        <div id="ap302-doc-list"></div>
+        <div class="doc-empty" id="ap302-doc-empty">Nenhum documento adicionado ainda.</div>
+        <input type="file" id="ap302_docFileInput" accept="application/pdf" style="display:none;">
+        <button type="button" class="doc-upload-btn" id="ap302_docAddBtn">➕ Adicionar documento</button>
+        <p class="doc-note">Os PDFs ficam guardados só nesta sessão do navegador (não há armazenamento permanente no arquivo) — se fechar ou recarregar a página, precisa adicionar de novo. Renomeie pelo campo de texto ao lado de cada documento.</p>
+      </div>
+
     </section>
 
   </main>
@@ -497,8 +619,8 @@
     <button class="navbtn" data-tab="lista">
       <span class="navicon">📋</span>Lista
     </button>
-    <button class="navbtn" data-tab="ranking">
-      <span class="navicon">🏆</span>Ranking
+    <button class="navbtn" data-tab="ap302">
+      <span class="navicon">🔑</span>AP302
     </button>
   </div>
 </nav>
@@ -577,7 +699,7 @@ function showTab(id) {
   document.querySelectorAll('.navbtn').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
   document.querySelector('.navbtn[data-tab="' + id + '"]').classList.add('active');
-  if (id === 'ranking') renderRanking();
+  if (id === 'ap302') renderAp302();
   window.scrollTo({top:0, behavior:'instant'});
 }
 document.querySelectorAll('.navbtn').forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
@@ -821,7 +943,7 @@ const PROPS = {
   gran302: {
     link: "https://venda-imoveis.caixa.gov.br/sistema/detalhe-imovel.asp?hdnimovel=8787715578697",
     title: "AP302 - Gran Acrópolis IV",
-    subtitle: "Rua 8, Apto. 302, Bloco 07, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO · Matrícula 104.473 · Insc. 014730000800020000",
+    subtitle: "Rua 8, Apto. 302, Bloco 07, Res. Gran Acrópolis IV, Valparaíso de Goiás/GO · Matrícula 104.473 · Cadastro Imobiliário 264865",
     avaliacao: "R$ 128.000,00",
     valorMinimo: "R$ 64.878,59 (49,31% deságio)",
     condoMensal: "≈ R$ 220,00/mês — estimativa não confirmada (mesma administradora do AP202/AP102)",
@@ -831,10 +953,14 @@ const PROPS = {
     ultimaVenda: "A CONFIRMAR (data de construção/entrega e consolidação pela Caixa não encontradas nas fontes pesquisadas)",
     mapsQuery: "Residencial Gran Acrópolis IV Bloco 07, Rua 8, Chácaras e Mansões Santa Maria, Valparaíso de Goiás, GO",
     mapsNota: "Não encontramos coordenada exata do bloco (link abre busca por endereço/nome do condomínio) — confira se o pino bate com a foto do anúncio antes de usar.",
+    arremate: { valor: null, data: null },
+    sindico: { nome: null, telefone: null },
+    portaria: { telefone: null },
+    corretor: { nome: null, telefone: null },
     administradora: { nome: "JK Exclusive", telefone: "(61) 3798-9888", email: "contabil@jkexclusive.com.br", cnpj: "53.959.381/0001-05", confirmado: true },
     iptuCheckLink: "https://nfe.valparaisodegoias.go.gov.br/IPTU_Index.aspx?Origem=Menu",
-    iptuInscricao: "014730000800020000",
-    iptuInscricaoNota: "Este é o número de \"Inscrição Imobiliária\" (18 dígitos) do próprio anúncio da Caixa — formato diferente do Cadastro Imobiliário municipal (6 dígitos, como nas outras unidades do mesmo prédio: 265086/264956) usado no portal da Prefeitura. O campo do portal não aceitou este número. Alternativas: consultar no portal por CPF/CNPJ usando o CNPJ da Caixa Econômica Federal (00.360.305/0001-04), ou ligar direto pra Prefeitura com o endereço/matrícula 104.473.",
+    iptuInscricao: "264865",
+    iptuInscricaoNota: null,
     edital: { aplicavel: false, texto: "Venda Online — não tem edital individual por imóvel, é regida pelo regulamento geral da Caixa.", link: "https://venda-imoveis.caixa.gov.br/editais/regras-VOL/comocomprar.pdf?v=01" },
     matriculaInfo: { cartorio: "Cartório de Registro de Imóveis e Anexos de Valparaíso de Goiás/GO (CNS 02.615-3)", telefone: "(61) 3669-9600", nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
     leiloeiro: { aplicavel: false, nota: "Venda Online — venda direta pela própria Caixa, sem leiloeiro." },
@@ -856,22 +982,22 @@ const PROPS = {
       ["VivaReal (busca no bairro)", "https://www.vivareal.com.br/venda/goias/valparaiso-de-goias/bairros/chacaras-e-mansoes-santa-maria/"],
       ["Chaves na Mão (busca no bairro)", "https://www.chavesnamao.com.br/imoveis/go-valparaiso-de-goias/chacaras-e-mansoes-santa-maria/"],
     ],
-    dividasIPTU: "A CONFIRMAR",
+    dividasIPTU: "R$ 268,72 (confirmado oficialmente — guia 5.121.276)",
     dividasCondominio: "R$ 9.800,00 (informado pelo usuário)",
     dividasOutros: null,
-    dividasNote: "Dívida de condomínio informada diretamente por você: R$9.800,00. IPTU ainda não checado no portal oficial (inscrição 014730000800020000) — link disponível acima para conferência. Administradora: JK Exclusive — (61) 3798-9888 / contabil@jkexclusive.com.br.",
-    fontes: "matrícula 104.473, venda-imoveis.caixa.gov.br (anúncio AP302), spyleiloes.com.br e vivareal.com.br (comparáveis), econodata.com.br (incorporadora), multiprimeimoveis.com.br (averbação de leilão negativo). IPTU e condomínio mensal ainda não verificados oficialmente.",
+    dividasNote: "IPTU confirmado oficialmente na Prefeitura de Valparaíso de Goiás (cadastro imobiliário 264865): guia 5.121.276, IPTU 2026 no valor de R$252,81 + multa R$5,06 + juros R$10,85 = R$268,72, venc. 10/04/2026 (consulta em 05/08/2026, válida até 17/08/2026). Dívida de condomínio informada diretamente por você: R$9.800,00. Administradora: JK Exclusive — (61) 3798-9888 / contabil@jkexclusive.com.br.",
+    fontes: "matrícula 104.473, venda-imoveis.caixa.gov.br (anúncio AP302), spyleiloes.com.br e vivareal.com.br (comparáveis), econodata.com.br (incorporadora), multiprimeimoveis.com.br (averbação de leilão negativo), IPTU Prefeitura Valparaíso de Goiás (cadastro 264865, guia 5.121.276, consultado 05/08/2026).",
     P_min: 64878.59, P_max: 128000, P_default: 64878.59,
     V_min: 50000, V_max: 190000, V_default: 95000,
-    reforma: 8000, condoDivida: 9800, iptuAtraso: 0, condoMes: 220,
+    reforma: 0, condoDivida: 9800, iptuAtraso: 268.72, condoMes: 220,
     comissaoPct: 0, itbiPct: 2, cartorio: 2000, outros: 0,
     corretagemPct: 6, irPct: 15,
-    entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
-    unconfirmed: ['iptuAtraso', 'condoMes'],
+    entradaPct: 100, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+    unconfirmed: ['condoMes'],
   },
 };
 
-let propStatus = { gran: 'analise', ap102: 'analise', gran302: 'analise', colorado: 'descartado', loja: 'descartado', belo: 'descartado' };
+let propStatus = { gran: 'analise', ap102: 'analise', gran302: 'comprado', colorado: 'descartado', loja: 'descartado', belo: 'descartado' };
 const STATUS_LABEL = { analise: 'Em análise', descartado: 'Descartado', comprado: 'Comprado' };
 const STATUS_CLASS = { analise: 'badge-progress', descartado: 'badge-dead', comprado: 'badge-live' };
 const STATUS_DOT   = { analise: 'status-warning', descartado: 'status-muted', comprado: 'status-good' };
@@ -1304,9 +1430,7 @@ function compute() {
   }).join('');
 }
 
-// ---------- ranking (gestor de imobiliária) ----------
-// Reimplementa a fórmula de compute() de forma pura (sem ler o DOM), para poder
-// simular qualquer imóvel usando seus valores padrão (e edições já feitas nos campos "a confirmar").
+// Reimplementação pura (sem ler o DOM) da fórmula de compute(), usada pela calculadora da aba AP302.
 function computeForProperty(p, P, V, meses, entradaPctInput) {
   const entradaPct = entradaPctInput / 100;
   const taxaAA = p.taxaAA / 100;
@@ -1350,57 +1474,6 @@ function computeForProperty(p, P, V, meses, entradaPctInput) {
   return { lucro, retorno, retornoAno, caixaProprioTotal };
 }
 
-const RISCO_LABEL = { baixo: 'Baixo', medio: 'Médio', alto: 'Alto' };
-const RISCO_CLASS = { baixo: 'ink-good', medio: 'ink-warning', alto: 'ink-critical' };
-function riscoNivel(count) {
-  if (count <= 0) return 'baixo';
-  if (count <= 2) return 'medio';
-  return 'alto';
-}
-
-function renderRanking() {
-  const ranked = PROP_ORDER.map(key => {
-    const p = PROPS[key];
-    const r6 = computeForProperty(p, p.P_default, p.V_default, 6, p.entradaPct);
-    const r12 = computeForProperty(p, p.P_default, p.V_default, 12, p.entradaPct);
-    const riscoCount = (p.unconfirmed || []).length;
-    const status = propStatus[key];
-    let score = r6.retornoAno - riscoCount * 10;
-    if (status === 'descartado') score -= 1000;
-    if (status === 'comprado') score -= 500;
-    return { key, p, r6, r12, riscoCount, status, score };
-  }).sort((a, b) => b.score - a.score);
-
-  const top = ranked.find(r => r.status === 'analise') || ranked[0];
-  el('rankingTopPick').innerHTML =
-    '<h2 class="sec">🥇 Recomendação do gestor</h2>' +
-    '<p class="body" style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">' + top.p.title + '</p>' +
-    '<p class="body">Com preço de compra e venda padrão, lucro projetado de <b>' + fmtBRL(top.r6.lucro) + '</b> em 6 meses (retorno anualizado ≈' + fmtPct(top.r6.retornoAno) + ') — o melhor equilíbrio entre retorno e risco entre os imóveis ainda em análise.' +
-    (top.riscoCount > 0 ? ' Atenção: este número ainda depende de ' + top.riscoCount + ' valor(es) não confirmado(s) (condomínio/IPTU) — confirme na aba Imóvel para refinar.' : '') +
-    '</p>';
-
-  el('rankingTbody').innerHTML = ranked.map((r, i) => {
-    const outOfRace = r.status !== 'analise';
-    return '<tr style="' + (outOfRace ? 'opacity:.55;' : '') + '">' +
-      '<td>' + (i + 1) + 'º</td>' +
-      '<td><a href="#" class="ranking-link" data-key="' + r.key + '" style="color:var(--accent);font-weight:700;text-decoration:none;">' + r.p.title + '</a>' +
-        '<div style="font-size:10.5px;color:var(--text-muted);">' + STATUS_LABEL[r.status] + '</div></td>' +
-      '<td class="' + (r.r6.lucro >= 0 ? 'ink-good' : 'ink-critical') + '">' + fmtBRL(r.r6.lucro) + '</td>' +
-      '<td>' + fmtPct(r.r6.retornoAno) + '</td>' +
-      '<td class="' + RISCO_CLASS[riscoNivel(r.riscoCount)] + '">' + RISCO_LABEL[riscoNivel(r.riscoCount)] + '</td>' +
-    '</tr>';
-  }).join('');
-
-  el('rankingTbody').querySelectorAll('.ranking-link').forEach(a => {
-    a.addEventListener('click', (e) => {
-      e.preventDefault();
-      propSelect.value = a.dataset.key;
-      renderProperty(a.dataset.key);
-      showTab('imovel');
-    });
-  });
-}
-
 // ---------- lista ----------
 function renderLista() {
   const filter = el('filterSelect').value;
@@ -1442,9 +1515,184 @@ function renderLista() {
 }
 el('filterSelect').addEventListener('change', renderLista);
 
+// ---------- AP302 (imóvel arrematado) ----------
+let ap302Docs = [];
+let ap302DocIdSeq = 1;
+
+function buildMapsUrl(p) {
+  if (p.mapsCoords) return 'https://www.google.com/maps/search/?api=1&query=' + p.mapsCoords;
+  if (p.mapsQuery) return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(p.mapsQuery);
+  return '#';
+}
+function buildWazeUrl(p) {
+  if (p.mapsCoords) {
+    const [lat, lon] = p.mapsCoords.split(',');
+    return 'https://waze.com/ul?ll=' + lat + ',' + lon + '&navigate=yes';
+  }
+  const q = p.mapsQuery || p.endereco;
+  return 'https://waze.com/ul?q=' + encodeURIComponent(q) + '&navigate=yes';
+}
+
+function renderAp302() {
+  const p = PROPS.gran302;
+
+  el('ap302_valorArremate').value = p.arremate.valor != null ? p.arremate.valor : '';
+  el('ap302_condoMes').value = p.condoMes;
+  el('ap302_arremateNote').textContent = p.arremate.valor != null
+    ? 'Valor de arremataçao registrado. Edite acima se precisar corrigir.'
+    : '⚠ Valor de arremataçao ainda não informado — preencha acima para a calculadora refletir o custo real.';
+
+  el('ap302-endereco-table').innerHTML =
+    '<tr><td>Endereço</td><td>' + p.endereco + '</td></tr>' +
+    '<tr><td>Matrícula</td><td>' + (p.matriculaInfo ? p.matriculaInfo.cartorio : '') + '</td></tr>';
+  el('ap302_mapsLink').href = buildMapsUrl(p);
+  el('ap302_wazeLink').href = buildWazeUrl(p);
+
+  if (p.comparaveis && p.comparaveis.length) {
+    el('ap302-comp-table').innerHTML = '<tr><th>Empreendimento</th><th>Área</th><th>Preço</th></tr>' +
+      p.comparaveis.map(c => {
+        const nome = c[3] ? '<a href="' + c[3] + '" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700;">' + c[0] + ' ↗</a>' : c[0];
+        return '<tr><td>' + nome + '</td><td>' + c[1] + '</td><td>' + c[2] + '</td></tr>';
+      }).join('');
+  } else {
+    el('ap302-comp-table').innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Nenhum comparável coletado</td></tr>';
+  }
+  el('ap302-comp-note').textContent = p.comparaveisNote || '';
+  el('ap302-comp-note').style.display = p.comparaveisNote ? 'block' : 'none';
+
+  el('ap302-dividas-table').innerHTML =
+    '<tr><td>IPTU em atraso (R$)</td><td><input type="number" class="numfield" id="ap302_dividaIptu" step="10" style="width:140px;text-align:right;"></td></tr>' +
+    '<tr><td>Dívida de condomínio (R$)</td><td><input type="number" class="numfield" id="ap302_dividaCondo" step="100" style="width:140px;text-align:right;"></td></tr>';
+  el('ap302_dividaIptu').value = p.iptuAtraso;
+  el('ap302_dividaCondo').value = p.condoDivida;
+  el('ap302_dividaIptu').oninput = function() {
+    p.iptuAtraso = parseFloat(this.value) || 0;
+    if (propSelect.value === 'gran302') { el('iptuAtrasoInput').value = p.iptuAtraso; compute(); }
+    ap302Compute();
+  };
+  el('ap302_dividaCondo').oninput = function() {
+    p.condoDivida = parseFloat(this.value) || 0;
+    if (propSelect.value === 'gran302') { el('condoDividaInput').value = p.condoDivida; compute(); }
+    ap302Compute();
+  };
+
+  el('ap302_sindicoNome').value = p.sindico.nome || '';
+  el('ap302_sindicoTel').value = p.sindico.telefone || '';
+  el('ap302_portariaTel').value = p.portaria.telefone || '';
+  el('ap302_corretorNome').value = p.corretor.nome || '';
+  el('ap302_corretorTel').value = p.corretor.telefone || '';
+
+  el('ap302_calcPreco').value = p.arremate.valor != null ? p.arremate.valor : p.P_default;
+  el('ap302_calcReforma').value = p.reforma;
+  el('ap302_calcVenda').value = p.V_default;
+  el('ap302_entradaSlider').value = p.entradaPct;
+  el('ap302_entradaLabel').textContent = p.entradaPct + '%';
+  el('ap302_calcPrazo').value = 6;
+  el('ap302_prazoLabel').textContent = '6 meses';
+
+  renderAp302Docs();
+  ap302Compute();
+}
+
+function ap302Compute() {
+  const p = PROPS.gran302;
+  const P = parseFloat(el('ap302_calcPreco').value) || 0;
+  const V = parseFloat(el('ap302_calcVenda').value) || 0;
+  const reforma = parseFloat(el('ap302_calcReforma').value) || 0;
+  const meses = parseInt(el('ap302_calcPrazo').value) || 1;
+  const entradaPct = parseFloat(el('ap302_entradaSlider').value) || 5;
+
+  const pTemp = Object.assign({}, p, { reforma });
+  const r = computeForProperty(pTemp, P, V, meses, entradaPct);
+
+  el('ap302_lucroValue').textContent = fmtBRL(r.lucro);
+  el('ap302_lucroValue').className = 'hero-value ' + (r.lucro >= 0 ? '' : 'ink-critical');
+  el('ap302_retornoValue').textContent = fmtPct(r.retorno) + ' em ' + meses + (meses === 1 ? ' mês' : ' meses');
+  el('ap302_caixaValue').textContent = fmtBRL(r.caixaProprioTotal);
+  el('ap302_retornoAnoValue').textContent = fmtPct(r.retornoAno);
+  el('ap302_retornoAnoValue').className = 'stat-value ' + (r.retornoAno >= 20 ? 'ink-good' : r.retornoAno >= 8 ? 'ink-warning' : 'ink-critical');
+}
+
+el('ap302_valorArremate').addEventListener('input', function() {
+  const v = parseFloat(this.value);
+  PROPS.gran302.arremate.valor = isNaN(v) ? null : v;
+  el('ap302_arremateNote').textContent = PROPS.gran302.arremate.valor != null
+    ? 'Valor de arremataçao registrado. Edite acima se precisar corrigir.'
+    : '⚠ Valor de arremataçao ainda não informado — preencha acima para a calculadora refletir o custo real.';
+  el('ap302_calcPreco').value = PROPS.gran302.arremate.valor != null ? PROPS.gran302.arremate.valor : PROPS.gran302.P_default;
+  ap302Compute();
+});
+el('ap302_condoMes').addEventListener('input', function() {
+  const v = parseFloat(this.value) || 0;
+  PROPS.gran302.condoMes = v;
+  if (propSelect.value === 'gran302') { el('condoMesInput').value = v; compute(); }
+});
+el('ap302_sindicoNome').addEventListener('input', function() { PROPS.gran302.sindico.nome = this.value.trim() || null; });
+el('ap302_sindicoTel').addEventListener('input', function() { PROPS.gran302.sindico.telefone = this.value.trim() || null; });
+el('ap302_portariaTel').addEventListener('input', function() { PROPS.gran302.portaria.telefone = this.value.trim() || null; });
+el('ap302_corretorNome').addEventListener('input', function() { PROPS.gran302.corretor.nome = this.value.trim() || null; });
+el('ap302_corretorTel').addEventListener('input', function() { PROPS.gran302.corretor.telefone = this.value.trim() || null; });
+
+['ap302_calcPreco','ap302_calcReforma','ap302_calcVenda'].forEach(id => el(id).addEventListener('input', ap302Compute));
+el('ap302_calcPrazo').addEventListener('input', function() {
+  el('ap302_prazoLabel').textContent = this.value + (this.value == 1 ? ' mês' : ' meses');
+  ap302Compute();
+});
+el('ap302_entradaSlider').addEventListener('input', function() {
+  el('ap302_entradaLabel').textContent = this.value + '%';
+  ap302Compute();
+});
+
+function renderAp302Docs() {
+  const list = el('ap302-doc-list');
+  if (!ap302Docs.length) {
+    list.innerHTML = '';
+    el('ap302-doc-empty').style.display = 'block';
+    return;
+  }
+  el('ap302-doc-empty').style.display = 'none';
+  list.innerHTML = ap302Docs.map(d =>
+    '<div class="doc-row">' +
+      '<span class="doc-icon">📄</span>' +
+      '<input type="text" class="doc-name-input" value="' + d.name.replace(/"/g,'&quot;') + '" data-docid="' + d.id + '">' +
+      '<div class="doc-actions">' +
+        '<a class="doc-btn" href="' + d.dataUrl + '" download="' + d.name.replace(/"/g,'&quot;') + '.pdf">⬇ Baixar</a>' +
+        '<button type="button" class="doc-btn danger" data-del="' + d.id + '">🗑</button>' +
+      '</div>' +
+    '</div>'
+  ).join('');
+  list.querySelectorAll('.doc-name-input').forEach(inp => {
+    inp.addEventListener('input', function() {
+      const doc = ap302Docs.find(d => d.id === parseInt(this.dataset.docid));
+      if (doc) doc.name = this.value;
+    });
+  });
+  list.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      ap302Docs = ap302Docs.filter(d => d.id !== parseInt(this.dataset.del));
+      renderAp302Docs();
+    });
+  });
+}
+
+el('ap302_docAddBtn').addEventListener('click', () => el('ap302_docFileInput').click());
+el('ap302_docFileInput').addEventListener('change', function() {
+  const file = this.files && this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function() {
+    const defaultName = file.name.replace(/\.pdf$/i, '');
+    ap302Docs.push({ id: ap302DocIdSeq++, name: defaultName, dataUrl: reader.result });
+    renderAp302Docs();
+  };
+  reader.readAsDataURL(file);
+  this.value = '';
+});
+
 // ---------- init ----------
 renderProperty('gran');
 renderLista();
+renderAp302();
 </script>
 </body>
 </html>
