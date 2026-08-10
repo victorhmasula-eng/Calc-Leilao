@@ -301,6 +301,13 @@
   .gasto-field:last-child { margin-bottom: 0; }
   .gasto-field label { font-size: 10.5px; color: var(--text-muted); display: block; margin-bottom: 3px; }
   .gasto-field input[type=text], .gasto-field select { width: 100%; background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px; padding: 8px 9px; font-size: 13px; color: var(--text-primary); font-family: inherit; box-sizing: border-box; }
+  .gasto-row-2col { display: grid; grid-template-columns: 1.3fr 1fr; gap: 10px; margin-bottom: 8px; }
+  .gasto-row-2col .gasto-field { margin-bottom: 0; }
+  .gasto-row.unconfirmed { border-color: var(--warning); box-shadow: 0 0 0 1px var(--warning); }
+  .gasto-confirm-badge { font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; }
+  .gasto-confirm-badge.pending { background: var(--warnbg); color: var(--warning); }
+  .gasto-confirm-badge.done { background: var(--goodbg); color: var(--good); }
+  .gasto-confirm-btn { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; width: 100%; margin-top: 10px; }
   .gasto-comprovante-row { display: flex; align-items: center; gap: 8px; }
   .gasto-comprovante-row .doc-btn { font-size: 11.5px; padding: 6px 9px; }
 
@@ -579,7 +586,6 @@
         <div class="field">
           <div class="field-label"><span>Valor de arremataçao</span></div>
           <table class="kv" style="margin-top:2px;"><tr><td style="border:none;padding:8px 0;">🔒 <span id="ap302_calcPrecoLocked">R$ 0,00</span></td></tr></table>
-          <div style="font-size:11px;color:var(--text-muted);">Travado — edite no card "Dados do arremate" acima.</div>
         </div>
 
         <div class="field">
@@ -587,6 +593,7 @@
           <div id="ap302-gastos-list"></div>
           <div class="doc-empty" id="ap302-gastos-empty">Nenhum gasto adicionado ainda.</div>
           <button type="button" class="doc-upload-btn" id="ap302_gastoAddBtn" style="margin-top:8px;">➕ Adicionar gasto</button>
+          <div class="callout good" id="ap302_debtSummary" style="margin-top:12px;display:none;"></div>
         </div>
 
         <div class="field">
@@ -1660,10 +1667,10 @@ el('ap302_avistaOff').addEventListener('click', () => setAp302Avista(false));
 // ---------- Gastos (itens de reforma/custos) ----------
 let ap302Gastos = [];
 let ap302GastoIdSeq = 1;
-const PAGO_POR_OPTIONS = ['VTO', 'CIR', 'Ambos'];
+const PAGO_POR_OPTIONS = ['Victor', 'Ciro', 'Ambos'];
 
 function addAp302Gasto() {
-  ap302Gastos.push({ id: ap302GastoIdSeq++, descricao: '', valor: 0, pagoPor: 'Ambos', comprovante: null });
+  ap302Gastos.push({ id: ap302GastoIdSeq++, descricao: '', valor: 0, pagoPor: 'Ambos', comprovante: null, confirmado: false });
   renderAp302Gastos();
 }
 el('ap302_gastoAddBtn').addEventListener('click', addAp302Gasto);
@@ -1672,9 +1679,36 @@ function ap302GastosTotal() {
   return ap302Gastos.reduce((sum, g) => sum + (g.valor || 0), 0);
 }
 
+function renderAp302DebtSummary() {
+  const box = el('ap302_debtSummary');
+  if (!ap302Gastos.length) { box.style.display = 'none'; return; }
+  const totalVictor = ap302Gastos.filter(g => g.pagoPor === 'Victor').reduce((s, g) => s + (g.valor || 0), 0);
+  const totalCiro = ap302Gastos.filter(g => g.pagoPor === 'Ciro').reduce((s, g) => s + (g.valor || 0), 0);
+  const totalAmbos = ap302Gastos.filter(g => g.pagoPor === 'Ambos').reduce((s, g) => s + (g.valor || 0), 0);
+  const diff = totalVictor - totalCiro;
+  const saldo = Math.abs(diff) / 2;
+
+  let saldoTexto;
+  if (Math.round(saldo * 100) === 0) {
+    saldoTexto = '✓ Contas equilibradas entre Victor e Ciro.';
+  } else if (diff > 0) {
+    saldoTexto = '<b>Ciro deve ' + fmtBRL(saldo) + ' para Victor</b> (Victor pagou mais).';
+  } else {
+    saldoTexto = '<b>Victor deve ' + fmtBRL(saldo) + ' para Ciro</b> (Ciro pagou mais).';
+  }
+
+  box.className = 'callout ' + (Math.round(saldo * 100) === 0 ? 'good' : 'warn');
+  box.style.display = 'flex';
+  box.innerHTML = '💰 <div><b>Resumo da dívida — Victor x Ciro</b><br>' +
+    'Victor pagou ' + fmtBRL(totalVictor) + ' · Ciro pagou ' + fmtBRL(totalCiro) +
+    (totalAmbos > 0 ? ' · Ambos (já dividido) ' + fmtBRL(totalAmbos) : '') + '<br>' +
+    saldoTexto + '</div>';
+}
+
 function renderAp302Gastos() {
   const list = el('ap302-gastos-list');
   el('ap302_gastosTotal').textContent = fmtBRL(ap302GastosTotal());
+  renderAp302DebtSummary();
   if (!ap302Gastos.length) {
     list.innerHTML = '';
     el('ap302-gastos-empty').style.display = 'block';
@@ -1683,10 +1717,16 @@ function renderAp302Gastos() {
   }
   el('ap302-gastos-empty').style.display = 'none';
   list.innerHTML = ap302Gastos.map((g, i) =>
-    '<div class="gasto-row">' +
-      '<div class="gasto-row-top"><span class="gasto-index">Gasto ' + (i + 1) + '</span><button type="button" class="doc-btn danger" data-gasto-del="' + g.id + '">🗑</button></div>' +
-      '<div class="gasto-field"><label>Descrição</label><input type="text" data-gasto-field="descricao" data-gasto-id="' + g.id + '" value="' + (g.descricao || '').replace(/"/g,'&quot;') + '" placeholder="Ex: pintura, piso, registro..."></div>' +
-      '<div class="gasto-field"><label>Valor (R$)</label><input type="text" inputmode="decimal" class="numfield gasto-valor-input" data-gasto-field="valor" data-gasto-id="' + g.id + '" value="' + fmtMoneyInput(g.valor) + '"></div>' +
+    '<div class="gasto-row' + (g.confirmado ? '' : ' unconfirmed') + '">' +
+      '<div class="gasto-row-top"><span class="gasto-index">Gasto ' + (i + 1) + '</span>' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+        '<span class="gasto-confirm-badge ' + (g.confirmado ? 'done">✓ Confirmado' : 'pending">⏳ Não confirmado') + '</span>' +
+        '<button type="button" class="doc-btn danger" data-gasto-del="' + g.id + '">🗑</button>' +
+        '</div></div>' +
+      '<div class="gasto-row-2col">' +
+        '<div class="gasto-field"><label>Descrição</label><input type="text" data-gasto-field="descricao" data-gasto-id="' + g.id + '" value="' + (g.descricao || '').replace(/"/g,'&quot;') + '" placeholder="Ex: pintura, piso..."></div>' +
+        '<div class="gasto-field"><label>Valor (R$)</label><input type="text" inputmode="decimal" class="numfield gasto-valor-input" data-gasto-field="valor" data-gasto-id="' + g.id + '" value="' + fmtMoneyInput(g.valor) + '"></div>' +
+      '</div>' +
       '<div class="gasto-field"><label>Pago por</label><select data-gasto-field="pagoPor" data-gasto-id="' + g.id + '">' +
         PAGO_POR_OPTIONS.map(o => '<option value="' + o + '"' + (g.pagoPor === o ? ' selected' : '') + '>' + o + '</option>').join('') +
       '</select></div>' +
@@ -1699,6 +1739,7 @@ function renderAp302Gastos() {
           '<button type="button" class="doc-btn" data-gasto-attach="' + g.id + '">' + (g.comprovante ? 'Trocar' : 'Anexar') + '</button>' +
         '</div>' +
       '</div>' +
+      (g.confirmado ? '' : '<button type="button" class="gasto-confirm-btn" data-gasto-confirm="' + g.id + '">✓ Confirmar e adicionar este gasto</button>') +
     '</div>'
   ).join('');
 
@@ -1710,9 +1751,11 @@ function renderAp302Gastos() {
       if (field === 'valor') {
         g.valor = getMoneyValue(this);
         el('ap302_gastosTotal').textContent = fmtBRL(ap302GastosTotal());
+        renderAp302DebtSummary();
         ap302Compute();
       } else {
         g[field] = this.value;
+        if (field === 'pagoPor') renderAp302DebtSummary();
       }
     });
     if (inp.dataset.gastoField === 'valor') initMoneyField(inp);
@@ -1721,6 +1764,12 @@ function renderAp302Gastos() {
     btn.addEventListener('click', function() {
       ap302Gastos = ap302Gastos.filter(g => g.id !== parseInt(this.dataset.gastoDel));
       renderAp302Gastos();
+    });
+  });
+  list.querySelectorAll('[data-gasto-confirm]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const g = ap302Gastos.find(x => x.id === parseInt(this.dataset.gastoConfirm));
+      if (g) { g.confirmado = true; renderAp302Gastos(); }
     });
   });
   list.querySelectorAll('[data-gasto-attach]').forEach(btn => {
