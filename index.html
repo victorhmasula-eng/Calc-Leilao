@@ -311,6 +311,21 @@
   .gasto-comprovante-row { display: flex; align-items: center; gap: 8px; }
   .gasto-comprovante-row .doc-btn { font-size: 11.5px; padding: 6px 9px; }
 
+  .gasto-line { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
+  .gasto-line-main { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .gasto-line-desc { font-size: 13.5px; font-weight: 700; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .gasto-line-meta { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+  .gasto-line-pill { background: var(--surface-1); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; font-size: 10.5px; font-weight: 700; }
+  .gasto-line-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .gasto-line-valor { font-size: 14px; font-weight: 800; color: var(--text-primary); white-space: nowrap; }
+  .gasto-line-btns { display: flex; gap: 6px; }
+  .gasto-line-btns .doc-btn { padding: 6px 8px; font-size: 12px; }
+
+  .backup-card .doc-note { margin-top: 10px; }
+  .backup-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .backup-btns .doc-upload-btn { flex: 1; justify-content: center; }
+  .backup-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: 1; background: var(--surface-2); color: var(--accent); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
   .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .contact-grid label { font-size: 11.5px; color: var(--text-muted); display: block; margin-bottom: 4px; }
   .contact-grid input { width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 9px; font-size: 13px; color: var(--text-primary); font-family: inherit; box-sizing: border-box; }
@@ -512,6 +527,17 @@
       <h1 class="pagetitle">🔑 AP302 — Gran Acrópolis IV</h1>
       <div class="pagesub">Imóvel arrematado — dados, contatos e documentos deste apartamento específico.</div>
 
+      <div class="card backup-card">
+        <h2 class="sec">💾 Backup dos dados</h2>
+        <p class="doc-note" style="margin-top:0;">Esta página não salva nada sozinha — se você atualizar/fechar sem baixar um backup, os gastos, dívidas e contatos digitados se perdem. Baixe um backup depois de editar, e restaure ao reabrir.</p>
+        <div class="backup-btns">
+          <button type="button" class="doc-upload-btn" id="ap302_backupSaveBtn">⬇️ Baixar backup</button>
+          <button type="button" class="backup-btn-outline" id="ap302_backupLoadBtn">⬆️ Restaurar backup</button>
+        </div>
+        <input type="file" id="ap302_backupFileInput" accept="application/json" style="display:none;">
+        <p class="doc-note" id="ap302_backupStatus"></p>
+      </div>
+
       <div class="card">
         <h2 class="sec">Dados do arremate</h2>
         <div class="contact-grid">
@@ -584,12 +610,11 @@
           <div class="range-ticks"><span>5%</span><span>100%</span></div>
         </div>
         <div class="field">
-          <div class="field-label"><span>Valor de arremataçao</span></div>
-          <table class="kv" style="margin-top:2px;"><tr><td style="border:none;padding:8px 0;">🔒 <span id="ap302_calcPrecoLocked">R$ 0,00</span></td></tr></table>
+          <div class="field-label"><span>🔒 Valor de arremataçao</span><span class="field-value" id="ap302_calcPrecoLocked">R$ 0,00</span></div>
         </div>
 
         <div class="field">
-          <div class="field-label"><span>Gastos (reforma, taxas, etc.)</span><span class="field-value" id="ap302_gastosTotal">R$ 0,00</span></div>
+          <div class="field-label"><span>Gastos (reforma, taxas, etc.)</span><span class="field-value" id="ap302_gastosTotal"></span></div>
           <div id="ap302-gastos-list"></div>
           <div class="doc-empty" id="ap302-gastos-empty">Nenhum gasto adicionado ainda.</div>
           <button type="button" class="doc-upload-btn" id="ap302_gastoAddBtn" style="margin-top:8px;">➕ Adicionar gasto</button>
@@ -1668,9 +1693,12 @@ el('ap302_avistaOff').addEventListener('click', () => setAp302Avista(false));
 let ap302Gastos = [];
 let ap302GastoIdSeq = 1;
 const PAGO_POR_OPTIONS = ['Victor', 'Ciro', 'Ambos'];
+let ap302EditingIds = new Set();
 
 function addAp302Gasto() {
-  ap302Gastos.push({ id: ap302GastoIdSeq++, descricao: '', valor: 0, pagoPor: 'Ambos', comprovante: null, confirmado: false });
+  const id = ap302GastoIdSeq++;
+  ap302Gastos.push({ id, descricao: '', valor: 0, pagoPor: 'Ambos', comprovante: null, confirmado: false });
+  ap302EditingIds.add(id);
   renderAp302Gastos();
 }
 el('ap302_gastoAddBtn').addEventListener('click', addAp302Gasto);
@@ -1705,19 +1733,27 @@ function renderAp302DebtSummary() {
     saldoTexto + '</div>';
 }
 
-function renderAp302Gastos() {
-  const list = el('ap302-gastos-list');
-  el('ap302_gastosTotal').textContent = fmtBRL(ap302GastosTotal());
-  renderAp302DebtSummary();
-  if (!ap302Gastos.length) {
-    list.innerHTML = '';
-    el('ap302-gastos-empty').style.display = 'block';
-    ap302Compute();
-    return;
-  }
-  el('ap302-gastos-empty').style.display = 'none';
-  list.innerHTML = ap302Gastos.map((g, i) =>
-    '<div class="gasto-row' + (g.confirmado ? '' : ' unconfirmed') + '">' +
+function ap302GastoLineHtml(g, i) {
+  const semDescricao = !g.descricao;
+  return '<div class="gasto-line">' +
+      '<div class="gasto-line-main">' +
+        '<span class="gasto-line-desc">' + (semDescricao ? '(sem descrição)' : (g.descricao || '').replace(/</g,'&lt;')) + '</span>' +
+        '<span class="gasto-line-meta"><span class="gasto-line-pill">' + g.pagoPor + '</span>' +
+          (g.comprovante ? '<a href="' + g.comprovante.dataUrl + '" download="' + g.comprovante.name.replace(/"/g,'&quot;') + '" style="color:var(--accent);">📎 comprovante</a>' : '') +
+        '</span>' +
+      '</div>' +
+      '<div class="gasto-line-actions">' +
+        '<span class="gasto-line-valor">' + fmtBRL(g.valor) + '</span>' +
+        '<div class="gasto-line-btns">' +
+          '<button type="button" class="doc-btn" data-gasto-edit="' + g.id + '">✎</button>' +
+          '<button type="button" class="doc-btn danger" data-gasto-del="' + g.id + '">🗑</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function ap302GastoFormHtml(g, i) {
+  return '<div class="gasto-row' + (g.confirmado ? '' : ' unconfirmed') + '">' +
       '<div class="gasto-row-top"><span class="gasto-index">Gasto ' + (i + 1) + '</span>' +
         '<div style="display:flex;align-items:center;gap:8px;">' +
         '<span class="gasto-confirm-badge ' + (g.confirmado ? 'done">✓ Confirmado' : 'pending">⏳ Não confirmado') + '</span>' +
@@ -1739,8 +1775,23 @@ function renderAp302Gastos() {
           '<button type="button" class="doc-btn" data-gasto-attach="' + g.id + '">' + (g.comprovante ? 'Trocar' : 'Anexar') + '</button>' +
         '</div>' +
       '</div>' +
-      (g.confirmado ? '' : '<button type="button" class="gasto-confirm-btn" data-gasto-confirm="' + g.id + '">✓ Confirmar e adicionar este gasto</button>') +
-    '</div>'
+      '<button type="button" class="gasto-confirm-btn" data-gasto-confirm="' + g.id + '">' + (g.confirmado ? '💾 Salvar' : '✓ Confirmar e adicionar este gasto') + '</button>' +
+    '</div>';
+}
+
+function renderAp302Gastos() {
+  const list = el('ap302-gastos-list');
+  el('ap302_gastosTotal').textContent = ap302Gastos.length ? fmtBRL(ap302GastosTotal()) : '';
+  renderAp302DebtSummary();
+  if (!ap302Gastos.length) {
+    list.innerHTML = '';
+    el('ap302-gastos-empty').style.display = 'block';
+    ap302Compute();
+    return;
+  }
+  el('ap302-gastos-empty').style.display = 'none';
+  list.innerHTML = ap302Gastos.map((g, i) =>
+    (!g.confirmado || ap302EditingIds.has(g.id)) ? ap302GastoFormHtml(g, i) : ap302GastoLineHtml(g, i)
   ).join('');
 
   list.querySelectorAll('[data-gasto-field]').forEach(inp => {
@@ -1750,7 +1801,7 @@ function renderAp302Gastos() {
       const field = this.dataset.gastoField;
       if (field === 'valor') {
         g.valor = getMoneyValue(this);
-        el('ap302_gastosTotal').textContent = fmtBRL(ap302GastosTotal());
+        el('ap302_gastosTotal').textContent = ap302Gastos.length ? fmtBRL(ap302GastosTotal()) : '';
         renderAp302DebtSummary();
         ap302Compute();
       } else {
@@ -1762,14 +1813,22 @@ function renderAp302Gastos() {
   });
   list.querySelectorAll('[data-gasto-del]').forEach(btn => {
     btn.addEventListener('click', function() {
-      ap302Gastos = ap302Gastos.filter(g => g.id !== parseInt(this.dataset.gastoDel));
+      const id = parseInt(this.dataset.gastoDel);
+      ap302Gastos = ap302Gastos.filter(g => g.id !== id);
+      ap302EditingIds.delete(id);
       renderAp302Gastos();
     });
   });
   list.querySelectorAll('[data-gasto-confirm]').forEach(btn => {
     btn.addEventListener('click', function() {
       const g = ap302Gastos.find(x => x.id === parseInt(this.dataset.gastoConfirm));
-      if (g) { g.confirmado = true; renderAp302Gastos(); }
+      if (g) { g.confirmado = true; ap302EditingIds.delete(g.id); renderAp302Gastos(); }
+    });
+  });
+  list.querySelectorAll('[data-gasto-edit]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      ap302EditingIds.add(parseInt(this.dataset.gastoEdit));
+      renderAp302Gastos();
     });
   });
   list.querySelectorAll('[data-gasto-attach]').forEach(btn => {
@@ -1887,6 +1946,73 @@ el('ap302_docFileInput').addEventListener('change', function() {
     renderAp302Docs();
   };
   reader.readAsDataURL(file);
+  this.value = '';
+});
+
+// ---------- Backup (export/import JSON) ----------
+function ap302BuildBackup() {
+  const p = PROPS.gran302;
+  return {
+    version: 1,
+    arremateValor: p.arremate.valor,
+    condoMes: p.condoMes,
+    iptuAtraso: p.iptuAtraso,
+    condoDivida: p.condoDivida,
+    sindico: p.sindico,
+    portaria: p.portaria,
+    corretor: p.corretor,
+    gastos: ap302Gastos,
+    gastoIdSeq: ap302GastoIdSeq,
+    docs: ap302Docs,
+    docIdSeq: ap302DocIdSeq,
+  };
+}
+
+el('ap302_backupSaveBtn').addEventListener('click', function() {
+  const data = ap302BuildBackup();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ap302-backup.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  el('ap302_backupStatus').textContent = '✓ Backup baixado. Use "Restaurar backup" na próxima vez que abrir a página para recuperar estes dados.';
+});
+
+el('ap302_backupLoadBtn').addEventListener('click', function() {
+  el('ap302_backupFileInput').click();
+});
+el('ap302_backupFileInput').addEventListener('change', function() {
+  const file = this.files && this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function() {
+    try {
+      const data = JSON.parse(reader.result);
+      const p = PROPS.gran302;
+      if (data.arremateValor != null) p.arremate.valor = data.arremateValor;
+      if (data.condoMes != null) p.condoMes = data.condoMes;
+      if (data.iptuAtraso != null) p.iptuAtraso = data.iptuAtraso;
+      if (data.condoDivida != null) p.condoDivida = data.condoDivida;
+      if (data.sindico) p.sindico = data.sindico;
+      if (data.portaria) p.portaria = data.portaria;
+      if (data.corretor) p.corretor = data.corretor;
+      if (Array.isArray(data.gastos)) { ap302Gastos = data.gastos; ap302EditingIds = new Set(); }
+      if (data.gastoIdSeq) ap302GastoIdSeq = data.gastoIdSeq;
+      if (Array.isArray(data.docs)) ap302Docs = data.docs;
+      if (data.docIdSeq) ap302DocIdSeq = data.docIdSeq;
+      renderAp302();
+      if (propSelect.value === 'gran302') compute();
+      el('ap302_backupStatus').textContent = '✓ Backup restaurado com sucesso.';
+    } catch (e) {
+      el('ap302_backupStatus').textContent = '⚠ Não foi possível ler este arquivo — verifique se é um backup .json gerado por este painel.';
+    }
+  };
+  reader.readAsText(file);
   this.value = '';
 });
 
