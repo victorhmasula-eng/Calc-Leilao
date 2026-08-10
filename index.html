@@ -294,6 +294,16 @@
   .doc-upload-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border: none; border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
   .doc-note { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
 
+  .gasto-row { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .gasto-row-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .gasto-row-top .gasto-index { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+  .gasto-field { margin-bottom: 8px; }
+  .gasto-field:last-child { margin-bottom: 0; }
+  .gasto-field label { font-size: 10.5px; color: var(--text-muted); display: block; margin-bottom: 3px; }
+  .gasto-field input[type=text], .gasto-field select { width: 100%; background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px; padding: 8px 9px; font-size: 13px; color: var(--text-primary); font-family: inherit; box-sizing: border-box; }
+  .gasto-comprovante-row { display: flex; align-items: center; gap: 8px; }
+  .gasto-comprovante-row .doc-btn { font-size: 11.5px; padding: 6px 9px; }
+
   .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .contact-grid label { font-size: 11.5px; color: var(--text-muted); display: block; margin-bottom: 4px; }
   .contact-grid input { width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 9px; font-size: 13px; color: var(--text-primary); font-family: inherit; box-sizing: border-box; }
@@ -386,7 +396,7 @@
           </div>
           <input type="range" id="entradaSlider" min="5" max="100" step="1" value="20">
           <div class="range-ticks" id="entradaTicks"><span>5%</span><span>100%</span></div>
-          <div style="margin-top:8px;display:none;" id="entradaAbsWrap"><input type="number" class="numfield" id="entradaAbsInput" step="500"></div>
+          <div style="margin-top:8px;display:none;" id="entradaAbsWrap"><input type="text" inputmode="decimal" class="numfield" id="entradaAbsInput"></div>
         </div>
 
         <div class="field">
@@ -399,7 +409,7 @@
 
         <div class="field">
           <div class="field-label"><span>Valor da reforma</span></div>
-          <input type="number" class="numfield" id="reformaInput" step="500">
+          <input type="text" inputmode="decimal" class="numfield" id="reformaInput">
         </div>
 
         <div class="field">
@@ -421,13 +431,13 @@
             <div><label>Taxa (% a.a. + TR)</label><input type="number" class="numfield" id="taxaInput" step="0.1"></div>
             <div><label>Prazo financiamento (meses)</label><input type="number" class="numfield" id="prazoFinInput" step="12"></div>
             <div><label>Seguro MIP+DFI (%/mês do saldo)</label><input type="number" class="numfield" id="seguroInput" step="0.005"></div>
-            <div><label>Dívida condomínio a assumir (R$)</label><input type="number" class="numfield" id="condoDividaInput" step="500"></div>
-            <div><label>IPTU/tributos em atraso (R$)</label><input type="number" class="numfield" id="iptuAtrasoInput" step="50"></div>
-            <div><label>Condomínio+IPTU corrente (R$/mês)</label><input type="number" class="numfield" id="condoMesInput" step="10"></div>
+            <div><label>Dívida condomínio a assumir (R$)</label><input type="text" inputmode="decimal" class="numfield" id="condoDividaInput"></div>
+            <div><label>IPTU/tributos em atraso (R$)</label><input type="text" inputmode="decimal" class="numfield" id="iptuAtrasoInput"></div>
+            <div><label>Condomínio+IPTU corrente (R$/mês)</label><input type="text" inputmode="decimal" class="numfield" id="condoMesInput"></div>
             <div><label>Comissão leiloeiro (%)</label><input type="number" class="numfield" id="comissaoInput" step="0.5"></div>
             <div><label>ITBI (%)</label><input type="number" class="numfield" id="itbiInput" step="0.5"></div>
-            <div><label>Cartório/registro (R$)</label><input type="number" class="numfield" id="cartorioInput" step="100"></div>
-            <div><label>Outros custos fixos (R$)</label><input type="number" class="numfield" id="outrosInput" step="100"></div>
+            <div><label>Cartório/registro (R$)</label><input type="text" inputmode="decimal" class="numfield" id="cartorioInput"></div>
+            <div><label>Outros custos fixos (R$)</label><input type="text" inputmode="decimal" class="numfield" id="outrosInput"></div>
             <div><label>Corretagem na venda (%)</label><input type="number" class="numfield" id="corretagemInput" step="0.5"></div>
             <div><label>IR ganho de capital (%)</label><input type="number" class="numfield" id="irInput" step="1"></div>
           </div>
@@ -500,11 +510,11 @@
         <div class="contact-grid">
           <div>
             <label>Valor de arremataçao (R$)</label>
-            <input type="number" class="numfield" id="ap302_valorArremate" step="500">
+            <input type="text" inputmode="decimal" class="numfield" id="ap302_valorArremate">
           </div>
           <div>
             <label>Condomínio mensal (R$)</label>
-            <input type="number" class="numfield" id="ap302_condoMes" step="10">
+            <input type="text" inputmode="decimal" class="numfield" id="ap302_condoMes">
           </div>
         </div>
         <p class="doc-note" id="ap302_arremateNote"></p>
@@ -559,17 +569,26 @@
         <h2 class="sec">🧮 Calculadora deste imóvel</h2>
         <div class="field">
           <div class="field-label"><span>Entrada</span><span class="field-value" id="ap302_entradaLabel">20%</span></div>
+          <div class="seg">
+            <button type="button" id="ap302_avistaOff" class="active">Financiado</button>
+            <button type="button" id="ap302_avistaOn">À vista</button>
+          </div>
           <input type="range" id="ap302_entradaSlider" min="5" max="100" step="1" value="20">
           <div class="range-ticks"><span>5%</span><span>100%</span></div>
         </div>
         <div class="field">
           <div class="field-label"><span>Valor de arremataçao</span></div>
-          <input type="number" class="numfield" id="ap302_calcPreco" step="500">
+          <table class="kv" style="margin-top:2px;"><tr><td style="border:none;padding:8px 0;">🔒 <span id="ap302_calcPrecoLocked">R$ 0,00</span></td></tr></table>
+          <div style="font-size:11px;color:var(--text-muted);">Travado — edite no card "Dados do arremate" acima.</div>
         </div>
+
         <div class="field">
-          <div class="field-label"><span>Valor da reforma</span></div>
-          <input type="number" class="numfield" id="ap302_calcReforma" step="500">
+          <div class="field-label"><span>Gastos (reforma, taxas, etc.)</span><span class="field-value" id="ap302_gastosTotal">R$ 0,00</span></div>
+          <div id="ap302-gastos-list"></div>
+          <div class="doc-empty" id="ap302-gastos-empty">Nenhum gasto adicionado ainda.</div>
+          <button type="button" class="doc-upload-btn" id="ap302_gastoAddBtn" style="margin-top:8px;">➕ Adicionar gasto</button>
         </div>
+
         <div class="field">
           <div class="field-label"><span>Prazo até a venda</span><span class="field-value" id="ap302_prazoLabel">6 meses</span></div>
           <input type="range" id="ap302_calcPrazo" min="1" max="24" step="1" value="6">
@@ -577,22 +596,17 @@
         </div>
         <div class="field">
           <div class="field-label"><span>Preço de venda estimado</span></div>
-          <input type="number" class="numfield" id="ap302_calcVenda" step="1000">
+          <input type="text" inputmode="decimal" class="numfield" id="ap302_calcVenda">
         </div>
 
         <div class="hero">
           <div class="hero-label">Lucro estimado</div>
           <div class="hero-value" id="ap302_lucroValue">R$ 0</div>
-          <div class="hero-sub" id="ap302_retornoValue">0% no prazo</div>
         </div>
-        <div class="stat-row">
+        <div class="stat-row" style="grid-template-columns:1fr;">
           <div class="stat-tile">
             <div class="stat-label">Caixa próprio total</div>
             <div class="stat-value" id="ap302_caixaValue">R$ 0</div>
-          </div>
-          <div class="stat-tile">
-            <div class="stat-label">Retorno anualizado</div>
-            <div class="stat-value" id="ap302_retornoAnoValue">0%</div>
           </div>
         </div>
       </div>
@@ -1015,13 +1029,40 @@ propSelect.addEventListener('change', () => renderProperty(propSelect.value));
 
 function fmtBRL(v) {
   const neg = v < 0;
-  v = Math.round(Math.abs(v));
-  return (neg ? '-R$ ' : 'R$ ') + v.toLocaleString('pt-BR');
+  v = Math.abs(v);
+  return (neg ? '-R$ ' : 'R$ ') + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 function fmtPct(v) { return v.toFixed(1).replace('.', ',') + '%'; }
 
+// ---------- campos de dinheiro (R$ 0,00) ----------
+function fmtMoneyInput(v) {
+  v = Number(v) || 0;
+  return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function parseMoneyInput(str) {
+  if (!str) return 0;
+  let s = String(str).replace(/[^\d.,]/g, '');
+  const lastComma = s.lastIndexOf(',');
+  const lastDot = s.lastIndexOf('.');
+  const decimalSep = lastComma > lastDot ? ',' : (lastDot > lastComma ? '.' : null);
+  if (decimalSep) {
+    const otherSep = decimalSep === ',' ? '.' : ',';
+    s = s.split(otherSep).join('');
+    s = s.replace(decimalSep, '.');
+  }
+  return parseFloat(s) || 0;
+}
+function setMoneyValue(el, v) { el.value = fmtMoneyInput(v); }
+function getMoneyValue(el) { return parseMoneyInput(el.value); }
+function initMoneyField(el) {
+  el.type = 'text';
+  el.setAttribute('inputmode', 'decimal');
+  el.addEventListener('focus', function() { this.select(); });
+  el.addEventListener('blur', function() { this.value = fmtMoneyInput(parseMoneyInput(this.value)); });
+}
+
 function editableCell(key, field, currentVal, step) {
-  return '<input type="number" class="numfield editable-field" data-key="' + key + '" data-field="' + field + '" value="' + currentVal + '" step="' + step + '" style="width:130px;text-align:right;display:inline-block;"> ' +
+  return '<input type="text" inputmode="decimal" class="numfield editable-field" data-key="' + key + '" data-field="' + field + '" value="' + fmtMoneyInput(currentVal) + '" style="width:130px;text-align:right;display:inline-block;"> ' +
     '<span style="font-size:11px;color:var(--warning);white-space:nowrap;">a confirmar — edite</span>';
 }
 
@@ -1208,15 +1249,16 @@ function bindLinkFields() {
 
 function bindEditableFields() {
   document.querySelectorAll('.editable-field').forEach(inp => {
+    initMoneyField(inp);
     inp.addEventListener('input', () => {
       const key = inp.dataset.key;
       const field = inp.dataset.field;
-      const val = parseFloat(inp.value) || 0;
+      const val = getMoneyValue(inp);
       PROPS[key][field] = val;
       if (propSelect.value === key) {
-        if (field === 'condoDivida') el('condoDividaInput').value = val;
-        if (field === 'condoMes') el('condoMesInput').value = val;
-        if (field === 'iptuAtraso') el('iptuAtrasoInput').value = val;
+        if (field === 'condoDivida') setMoneyValue(el('condoDividaInput'), val);
+        if (field === 'condoMes') setMoneyValue(el('condoMesInput'), val);
+        if (field === 'iptuAtraso') setMoneyValue(el('iptuAtrasoInput'), val);
         compute();
       }
     });
@@ -1237,11 +1279,11 @@ function setEntradaMode(mode) {
 function syncEntradaAbsFromPct() {
   const preco = parseFloat(el('precoInput').value) || 0;
   const pct = parseFloat(el('entradaSlider').value) || 0;
-  el('entradaAbsInput').value = Math.round(preco * pct / 100);
+  setMoneyValue(el('entradaAbsInput'), Math.round(preco * pct / 100));
 }
 function syncEntradaPctFromAbs() {
   const preco = parseFloat(el('precoInput').value) || 0;
-  const abs = parseFloat(el('entradaAbsInput').value) || 0;
+  const abs = getMoneyValue(el('entradaAbsInput'));
   const pct = preco > 0 ? Math.min(Math.max(abs / preco * 100, 5), 100) : 20;
   el('entradaSlider').value = pct;
 }
@@ -1265,14 +1307,14 @@ function loadPreset(key) {
   el('vendaMinTick').textContent = fmtBRL(p.V_min);
   el('vendaMaxTick').textContent = fmtBRL(p.V_max);
 
-  el('reformaInput').value = p.reforma;
-  el('condoDividaInput').value = p.condoDivida;
-  el('iptuAtrasoInput').value = p.iptuAtraso;
-  el('condoMesInput').value = p.condoMes;
+  setMoneyValue(el('reformaInput'), p.reforma);
+  setMoneyValue(el('condoDividaInput'), p.condoDivida);
+  setMoneyValue(el('iptuAtrasoInput'), p.iptuAtraso);
+  setMoneyValue(el('condoMesInput'), p.condoMes);
   el('comissaoInput').value = p.comissaoPct;
   el('itbiInput').value = p.itbiPct;
-  el('cartorioInput').value = p.cartorio;
-  el('outrosInput').value = p.outros;
+  setMoneyValue(el('cartorioInput'), p.cartorio);
+  setMoneyValue(el('outrosInput'), p.outros);
   el('corretagemInput').value = p.corretagemPct;
   el('irInput').value = p.irPct;
 
@@ -1312,6 +1354,8 @@ function bindCalc() {
   ['taxaInput','prazoFinInput','seguroInput','reformaInput','condoDividaInput',
    'iptuAtrasoInput','condoMesInput','comissaoInput','itbiInput','cartorioInput','outrosInput',
    'corretagemInput','irInput'].forEach(id => el(id).addEventListener('input', () => compute()));
+  ['entradaAbsInput','reformaInput','condoDividaInput','iptuAtrasoInput','condoMesInput','cartorioInput','outrosInput']
+    .forEach(id => initMoneyField(el(id)));
 }
 bindCalc();
 
@@ -1324,14 +1368,14 @@ function compute() {
   const taxaAA = parseFloat(el('taxaInput').value) / 100 || 0;
   const prazoFin = parseInt(el('prazoFinInput').value, 10) || 360;
   const seguroMensal = (parseFloat(el('seguroInput').value) || 0) / 100;
-  const reforma = parseFloat(el('reformaInput').value) || 0;
-  const condoDivida = parseFloat(el('condoDividaInput').value) || 0;
-  const iptuAtraso = parseFloat(el('iptuAtrasoInput').value) || 0;
-  const condoMes = parseFloat(el('condoMesInput').value) || 0;
+  const reforma = getMoneyValue(el('reformaInput'));
+  const condoDivida = getMoneyValue(el('condoDividaInput'));
+  const iptuAtraso = getMoneyValue(el('iptuAtrasoInput'));
+  const condoMes = getMoneyValue(el('condoMesInput'));
   const comissaoPct = (parseFloat(el('comissaoInput').value) || 0) / 100;
   const itbiPct = (parseFloat(el('itbiInput').value) || 0) / 100;
-  const cartorio = parseFloat(el('cartorioInput').value) || 0;
-  const outros = parseFloat(el('outrosInput').value) || 0;
+  const cartorio = getMoneyValue(el('cartorioInput'));
+  const outros = getMoneyValue(el('outrosInput'));
   const corretagemPct = (parseFloat(el('corretagemInput').value) || 0) / 100;
   const irPct = (parseFloat(el('irInput').value) || 0) / 100;
 
@@ -1536,8 +1580,8 @@ function buildWazeUrl(p) {
 function renderAp302() {
   const p = PROPS.gran302;
 
-  el('ap302_valorArremate').value = p.arremate.valor != null ? p.arremate.valor : '';
-  el('ap302_condoMes').value = p.condoMes;
+  el('ap302_valorArremate').value = p.arremate.valor != null ? fmtMoneyInput(p.arremate.valor) : '';
+  setMoneyValue(el('ap302_condoMes'), p.condoMes);
   el('ap302_arremateNote').textContent = p.arremate.valor != null
     ? 'Valor de arremataçao registrado. Edite acima se precisar corrigir.'
     : '⚠ Valor de arremataçao ainda não informado — preencha acima para a calculadora refletir o custo real.';
@@ -1561,18 +1605,20 @@ function renderAp302() {
   el('ap302-comp-note').style.display = p.comparaveisNote ? 'block' : 'none';
 
   el('ap302-dividas-table').innerHTML =
-    '<tr><td>IPTU em atraso (R$)</td><td><input type="number" class="numfield" id="ap302_dividaIptu" step="10" style="width:140px;text-align:right;"></td></tr>' +
-    '<tr><td>Dívida de condomínio (R$)</td><td><input type="number" class="numfield" id="ap302_dividaCondo" step="100" style="width:140px;text-align:right;"></td></tr>';
-  el('ap302_dividaIptu').value = p.iptuAtraso;
-  el('ap302_dividaCondo').value = p.condoDivida;
+    '<tr><td>IPTU em atraso (R$)</td><td><input type="text" inputmode="decimal" class="numfield" id="ap302_dividaIptu" style="width:140px;text-align:right;"></td></tr>' +
+    '<tr><td>Dívida de condomínio (R$)</td><td><input type="text" inputmode="decimal" class="numfield" id="ap302_dividaCondo" style="width:140px;text-align:right;"></td></tr>';
+  setMoneyValue(el('ap302_dividaIptu'), p.iptuAtraso);
+  setMoneyValue(el('ap302_dividaCondo'), p.condoDivida);
+  initMoneyField(el('ap302_dividaIptu'));
+  initMoneyField(el('ap302_dividaCondo'));
   el('ap302_dividaIptu').oninput = function() {
-    p.iptuAtraso = parseFloat(this.value) || 0;
-    if (propSelect.value === 'gran302') { el('iptuAtrasoInput').value = p.iptuAtraso; compute(); }
+    p.iptuAtraso = getMoneyValue(this);
+    if (propSelect.value === 'gran302') { setMoneyValue(el('iptuAtrasoInput'), p.iptuAtraso); compute(); }
     ap302Compute();
   };
   el('ap302_dividaCondo').oninput = function() {
-    p.condoDivida = parseFloat(this.value) || 0;
-    if (propSelect.value === 'gran302') { el('condoDividaInput').value = p.condoDivida; compute(); }
+    p.condoDivida = getMoneyValue(this);
+    if (propSelect.value === 'gran302') { setMoneyValue(el('condoDividaInput'), p.condoDivida); compute(); }
     ap302Compute();
   };
 
@@ -1582,23 +1628,129 @@ function renderAp302() {
   el('ap302_corretorNome').value = p.corretor.nome || '';
   el('ap302_corretorTel').value = p.corretor.telefone || '';
 
-  el('ap302_calcPreco').value = p.arremate.valor != null ? p.arremate.valor : p.P_default;
-  el('ap302_calcReforma').value = p.reforma;
-  el('ap302_calcVenda').value = p.V_default;
-  el('ap302_entradaSlider').value = p.entradaPct;
-  el('ap302_entradaLabel').textContent = p.entradaPct + '%';
+  el('ap302_calcPrecoLocked').textContent = fmtBRL(p.arremate.valor != null ? p.arremate.valor : p.P_default);
+  setMoneyValue(el('ap302_calcVenda'), p.V_default);
   el('ap302_calcPrazo').value = 6;
   el('ap302_prazoLabel').textContent = '6 meses';
+  setAp302Avista(ap302Avista);
 
   renderAp302Docs();
+  renderAp302Gastos();
+}
+
+// ---------- Entrada: financiado x à vista ----------
+let ap302Avista = true;
+function setAp302Avista(isAvista) {
+  ap302Avista = isAvista;
+  el('ap302_avistaOn').classList.toggle('active', isAvista);
+  el('ap302_avistaOff').classList.toggle('active', !isAvista);
+  el('ap302_entradaSlider').disabled = isAvista;
+  el('ap302_entradaSlider').style.opacity = isAvista ? '.4' : '1';
+  if (isAvista) {
+    el('ap302_entradaSlider').value = 100;
+    el('ap302_entradaLabel').textContent = '100% (à vista)';
+  } else {
+    el('ap302_entradaLabel').textContent = el('ap302_entradaSlider').value + '%';
+  }
+  ap302Compute();
+}
+el('ap302_avistaOn').addEventListener('click', () => setAp302Avista(true));
+el('ap302_avistaOff').addEventListener('click', () => setAp302Avista(false));
+
+// ---------- Gastos (itens de reforma/custos) ----------
+let ap302Gastos = [];
+let ap302GastoIdSeq = 1;
+const PAGO_POR_OPTIONS = ['VTO', 'CIR', 'Ambos'];
+
+function addAp302Gasto() {
+  ap302Gastos.push({ id: ap302GastoIdSeq++, descricao: '', valor: 0, pagoPor: 'Ambos', comprovante: null });
+  renderAp302Gastos();
+}
+el('ap302_gastoAddBtn').addEventListener('click', addAp302Gasto);
+
+function ap302GastosTotal() {
+  return ap302Gastos.reduce((sum, g) => sum + (g.valor || 0), 0);
+}
+
+function renderAp302Gastos() {
+  const list = el('ap302-gastos-list');
+  el('ap302_gastosTotal').textContent = fmtBRL(ap302GastosTotal());
+  if (!ap302Gastos.length) {
+    list.innerHTML = '';
+    el('ap302-gastos-empty').style.display = 'block';
+    ap302Compute();
+    return;
+  }
+  el('ap302-gastos-empty').style.display = 'none';
+  list.innerHTML = ap302Gastos.map((g, i) =>
+    '<div class="gasto-row">' +
+      '<div class="gasto-row-top"><span class="gasto-index">Gasto ' + (i + 1) + '</span><button type="button" class="doc-btn danger" data-gasto-del="' + g.id + '">🗑</button></div>' +
+      '<div class="gasto-field"><label>Descrição</label><input type="text" data-gasto-field="descricao" data-gasto-id="' + g.id + '" value="' + (g.descricao || '').replace(/"/g,'&quot;') + '" placeholder="Ex: pintura, piso, registro..."></div>' +
+      '<div class="gasto-field"><label>Valor (R$)</label><input type="text" inputmode="decimal" class="numfield gasto-valor-input" data-gasto-field="valor" data-gasto-id="' + g.id + '" value="' + fmtMoneyInput(g.valor) + '"></div>' +
+      '<div class="gasto-field"><label>Pago por</label><select data-gasto-field="pagoPor" data-gasto-id="' + g.id + '">' +
+        PAGO_POR_OPTIONS.map(o => '<option value="' + o + '"' + (g.pagoPor === o ? ' selected' : '') + '>' + o + '</option>').join('') +
+      '</select></div>' +
+      '<div class="gasto-field">' +
+        '<label>Comprovante</label>' +
+        '<div class="gasto-comprovante-row">' +
+          (g.comprovante
+            ? '<a class="doc-btn" href="' + g.comprovante.dataUrl + '" download="' + g.comprovante.name.replace(/"/g,'&quot;') + '">📎 ' + g.comprovante.name + '</a>'
+            : '<span style="font-size:11.5px;color:var(--text-muted);">Nenhum anexado</span>') +
+          '<button type="button" class="doc-btn" data-gasto-attach="' + g.id + '">' + (g.comprovante ? 'Trocar' : 'Anexar') + '</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>'
+  ).join('');
+
+  list.querySelectorAll('[data-gasto-field]').forEach(inp => {
+    inp.addEventListener('input', function() {
+      const g = ap302Gastos.find(x => x.id === parseInt(this.dataset.gastoId));
+      if (!g) return;
+      const field = this.dataset.gastoField;
+      if (field === 'valor') {
+        g.valor = getMoneyValue(this);
+        el('ap302_gastosTotal').textContent = fmtBRL(ap302GastosTotal());
+        ap302Compute();
+      } else {
+        g[field] = this.value;
+      }
+    });
+    if (inp.dataset.gastoField === 'valor') initMoneyField(inp);
+  });
+  list.querySelectorAll('[data-gasto-del]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      ap302Gastos = ap302Gastos.filter(g => g.id !== parseInt(this.dataset.gastoDel));
+      renderAp302Gastos();
+    });
+  });
+  list.querySelectorAll('[data-gasto-attach]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const gastoId = parseInt(this.dataset.gastoAttach);
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'application/pdf,image/*';
+      fileInput.addEventListener('change', function() {
+        const file = this.files && this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function() {
+          const g = ap302Gastos.find(x => x.id === gastoId);
+          if (g) { g.comprovante = { name: file.name, dataUrl: reader.result }; renderAp302Gastos(); }
+        };
+        reader.readAsDataURL(file);
+      });
+      fileInput.click();
+    });
+  });
+
   ap302Compute();
 }
 
 function ap302Compute() {
   const p = PROPS.gran302;
-  const P = parseFloat(el('ap302_calcPreco').value) || 0;
-  const V = parseFloat(el('ap302_calcVenda').value) || 0;
-  const reforma = parseFloat(el('ap302_calcReforma').value) || 0;
+  const P = p.arremate.valor != null ? p.arremate.valor : p.P_default;
+  const V = getMoneyValue(el('ap302_calcVenda'));
+  const reforma = ap302GastosTotal();
   const meses = parseInt(el('ap302_calcPrazo').value) || 1;
   const entradaPct = parseFloat(el('ap302_entradaSlider').value) || 5;
 
@@ -1607,39 +1759,39 @@ function ap302Compute() {
 
   el('ap302_lucroValue').textContent = fmtBRL(r.lucro);
   el('ap302_lucroValue').className = 'hero-value ' + (r.lucro >= 0 ? '' : 'ink-critical');
-  el('ap302_retornoValue').textContent = fmtPct(r.retorno) + ' em ' + meses + (meses === 1 ? ' mês' : ' meses');
   el('ap302_caixaValue').textContent = fmtBRL(r.caixaProprioTotal);
-  el('ap302_retornoAnoValue').textContent = fmtPct(r.retornoAno);
-  el('ap302_retornoAnoValue').className = 'stat-value ' + (r.retornoAno >= 20 ? 'ink-good' : r.retornoAno >= 8 ? 'ink-warning' : 'ink-critical');
 }
 
 el('ap302_valorArremate').addEventListener('input', function() {
-  const v = parseFloat(this.value);
+  const v = this.value.trim() === '' ? NaN : getMoneyValue(this);
   PROPS.gran302.arremate.valor = isNaN(v) ? null : v;
   el('ap302_arremateNote').textContent = PROPS.gran302.arremate.valor != null
     ? 'Valor de arremataçao registrado. Edite acima se precisar corrigir.'
     : '⚠ Valor de arremataçao ainda não informado — preencha acima para a calculadora refletir o custo real.';
-  el('ap302_calcPreco').value = PROPS.gran302.arremate.valor != null ? PROPS.gran302.arremate.valor : PROPS.gran302.P_default;
+  el('ap302_calcPrecoLocked').textContent = fmtBRL(PROPS.gran302.arremate.valor != null ? PROPS.gran302.arremate.valor : PROPS.gran302.P_default);
   ap302Compute();
 });
+initMoneyField(el('ap302_valorArremate'));
 el('ap302_condoMes').addEventListener('input', function() {
-  const v = parseFloat(this.value) || 0;
+  const v = getMoneyValue(this);
   PROPS.gran302.condoMes = v;
-  if (propSelect.value === 'gran302') { el('condoMesInput').value = v; compute(); }
+  if (propSelect.value === 'gran302') { setMoneyValue(el('condoMesInput'), v); compute(); }
 });
+initMoneyField(el('ap302_condoMes'));
 el('ap302_sindicoNome').addEventListener('input', function() { PROPS.gran302.sindico.nome = this.value.trim() || null; });
 el('ap302_sindicoTel').addEventListener('input', function() { PROPS.gran302.sindico.telefone = this.value.trim() || null; });
 el('ap302_portariaTel').addEventListener('input', function() { PROPS.gran302.portaria.telefone = this.value.trim() || null; });
 el('ap302_corretorNome').addEventListener('input', function() { PROPS.gran302.corretor.nome = this.value.trim() || null; });
 el('ap302_corretorTel').addEventListener('input', function() { PROPS.gran302.corretor.telefone = this.value.trim() || null; });
 
-['ap302_calcPreco','ap302_calcReforma','ap302_calcVenda'].forEach(id => el(id).addEventListener('input', ap302Compute));
+el('ap302_calcVenda').addEventListener('input', ap302Compute);
+initMoneyField(el('ap302_calcVenda'));
 el('ap302_calcPrazo').addEventListener('input', function() {
   el('ap302_prazoLabel').textContent = this.value + (this.value == 1 ? ' mês' : ' meses');
   ap302Compute();
 });
 el('ap302_entradaSlider').addEventListener('input', function() {
-  el('ap302_entradaLabel').textContent = this.value + '%';
+  if (!ap302Avista) el('ap302_entradaLabel').textContent = this.value + '%';
   ap302Compute();
 });
 
