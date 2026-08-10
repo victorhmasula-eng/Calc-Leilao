@@ -528,11 +528,11 @@
       <div class="pagesub">Imóvel arrematado — dados, contatos e documentos deste apartamento específico.</div>
 
       <div class="card backup-card">
-        <h2 class="sec">💾 Backup dos dados</h2>
-        <p class="doc-note" style="margin-top:0;">Esta página não salva nada sozinha — se você atualizar/fechar sem baixar um backup, os gastos, dívidas e contatos digitados se perdem. Baixe um backup depois de editar, e restaure ao reabrir.</p>
+        <h2 class="sec">☁️ Banco de dados</h2>
+        <p class="doc-note" style="margin-top:0;" id="ap302_syncStatus">Conectando…</p>
         <div class="backup-btns">
-          <button type="button" class="doc-upload-btn" id="ap302_backupSaveBtn">⬇️ Baixar backup</button>
-          <button type="button" class="backup-btn-outline" id="ap302_backupLoadBtn">⬆️ Restaurar backup</button>
+          <button type="button" class="doc-upload-btn" id="ap302_backupSaveBtn">⬇️ Baixar cópia (.json)</button>
+          <button type="button" class="backup-btn-outline" id="ap302_backupLoadBtn">⬆️ Restaurar cópia</button>
         </div>
         <input type="file" id="ap302_backupFileInput" accept="application/json" style="display:none;">
         <p class="doc-note" id="ap302_backupStatus"></p>
@@ -1647,11 +1647,13 @@ function renderAp302() {
     p.iptuAtraso = getMoneyValue(this);
     if (propSelect.value === 'gran302') { setMoneyValue(el('iptuAtrasoInput'), p.iptuAtraso); compute(); }
     ap302Compute();
+    ap302ScheduleSave();
   };
   el('ap302_dividaCondo').oninput = function() {
     p.condoDivida = getMoneyValue(this);
     if (propSelect.value === 'gran302') { setMoneyValue(el('condoDividaInput'), p.condoDivida); compute(); }
     ap302Compute();
+    ap302ScheduleSave();
   };
 
   el('ap302_sindicoNome').value = p.sindico.nome || '';
@@ -1817,12 +1819,13 @@ function renderAp302Gastos() {
       ap302Gastos = ap302Gastos.filter(g => g.id !== id);
       ap302EditingIds.delete(id);
       renderAp302Gastos();
+      ap302ScheduleSave();
     });
   });
   list.querySelectorAll('[data-gasto-confirm]').forEach(btn => {
     btn.addEventListener('click', function() {
       const g = ap302Gastos.find(x => x.id === parseInt(this.dataset.gastoConfirm));
-      if (g) { g.confirmado = true; ap302EditingIds.delete(g.id); renderAp302Gastos(); }
+      if (g) { g.confirmado = true; ap302EditingIds.delete(g.id); renderAp302Gastos(); ap302ScheduleSave(); }
     });
   });
   list.querySelectorAll('[data-gasto-edit]').forEach(btn => {
@@ -1843,7 +1846,7 @@ function renderAp302Gastos() {
         const reader = new FileReader();
         reader.onload = function() {
           const g = ap302Gastos.find(x => x.id === gastoId);
-          if (g) { g.comprovante = { name: file.name, dataUrl: reader.result }; renderAp302Gastos(); }
+          if (g) { g.comprovante = { name: file.name, dataUrl: reader.result }; renderAp302Gastos(); ap302ScheduleSave(); }
         };
         reader.readAsDataURL(file);
       });
@@ -1878,19 +1881,21 @@ el('ap302_valorArremate').addEventListener('input', function() {
     : '⚠ Valor de arremataçao ainda não informado — preencha acima para a calculadora refletir o custo real.';
   el('ap302_calcPrecoLocked').textContent = fmtBRL(PROPS.gran302.arremate.valor != null ? PROPS.gran302.arremate.valor : PROPS.gran302.P_default);
   ap302Compute();
+  ap302ScheduleSave();
 });
 initMoneyField(el('ap302_valorArremate'));
 el('ap302_condoMes').addEventListener('input', function() {
   const v = getMoneyValue(this);
   PROPS.gran302.condoMes = v;
   if (propSelect.value === 'gran302') { setMoneyValue(el('condoMesInput'), v); compute(); }
+  ap302ScheduleSave();
 });
 initMoneyField(el('ap302_condoMes'));
-el('ap302_sindicoNome').addEventListener('input', function() { PROPS.gran302.sindico.nome = this.value.trim() || null; });
-el('ap302_sindicoTel').addEventListener('input', function() { PROPS.gran302.sindico.telefone = this.value.trim() || null; });
-el('ap302_portariaTel').addEventListener('input', function() { PROPS.gran302.portaria.telefone = this.value.trim() || null; });
-el('ap302_corretorNome').addEventListener('input', function() { PROPS.gran302.corretor.nome = this.value.trim() || null; });
-el('ap302_corretorTel').addEventListener('input', function() { PROPS.gran302.corretor.telefone = this.value.trim() || null; });
+el('ap302_sindicoNome').addEventListener('input', function() { PROPS.gran302.sindico.nome = this.value.trim() || null; ap302ScheduleSave(); });
+el('ap302_sindicoTel').addEventListener('input', function() { PROPS.gran302.sindico.telefone = this.value.trim() || null; ap302ScheduleSave(); });
+el('ap302_portariaTel').addEventListener('input', function() { PROPS.gran302.portaria.telefone = this.value.trim() || null; ap302ScheduleSave(); });
+el('ap302_corretorNome').addEventListener('input', function() { PROPS.gran302.corretor.nome = this.value.trim() || null; ap302ScheduleSave(); });
+el('ap302_corretorTel').addEventListener('input', function() { PROPS.gran302.corretor.telefone = this.value.trim() || null; ap302ScheduleSave(); });
 
 el('ap302_calcVenda').addEventListener('input', ap302Compute);
 initMoneyField(el('ap302_calcVenda'));
@@ -1924,13 +1929,14 @@ function renderAp302Docs() {
   list.querySelectorAll('.doc-name-input').forEach(inp => {
     inp.addEventListener('input', function() {
       const doc = ap302Docs.find(d => d.id === parseInt(this.dataset.docid));
-      if (doc) doc.name = this.value;
+      if (doc) { doc.name = this.value; ap302ScheduleSave(); }
     });
   });
   list.querySelectorAll('[data-del]').forEach(btn => {
     btn.addEventListener('click', function() {
       ap302Docs = ap302Docs.filter(d => d.id !== parseInt(this.dataset.del));
       renderAp302Docs();
+      ap302ScheduleSave();
     });
   });
 }
@@ -1944,6 +1950,7 @@ el('ap302_docFileInput').addEventListener('change', function() {
     const defaultName = file.name.replace(/\.pdf$/i, '');
     ap302Docs.push({ id: ap302DocIdSeq++, name: defaultName, dataUrl: reader.result });
     renderAp302Docs();
+    ap302ScheduleSave();
   };
   reader.readAsDataURL(file);
   this.value = '';
@@ -1968,6 +1975,23 @@ function ap302BuildBackup() {
   };
 }
 
+function ap302ApplyBackupData(data) {
+  const p = PROPS.gran302;
+  if (data.arremateValor != null) p.arremate.valor = data.arremateValor;
+  if (data.condoMes != null) p.condoMes = data.condoMes;
+  if (data.iptuAtraso != null) p.iptuAtraso = data.iptuAtraso;
+  if (data.condoDivida != null) p.condoDivida = data.condoDivida;
+  if (data.sindico) p.sindico = data.sindico;
+  if (data.portaria) p.portaria = data.portaria;
+  if (data.corretor) p.corretor = data.corretor;
+  if (Array.isArray(data.gastos)) { ap302Gastos = data.gastos; ap302EditingIds = new Set(); }
+  if (data.gastoIdSeq) ap302GastoIdSeq = data.gastoIdSeq;
+  if (Array.isArray(data.docs)) ap302Docs = data.docs;
+  if (data.docIdSeq) ap302DocIdSeq = data.docIdSeq;
+  renderAp302();
+  if (propSelect.value === 'gran302') compute();
+}
+
 el('ap302_backupSaveBtn').addEventListener('click', function() {
   const data = ap302BuildBackup();
   const json = JSON.stringify(data, null, 2);
@@ -1980,7 +2004,7 @@ el('ap302_backupSaveBtn').addEventListener('click', function() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  el('ap302_backupStatus').textContent = '✓ Backup baixado. Use "Restaurar backup" na próxima vez que abrir a página para recuperar estes dados.';
+  el('ap302_backupStatus').textContent = '✓ Cópia baixada.';
 });
 
 el('ap302_backupLoadBtn').addEventListener('click', function() {
@@ -1993,33 +2017,84 @@ el('ap302_backupFileInput').addEventListener('change', function() {
   reader.onload = function() {
     try {
       const data = JSON.parse(reader.result);
-      const p = PROPS.gran302;
-      if (data.arremateValor != null) p.arremate.valor = data.arremateValor;
-      if (data.condoMes != null) p.condoMes = data.condoMes;
-      if (data.iptuAtraso != null) p.iptuAtraso = data.iptuAtraso;
-      if (data.condoDivida != null) p.condoDivida = data.condoDivida;
-      if (data.sindico) p.sindico = data.sindico;
-      if (data.portaria) p.portaria = data.portaria;
-      if (data.corretor) p.corretor = data.corretor;
-      if (Array.isArray(data.gastos)) { ap302Gastos = data.gastos; ap302EditingIds = new Set(); }
-      if (data.gastoIdSeq) ap302GastoIdSeq = data.gastoIdSeq;
-      if (Array.isArray(data.docs)) ap302Docs = data.docs;
-      if (data.docIdSeq) ap302DocIdSeq = data.docIdSeq;
-      renderAp302();
-      if (propSelect.value === 'gran302') compute();
-      el('ap302_backupStatus').textContent = '✓ Backup restaurado com sucesso.';
+      ap302ApplyBackupData(data);
+      ap302ScheduleSave();
+      el('ap302_backupStatus').textContent = '✓ Cópia restaurada e enviada para o banco de dados.';
     } catch (e) {
-      el('ap302_backupStatus').textContent = '⚠ Não foi possível ler este arquivo — verifique se é um backup .json gerado por este painel.';
+      el('ap302_backupStatus').textContent = '⚠ Não foi possível ler este arquivo — verifique se é uma cópia .json gerada por este painel.';
     }
   };
   reader.readAsText(file);
   this.value = '';
 });
 
+// ---------- Sync com Supabase ----------
+const SUPABASE_URL = 'https://eujbnljckzgbsxqqbbqq.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1amJubGpja3pnYnN4cXFiYnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1NDA5NzcsImV4cCI6MjA5OTExNjk3N30.o1U9spmaqbXue5kPEvRLbIAW54PKIBzXn5UjHf_VdmY';
+const SUPABASE_TABLE = 'leiloes_ap302_dados';
+const SUPABASE_ROW_ID = 'ap302';
+
+let ap302SaveTimer = null;
+let ap302Loaded = false;
+
+function ap302SetSyncStatus(text, kind) {
+  const box = el('ap302_syncStatus');
+  box.textContent = text;
+  box.style.color = kind === 'error' ? 'var(--critical)' : kind === 'saving' ? 'var(--warning)' : 'var(--good)';
+}
+
+function ap302ScheduleSave() {
+  if (!ap302Loaded) return;
+  ap302SetSyncStatus('☁️ Salvando…', 'saving');
+  clearTimeout(ap302SaveTimer);
+  ap302SaveTimer = setTimeout(ap302SaveToSupabase, 800);
+}
+
+async function ap302SaveToSupabase() {
+  try {
+    const payload = ap302BuildBackup();
+    const res = await fetch(SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal',
+      },
+      body: JSON.stringify({ id: SUPABASE_ROW_ID, data: payload, updated_at: new Date().toISOString() }),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    ap302SetSyncStatus('☁️ Salvo — sincronizado com o banco de dados.', 'ok');
+  } catch (e) {
+    ap302SetSyncStatus('⚠ Não consegui salvar no banco agora. Verifique a internet ou se a tabela "' + SUPABASE_TABLE + '" já foi criada — use "Baixar cópia" como reserva.', 'error');
+  }
+}
+
+async function ap302LoadFromSupabase() {
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE + '?id=eq.' + SUPABASE_ROW_ID + '&select=data', {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const rows = await res.json();
+    if (rows.length && rows[0].data) {
+      ap302ApplyBackupData(rows[0].data);
+      ap302SetSyncStatus('☁️ Dados carregados do banco.', 'ok');
+    } else {
+      ap302SetSyncStatus('☁️ Conectado — nenhum dado salvo ainda.', 'ok');
+    }
+  } catch (e) {
+    ap302SetSyncStatus('⚠ Não consegui conectar ao banco (a tabela "' + SUPABASE_TABLE + '" ainda não existe no Supabase?). Os dados ficam só nesta sessão até lá.', 'error');
+  } finally {
+    ap302Loaded = true;
+  }
+}
+
 // ---------- init ----------
 renderProperty('gran');
 renderLista();
 renderAp302();
+ap302LoadFromSupabase();
 </script>
 </body>
 </html>
