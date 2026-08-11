@@ -575,7 +575,7 @@
             <button type="button" id="ap302_avistaOn">À vista</button>
           </div>
           <input type="range" id="ap302_entradaSlider" min="5" max="100" step="1" value="20">
-          <div class="range-ticks"><span>5%</span><span>100%</span></div>
+          <div class="range-ticks" id="ap302_entradaTicks"><span>5%</span><span>100%</span></div>
         </div>
         <div class="field">
           <div class="field-label"><span>Lançamentos financeiros</span></div>
@@ -1658,7 +1658,8 @@ function setAp302Avista(isAvista) {
   el('ap302_avistaOn').classList.toggle('active', isAvista);
   el('ap302_avistaOff').classList.toggle('active', !isAvista);
   el('ap302_entradaSlider').disabled = isAvista;
-  el('ap302_entradaSlider').style.opacity = isAvista ? '.4' : '1';
+  el('ap302_entradaSlider').style.display = isAvista ? 'none' : 'block';
+  el('ap302_entradaTicks').style.display = isAvista ? 'none' : 'flex';
   if (isAvista) {
     el('ap302_entradaSlider').value = 100;
     el('ap302_entradaLabel').textContent = '100% (à vista)';
