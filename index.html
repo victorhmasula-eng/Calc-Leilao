@@ -336,6 +336,9 @@
   .contact-block { margin-bottom: 14px; }
   .contact-block:last-child { margin-bottom: 0; }
   .contact-block-title { font-size: 12.5px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; }
+  .contact-compact-grid { display: grid; grid-template-columns: 66px 1fr 1fr; gap: 8px 8px; align-items: center; }
+  .contact-compact-grid .ccg-label { font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+  .contact-compact-grid input { width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 8px; font-size: 12.5px; color: var(--text-primary); font-family: inherit; box-sizing: border-box; }
 
   .nav-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
   .nav-row a { flex: 1; min-width: 140px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; }
@@ -360,7 +363,7 @@
   <main>
 
     <!-- ===================== IMÓVEL ===================== -->
-    <section id="tab-imovel" class="tabpanel active">
+    <section id="tab-imovel" class="tabpanel">
 
       <div class="card">
         <h2 class="sec">Selecionar imóvel</h2>
@@ -526,14 +529,14 @@
     </section>
 
     <!-- ===================== AP302 (imóvel arrematado) ===================== -->
-    <section id="tab-ap302" class="tabpanel">
+    <section id="tab-ap302" class="tabpanel active">
       <span class="badge badge-live"><span class="live-dot"></span>Comprado</span>
       <h1 class="pagetitle">🔑 AP302 — Gran Acrópolis IV</h1>
       <div class="pagesub">Imóvel arrematado — dados, contatos e documentos deste apartamento específico.</div>
 
       <div class="card backup-card">
-        <h2 class="sec">☁️ Banco de dados</h2>
-        <p class="doc-note" style="margin-top:0;" id="ap302_syncStatus">Conectando…</p>
+        <h2 class="sec">💾 Backup dos dados</h2>
+        <p class="doc-note" style="margin-top:0;">Os dados desta aba salvam automaticamente neste navegador. Use os botões abaixo para guardar uma cópia (.json) ou levar os dados para outro dispositivo/navegador.</p>
         <div class="backup-btns">
           <button type="button" class="doc-upload-btn" id="ap302_backupSaveBtn">⬇️ Baixar cópia (.json)</button>
           <button type="button" class="backup-btn-outline" id="ap302_backupLoadBtn">⬆️ Restaurar cópia</button>
@@ -574,31 +577,23 @@
 
       <div class="card">
         <h2 class="sec">Dívidas</h2>
-        <div class="callout warn">⚠ Os valores abaixo são compartilhados com a aba Imóvel — editar aqui atualiza a calculadora nos dois lugares.</div>
         <table class="kv" id="ap302-dividas-table"></table>
       </div>
 
       <div class="card">
         <h2 class="sec">Contatos</h2>
-        <div class="contact-block">
-          <div class="contact-block-title">Síndico</div>
-          <div class="contact-grid">
-            <div><label>Nome</label><input type="text" id="ap302_sindicoNome" placeholder="Nome do síndico"></div>
-            <div><label>Telefone</label><input type="text" id="ap302_sindicoTel" placeholder="(61) 9xxxx-xxxx"></div>
-          </div>
-        </div>
-        <div class="contact-block">
-          <div class="contact-block-title">Portaria</div>
-          <div class="contact-grid">
-            <div><label>Telefone</label><input type="text" id="ap302_portariaTel" placeholder="(61) 9xxxx-xxxx"></div>
-          </div>
-        </div>
-        <div class="contact-block">
-          <div class="contact-block-title">Corretor</div>
-          <div class="contact-grid">
-            <div><label>Nome</label><input type="text" id="ap302_corretorNome" placeholder="Nome do corretor"></div>
-            <div><label>Telefone</label><input type="text" id="ap302_corretorTel" placeholder="(61) 9xxxx-xxxx"></div>
-          </div>
+        <div class="contact-compact-grid">
+          <div class="ccg-label">Síndico</div>
+          <input type="text" id="ap302_sindicoNome" placeholder="Nome">
+          <input type="text" id="ap302_sindicoTel" placeholder="Telefone">
+
+          <div class="ccg-label">Portaria</div>
+          <div></div>
+          <input type="text" id="ap302_portariaTel" placeholder="Telefone">
+
+          <div class="ccg-label">Corretor</div>
+          <input type="text" id="ap302_corretorNome" placeholder="Nome">
+          <input type="text" id="ap302_corretorTel" placeholder="Telefone">
         </div>
       </div>
 
@@ -614,11 +609,16 @@
           <div class="range-ticks"><span>5%</span><span>100%</span></div>
         </div>
         <div class="field">
-          <div class="field-label"><span>🔒 Valor de arremataçao</span><span class="field-value" id="ap302_calcPrecoLocked">R$ 0,00</span></div>
-        </div>
-
-        <div class="field">
-          <div class="field-label"><span>Gastos (reforma, taxas, etc.)</span><span class="field-value" id="ap302_gastosTotal"></span></div>
+          <div class="field-label"><span>Lançamentos financeiros</span></div>
+          <div class="gasto-line">
+            <div class="gasto-line-main">
+              <span class="gasto-line-desc">Valor de arremataçao</span>
+              <span class="gasto-line-meta"><span class="gasto-line-pill">🔒 Fixo</span></span>
+            </div>
+            <div class="gasto-line-actions">
+              <span class="gasto-line-valor" id="ap302_calcPrecoLocked">R$ 0,00</span>
+            </div>
+          </div>
           <div id="ap302-gastos-list"></div>
           <div class="doc-empty" id="ap302-gastos-empty">Nenhum gasto adicionado ainda.</div>
           <button type="button" class="doc-upload-btn" id="ap302_gastoAddBtn" style="margin-top:8px;">➕ Adicionar gasto</button>
@@ -663,13 +663,13 @@
 
 <nav class="bottomnav">
   <div class="bottomnav-inner">
-    <button class="navbtn active" data-tab="imovel">
+    <button class="navbtn" data-tab="imovel">
       <span class="navicon">🏢</span>Imóvel
     </button>
     <button class="navbtn" data-tab="lista">
       <span class="navicon">📋</span>Lista
     </button>
-    <button class="navbtn" data-tab="ap302">
+    <button class="navbtn active" data-tab="ap302">
       <span class="navicon">🔑</span>AP302
     </button>
   </div>
@@ -1279,6 +1279,7 @@ function bindLinkFields() {
       const key = inp.dataset.key;
       PROPS[key].link = inp.value.trim() || null;
       renderProperty(key);
+      key === 'gran302' ? ap302ScheduleSave() : scheduleAppStateSave();
     });
   });
 }
@@ -1297,6 +1298,7 @@ function bindEditableFields() {
         if (field === 'iptuAtraso') setMoneyValue(el('iptuAtrasoInput'), val);
         compute();
       }
+      key === 'gran302' ? ap302ScheduleSave() : scheduleAppStateSave();
     });
   });
 }
@@ -1342,6 +1344,8 @@ function loadPreset(key) {
   el('vendaInput').value = p.V_default;
   el('vendaMinTick').textContent = fmtBRL(p.V_min);
   el('vendaMaxTick').textContent = fmtBRL(p.V_max);
+
+  el('prazoSlider').value = p.prazoMeses || 6;
 
   setMoneyValue(el('reformaInput'), p.reforma);
   setMoneyValue(el('condoDividaInput'), p.condoDivida);
@@ -1508,6 +1512,28 @@ function compute() {
     const isTotal = ['Caixa próprio total','LUCRO','Líquido da venda'].includes(r[0]);
     return '<tr' + (isTotal ? ' class="tot"' : '') + '><td>' + r[0] + '</td><td style="text-align:right;">' + fmtBRL(r[1]) + '</td></tr>';
   }).join('');
+
+  syncCalcStateToProps(P, entradaPct * 100, reforma, meses, V, el('taxaInput').value,
+    prazoFin, el('seguroInput').value, condoDivida, iptuAtraso, condoMes,
+    el('comissaoInput').value, el('itbiInput').value, cartorio, outros,
+    el('corretagemInput').value, el('irInput').value);
+}
+
+// Guarda os valores atuais da calculadora de volta no imóvel selecionado, para não se
+// perderem ao trocar de aba/imóvel ou fechar a página — e sincroniza com o banco (várias
+// pessoas usam o app).
+function syncCalcStateToProps(P, entradaPct, reforma, meses, V, taxaAA, prazoFin, seguroPct,
+    condoDivida, iptuAtraso, condoMes, comissaoPct, itbiPct, cartorio, outros, corretagemPct, irPct) {
+  const key = propSelect.value;
+  const p = PROPS[key];
+  if (!p) return;
+  p.P_default = P; p.entradaPct = entradaPct; p.reforma = reforma; p.prazoMeses = meses;
+  p.V_default = V; p.taxaAA = parseFloat(taxaAA) || 0; p.prazoFin = prazoFin;
+  p.seguroPct = parseFloat(seguroPct) || 0; p.condoDivida = condoDivida; p.iptuAtraso = iptuAtraso;
+  p.condoMes = condoMes; p.comissaoPct = parseFloat(comissaoPct) || 0; p.itbiPct = parseFloat(itbiPct) || 0;
+  p.cartorio = cartorio; p.outros = outros; p.corretagemPct = parseFloat(corretagemPct) || 0;
+  p.irPct = parseFloat(irPct) || 0;
+  scheduleAppStateSave();
 }
 
 // Reimplementação pura (sem ler o DOM) da fórmula de compute(), usada pela calculadora da aba AP302.
@@ -1582,6 +1608,7 @@ function renderLista() {
       propStatus[sel.dataset.key] = sel.value;
       if (propSelect.value === sel.dataset.key) renderProperty(sel.dataset.key);
       renderLista();
+      scheduleAppStateSave();
     });
   });
   tbody.querySelectorAll('.lista-link').forEach(a => {
@@ -1623,8 +1650,7 @@ function renderAp302() {
     : '⚠ Valor de arremataçao ainda não informado — preencha acima para a calculadora refletir o custo real.';
 
   el('ap302-endereco-table').innerHTML =
-    '<tr><td>Endereço</td><td>' + p.endereco + '</td></tr>' +
-    '<tr><td>Matrícula</td><td>' + (p.matriculaInfo ? p.matriculaInfo.cartorio : '') + '</td></tr>';
+    '<tr><td>Endereço</td><td>' + p.endereco + '</td></tr>';
   el('ap302_mapsLink').href = buildMapsUrl(p);
   el('ap302_wazeLink').href = buildWazeUrl(p);
 
@@ -1667,10 +1693,11 @@ function renderAp302() {
   el('ap302_corretorTel').value = p.corretor.telefone || '';
 
   el('ap302_calcPrecoLocked').textContent = fmtBRL(p.arremate.valor != null ? p.arremate.valor : p.P_default);
-  setMoneyValue(el('ap302_calcVenda'), p.V_default);
-  el('ap302_calcPrazo').value = 6;
-  el('ap302_prazoLabel').textContent = '6 meses';
-  setAp302Avista(ap302Avista);
+  setMoneyValue(el('ap302_calcVenda'), p.calcVenda != null ? p.calcVenda : p.V_default);
+  el('ap302_calcPrazo').value = p.calcPrazo || 6;
+  el('ap302_prazoLabel').textContent = (p.calcPrazo || 6) + ((p.calcPrazo || 6) === 1 ? ' mês' : ' meses');
+  el('ap302_entradaSlider').value = p.calcEntradaPct || 20;
+  setAp302Avista(p.calcAvista != null ? p.calcAvista : ap302Avista);
 
   renderAp302Docs();
   renderAp302Gastos();
@@ -1787,7 +1814,6 @@ function ap302GastoFormHtml(g, i) {
 
 function renderAp302Gastos() {
   const list = el('ap302-gastos-list');
-  el('ap302_gastosTotal').textContent = ap302Gastos.length ? fmtBRL(ap302GastosTotal()) : '';
   renderAp302DebtSummary();
   if (!ap302Gastos.length) {
     list.innerHTML = '';
@@ -1807,7 +1833,6 @@ function renderAp302Gastos() {
       const field = this.dataset.gastoField;
       if (field === 'valor') {
         g.valor = getMoneyValue(this);
-        el('ap302_gastosTotal').textContent = ap302Gastos.length ? fmtBRL(ap302GastosTotal()) : '';
         renderAp302DebtSummary();
         ap302Compute();
       } else {
@@ -1875,6 +1900,14 @@ function ap302Compute() {
   el('ap302_lucroValue').textContent = fmtBRL(r.lucro);
   el('ap302_lucroValue').className = 'hero-value ' + (r.lucro >= 0 ? '' : 'ink-critical');
   el('ap302_caixaValue').textContent = fmtBRL(r.caixaProprioTotal);
+
+  // guarda prazo/venda/entrada para não resetar ao trocar de aba, recarregar a página,
+  // ou quando outra pessoa abrir o app depois
+  p.calcVenda = V;
+  p.calcPrazo = meses;
+  p.calcEntradaPct = entradaPct;
+  p.calcAvista = ap302Avista;
+  ap302ScheduleSave();
 }
 
 el('ap302_valorArremate').addEventListener('input', function() {
@@ -1976,6 +2009,10 @@ function ap302BuildBackup() {
     gastoIdSeq: ap302GastoIdSeq,
     docs: ap302Docs,
     docIdSeq: ap302DocIdSeq,
+    calcVenda: p.calcVenda,
+    calcPrazo: p.calcPrazo,
+    calcEntradaPct: p.calcEntradaPct,
+    calcAvista: p.calcAvista,
   };
 }
 
@@ -1991,6 +2028,10 @@ function ap302ApplyBackupData(data) {
   if (Array.isArray(data.gastos)) { ap302Gastos = data.gastos; ap302EditingIds = new Set(); }
   if (data.gastoIdSeq) ap302GastoIdSeq = data.gastoIdSeq;
   if (Array.isArray(data.docs)) ap302Docs = data.docs;
+  if (data.calcVenda != null) p.calcVenda = data.calcVenda;
+  if (data.calcPrazo != null) p.calcPrazo = data.calcPrazo;
+  if (data.calcEntradaPct != null) p.calcEntradaPct = data.calcEntradaPct;
+  if (data.calcAvista != null) { p.calcAvista = data.calcAvista; ap302Avista = data.calcAvista; }
   if (data.docIdSeq) ap302DocIdSeq = data.docIdSeq;
   renderAp302();
   if (propSelect.value === 'gran302') compute();
@@ -2023,7 +2064,7 @@ el('ap302_backupFileInput').addEventListener('change', function() {
       const data = JSON.parse(reader.result);
       ap302ApplyBackupData(data);
       ap302ScheduleSave();
-      el('ap302_backupStatus').textContent = '✓ Cópia restaurada e enviada para o banco de dados.';
+      el('ap302_backupStatus').textContent = '✓ Cópia restaurada.';
     } catch (e) {
       el('ap302_backupStatus').textContent = '⚠ Não foi possível ler este arquivo — verifique se é uma cópia .json gerada por este painel.';
     }
@@ -2032,32 +2073,18 @@ el('ap302_backupFileInput').addEventListener('change', function() {
   this.value = '';
 });
 
-// ---------- Sync com Supabase ----------
+// ---------- Persistência compartilhada (Supabase, silenciosa) + cache local ----------
+// Mais de uma pessoa usa o app, então tudo que é editado precisa ficar salvo num lugar
+// só que todo mundo lê — não apenas no navegador de quem editou. localStorage continua
+// existindo como cache instantâneo (a tela nunca fica esperando a rede) e como fallback
+// se a internet cair, mas quem manda é o banco.
 const SUPABASE_URL = 'https://eujbnljckzgbsxqqbbqq.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_4MrtbLQIqAKqzHGqfHzLQw_x3ocEvw4';
 const SUPABASE_TABLE = 'leiloes_ap302_dados';
-const SUPABASE_ROW_ID = 'ap302';
 
-let ap302SaveTimer = null;
-let ap302Loaded = false;
-
-function ap302SetSyncStatus(text, kind) {
-  const box = el('ap302_syncStatus');
-  box.textContent = text;
-  box.style.color = kind === 'error' ? 'var(--critical)' : kind === 'saving' ? 'var(--warning)' : 'var(--good)';
-}
-
-function ap302ScheduleSave() {
-  if (!ap302Loaded) return;
-  ap302SetSyncStatus('☁️ Salvando…', 'saving');
-  clearTimeout(ap302SaveTimer);
-  ap302SaveTimer = setTimeout(ap302SaveToSupabase, 800);
-}
-
-async function ap302SaveToSupabase() {
+async function cloudSave(rowId, dataObj) {
   try {
-    const payload = ap302BuildBackup();
-    const res = await fetch(SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE, {
+    await fetch(SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_ANON_KEY,
@@ -2065,40 +2092,128 @@ async function ap302SaveToSupabase() {
         'Content-Type': 'application/json',
         'Prefer': 'resolution=merge-duplicates,return=minimal',
       },
-      body: JSON.stringify({ id: SUPABASE_ROW_ID, data: payload, updated_at: new Date().toISOString() }),
+      body: JSON.stringify({ id: rowId, data: dataObj, updated_at: new Date().toISOString() }),
     });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    ap302SetSyncStatus('☁️ Salvo — sincronizado com o banco de dados.', 'ok');
   } catch (e) {
-    ap302SetSyncStatus('⚠ Não consegui salvar no banco agora. Verifique a internet ou se a tabela "' + SUPABASE_TABLE + '" já foi criada — use "Baixar cópia" como reserva.', 'error');
+    // sem internet agora — o localStorage já tem a versão mais recente deste navegador;
+    // sincroniza sozinho na próxima edição/recarregamento com internet.
   }
 }
 
-async function ap302LoadFromSupabase() {
+async function cloudLoad(rowId) {
   try {
-    const res = await fetch(SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE + '?id=eq.' + SUPABASE_ROW_ID + '&select=data', {
-      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
-    });
+    const res = await fetch(SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE + '?id=eq.' + rowId + '&select=data');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const rows = await res.json();
-    if (rows.length && rows[0].data) {
-      ap302ApplyBackupData(rows[0].data);
-      ap302SetSyncStatus('☁️ Dados carregados do banco.', 'ok');
-    } else {
-      ap302SetSyncStatus('☁️ Conectado — nenhum dado salvo ainda.', 'ok');
-    }
+    return (rows.length && rows[0].data) ? rows[0].data : null;
   } catch (e) {
-    ap302SetSyncStatus('⚠ Não consegui conectar ao banco (a tabela "' + SUPABASE_TABLE + '" ainda não existe no Supabase?). Os dados ficam só nesta sessão até lá.', 'error');
-  } finally {
-    ap302Loaded = true;
+    return null;
   }
+}
+
+// ---------- AP302 ----------
+const AP302_STORAGE_KEY = 'leiloes_ap302_dados_v1';
+let ap302SaveTimer = null;
+let ap302Ready = false;
+let ap302PendingSave = false;
+
+function ap302ScheduleSave() {
+  if (!ap302Ready) { ap302PendingSave = true; return; }
+  clearTimeout(ap302SaveTimer);
+  ap302SaveTimer = setTimeout(ap302DoSave, 500);
+}
+function ap302DoSave() {
+  const payload = ap302BuildBackup();
+  try { localStorage.setItem(AP302_STORAGE_KEY, JSON.stringify(payload)); } catch (e) {}
+  cloudSave('ap302', payload);
+}
+function ap302LoadFromLocal() {
+  try {
+    const raw = localStorage.getItem(AP302_STORAGE_KEY);
+    if (raw) ap302ApplyBackupData(JSON.parse(raw));
+  } catch (e) {
+    // ignora dado corrompido/local indisponível — segue com os valores padrão
+  }
+}
+async function ap302LoadFromCloud() {
+  const data = await cloudLoad('ap302');
+  if (data) {
+    ap302ApplyBackupData(data);
+    try { localStorage.setItem(AP302_STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+  ap302Ready = true;
+  if (ap302PendingSave) { ap302PendingSave = false; ap302ScheduleSave(); }
+}
+
+// ---------- Imóvel (calculadora por imóvel) + Lista (status) ----------
+const APPSTATE_STORAGE_KEY = 'leiloes_app_estado_v1';
+const MUTABLE_PROP_FIELDS = ['link','condoMes','iptuAtraso','condoDivida','P_default','V_default',
+  'entradaPct','reforma','prazoMeses','taxaAA','prazoFin','seguroPct','comissaoPct','itbiPct',
+  'cartorio','outros','corretagemPct','irPct'];
+let appStateSaveTimer = null;
+
+function buildAppStateSnapshot() {
+  const propOverrides = {};
+  Object.keys(PROPS).forEach(key => {
+    if (key === 'gran302') return; // AP302 já tem seu próprio registro
+    const p = PROPS[key], o = {};
+    MUTABLE_PROP_FIELDS.forEach(f => { if (p[f] !== undefined) o[f] = p[f]; });
+    propOverrides[key] = o;
+  });
+  return { propOverrides, propStatus };
+}
+function applyAppStateSnapshot(data) {
+  if (!data) return;
+  if (data.propOverrides) {
+    Object.keys(data.propOverrides).forEach(key => {
+      if (PROPS[key]) Object.assign(PROPS[key], data.propOverrides[key]);
+    });
+  }
+  if (data.propStatus) Object.assign(propStatus, data.propStatus);
+}
+// Trava para não deixar a tela mandar pro banco os valores padrão (ainda não conciliados
+// com a nuvem) por cima de uma edição feita por outra pessoa em outro navegador — só
+// grava de verdade depois que a primeira leitura da nuvem terminar (com ou sem dado).
+let appStateReady = false;
+let appStatePendingSave = false;
+
+function scheduleAppStateSave() {
+  if (!appStateReady) { appStatePendingSave = true; return; }
+  clearTimeout(appStateSaveTimer);
+  appStateSaveTimer = setTimeout(appStateDoSave, 500);
+}
+function appStateDoSave() {
+  const snapshot = buildAppStateSnapshot();
+  try { localStorage.setItem(APPSTATE_STORAGE_KEY, JSON.stringify(snapshot)); } catch (e) {}
+  cloudSave('app_state', snapshot);
+}
+function appStateLoadFromLocal() {
+  try {
+    const raw = localStorage.getItem(APPSTATE_STORAGE_KEY);
+    if (raw) applyAppStateSnapshot(JSON.parse(raw));
+  } catch (e) {}
+}
+async function appStateLoadFromCloud() {
+  const data = await cloudLoad('app_state');
+  if (data) {
+    applyAppStateSnapshot(data);
+    try { localStorage.setItem(APPSTATE_STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+    // reflete na tela caso a versão do banco seja mais nova que a que já foi renderizada
+    renderProperty(propSelect.value);
+    renderLista();
+  }
+  appStateReady = true;
+  if (appStatePendingSave) { appStatePendingSave = false; scheduleAppStateSave(); }
 }
 
 // ---------- init ----------
+appStateLoadFromLocal();
 renderProperty('gran');
 renderLista();
+ap302LoadFromLocal();
 renderAp302();
-ap302LoadFromSupabase();
+appStateLoadFromCloud();
+ap302LoadFromCloud();
 </script>
 </body>
 </html>
