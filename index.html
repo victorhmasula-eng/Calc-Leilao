@@ -596,6 +596,11 @@
           <input type="text" inputmode="decimal" class="numfield" id="ap302_calcVenda">
         </div>
 
+        <details class="more">
+          <summary>📊 Detalhamento da venda</summary>
+          <div id="ap302-venda-breakdown" style="margin-top:12px;"></div>
+        </details>
+
         <div class="hero">
           <div class="hero-label">Lucro estimado</div>
           <div class="hero-value" id="ap302_lucroValue">R$ 0</div>
@@ -1532,7 +1537,10 @@ function computeForProperty(p, P, V, meses, entradaPctInput) {
   const lucro = liquidoVenda - caixaProprioTotal;
   const retorno = caixaProprioTotal > 0 ? (lucro / caixaProprioTotal) * 100 : 0;
   const retornoAno = caixaProprioTotal > 0 ? (Math.pow(1 + lucro / caixaProprioTotal, 12 / meses) - 1) * 100 : 0;
-  return { lucro, retorno, retornoAno, caixaProprioTotal };
+  return {
+    lucro, retorno, retornoAno, caixaProprioTotal,
+    V, corretagem, saldoDevedor, ir, liquidoVenda,
+  };
 }
 
 // ---------- lista ----------
@@ -1849,6 +1857,7 @@ function ap302Compute() {
   el('ap302_lucroValue').textContent = fmtBRL(r.lucro);
   el('ap302_lucroValue').className = 'hero-value ' + (r.lucro >= 0 ? '' : 'ink-critical');
 
+  renderAp302VendaBreakdown(r);
   renderAp302Predicted();
 
   // guarda prazo/venda/entrada para não resetar ao trocar de aba, recarregar a página,
@@ -1858,6 +1867,30 @@ function ap302Compute() {
   p.calcEntradaPct = entradaPct;
   p.calcAvista = ap302Avista;
   ap302ScheduleSave();
+}
+
+// Mostra de onde vem e pra onde vai o dinheiro na hora da venda: quanto já foi gasto até
+// aqui (caixa próprio), o preço de venda, o que é descontado na venda (corretagem, saldo
+// devedor se houver financiamento, IR) e o que sobra de lucro no final.
+function renderAp302VendaBreakdown(r) {
+  const box = el('ap302-venda-breakdown');
+  if (!box) return;
+  const rows = [
+    { label: 'Caixa próprio total (gasto até aqui)', valor: r.caixaProprioTotal, destaque: true },
+    { label: 'Preço de venda', valor: r.V },
+    { label: '(-) Corretagem na venda', valor: -r.corretagem },
+    r.saldoDevedor > 0 ? { label: '(-) Quitação de saldo devedor', valor: -r.saldoDevedor } : null,
+    { label: '(-) IR sobre ganho de capital', valor: -r.ir },
+    { label: 'Líquido da venda', valor: r.liquidoVenda, destaque: true },
+    { label: 'LUCRO', valor: r.lucro, destaque: true, lucro: true },
+  ].filter(Boolean);
+  box.innerHTML = rows.map(row => {
+    const cor = row.lucro ? (row.valor >= 0 ? 'var(--good)' : 'var(--critical)') : (row.destaque ? 'var(--text-primary)' : 'var(--text-secondary)');
+    return '<div class="gasto-line" style="' + (row.destaque ? 'background:var(--surface-1);' : '') + '">' +
+        '<div class="gasto-line-main"><span class="gasto-line-desc" style="color:' + cor + ';font-weight:' + (row.destaque ? '800' : '600') + ';">' + row.label + '</span></div>' +
+        '<div class="gasto-line-actions"><span class="gasto-line-valor" style="color:' + cor + ';">' + fmtBRL(row.valor) + '</span></div>' +
+      '</div>';
+  }).join('');
 }
 
 // ---------- Lançamentos financeiros (arremataçao, condomínio, ITBI, cartório, dívidas) ----------
