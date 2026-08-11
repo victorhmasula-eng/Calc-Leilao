@@ -325,11 +325,6 @@
   .gasto-line-btns { display: flex; gap: 6px; }
   .gasto-line-btns .doc-btn { padding: 6px 8px; font-size: 12px; }
 
-  .backup-card .doc-note { margin-top: 10px; }
-  .backup-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-  .backup-btns .doc-upload-btn { flex: 1; justify-content: center; }
-  .backup-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: 1; background: var(--surface-2); color: var(--accent); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
-
   .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .contact-grid label { font-size: 11.5px; color: var(--text-muted); display: block; margin-bottom: 4px; }
   .contact-grid input { width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 9px; font-size: 13px; color: var(--text-primary); font-family: inherit; box-sizing: border-box; }
@@ -534,32 +529,6 @@
       <h1 class="pagetitle">🔑 AP302 — Gran Acrópolis IV</h1>
       <div class="pagesub">Imóvel arrematado — dados, contatos e documentos deste apartamento específico.</div>
 
-      <div class="card backup-card">
-        <h2 class="sec">💾 Backup dos dados</h2>
-        <p class="doc-note" style="margin-top:0;">Os dados desta aba salvam automaticamente neste navegador. Use os botões abaixo para guardar uma cópia (.json) ou levar os dados para outro dispositivo/navegador.</p>
-        <div class="backup-btns">
-          <button type="button" class="doc-upload-btn" id="ap302_backupSaveBtn">⬇️ Baixar cópia (.json)</button>
-          <button type="button" class="backup-btn-outline" id="ap302_backupLoadBtn">⬆️ Restaurar cópia</button>
-        </div>
-        <input type="file" id="ap302_backupFileInput" accept="application/json" style="display:none;">
-        <p class="doc-note" id="ap302_backupStatus"></p>
-      </div>
-
-      <div class="card">
-        <h2 class="sec">Dados do arremate</h2>
-        <div class="contact-grid">
-          <div>
-            <label>Valor de arremataçao (R$)</label>
-            <input type="text" inputmode="decimal" class="numfield" id="ap302_valorArremate">
-          </div>
-          <div>
-            <label>Condomínio mensal (R$)</label>
-            <input type="text" inputmode="decimal" class="numfield" id="ap302_condoMes">
-          </div>
-        </div>
-        <p class="doc-note" id="ap302_arremateNote"></p>
-      </div>
-
       <div class="card">
         <h2 class="sec">Endereço e localização</h2>
         <table class="kv" id="ap302-endereco-table"></table>
@@ -610,15 +579,6 @@
         </div>
         <div class="field">
           <div class="field-label"><span>Lançamentos financeiros</span></div>
-          <div class="gasto-line">
-            <div class="gasto-line-main">
-              <span class="gasto-line-desc">Valor de arremataçao</span>
-              <span class="gasto-line-meta"><span class="gasto-line-pill">🔒 Fixo</span></span>
-            </div>
-            <div class="gasto-line-actions">
-              <span class="gasto-line-valor" id="ap302_calcPrecoLocked">R$ 0,00</span>
-            </div>
-          </div>
           <div id="ap302-predicted-list"></div>
           <div id="ap302-gastos-list"></div>
           <div class="doc-empty" id="ap302-gastos-empty">Nenhum gasto adicionado ainda.</div>
@@ -1638,12 +1598,6 @@ function buildWazeUrl(p) {
 function renderAp302() {
   const p = PROPS.gran302;
 
-  el('ap302_valorArremate').value = p.arremate.valor != null ? fmtMoneyInput(p.arremate.valor) : '';
-  setMoneyValue(el('ap302_condoMes'), p.condoMes);
-  el('ap302_arremateNote').textContent = p.arremate.valor != null
-    ? 'Valor de arremataçao registrado. Edite acima se precisar corrigir.'
-    : '⚠ Valor de arremataçao ainda não informado — preencha acima para a calculadora refletir o custo real.';
-
   el('ap302-endereco-table').innerHTML =
     '<tr><td>Endereço</td><td>' + p.endereco + '</td></tr>';
   el('ap302_mapsLink').href = buildMapsUrl(p);
@@ -1687,7 +1641,6 @@ function renderAp302() {
   el('ap302_corretorNome').value = p.corretor.nome || '';
   el('ap302_corretorTel').value = p.corretor.telefone || '';
 
-  el('ap302_calcPrecoLocked').textContent = fmtBRL(p.arremate.valor != null ? p.arremate.valor : p.P_default);
   setMoneyValue(el('ap302_calcVenda'), p.calcVenda != null ? p.calcVenda : p.V_default);
   el('ap302_calcPrazo').value = p.calcPrazo || 6;
   el('ap302_prazoLabel').textContent = (p.calcPrazo || 6) + ((p.calcPrazo || 6) === 1 ? ' mês' : ' meses');
@@ -1906,53 +1859,71 @@ function ap302Compute() {
   ap302ScheduleSave();
 }
 
-// ---------- Gastos previstos (ITBI, cartório, dívidas, condomínio corrente) ----------
-// Esses custos já entram no cálculo de "caixa próprio" mesmo sem o usuário digitar nada
-// (vêm de estimativas/dados coletados). Antes ficavam escondidos dentro do total; agora
-// aparecem como linhas editáveis/excluíveis, iguais aos gastos manuais (ex: Bidmap), mas
-// marcadas como "Pendente" até serem revisadas — sem duplicar o valor no cálculo, porque
-// eles continuam sendo os MESMOS campos (p.cartorio, p.condoDivida etc.) já usados na
-// fórmula acima, só que agora com uma interface pra editar/zerar.
+// ---------- Lançamentos financeiros (arremataçao, condomínio, ITBI, cartório, dívidas) ----------
+// Todos esses valores já entravam no cálculo de "caixa próprio" mesmo sem aparecer em
+// lugar nenhum (vêm de estimativas/dados coletados). Agora aparecem como linhas
+// editáveis/excluíveis com status Pendente/Confirmado, iguais aos gastos manuais (ex:
+// Bidmap) — sem duplicar valor no cálculo, porque continuam sendo os MESMOS campos
+// (p.arremate.valor, p.cartorio, p.condoDivida etc.) já usados na fórmula, só que agora
+// com uma interface pra editar/confirmar/zerar.
 let ap302PredictedEditing = new Set();
+
+function ap302DefaultConfirmed() {
+  return { arremate: false, condoMensal: false, cartorio: false, condoDivida: false, iptuAtraso: false, itbi: false };
+}
 
 function ap302PredictedList() {
   const p = PROPS.gran302;
+  if (!p.calcConfirmed) p.calcConfirmed = ap302DefaultConfirmed();
   const P = p.arremate.valor != null ? p.arremate.valor : p.P_default;
-  const meses = parseInt(el('ap302_calcPrazo').value) || 1;
+  const c = p.calcConfirmed;
   return [
-    { key: 'cartorio', label: 'Cartório/registro', valor: p.cartorio || 0 },
-    { key: 'condoDivida', label: 'Dívida de condomínio assumida', valor: p.condoDivida || 0 },
-    { key: 'iptuAtraso', label: 'IPTU/tributos em atraso', valor: p.iptuAtraso || 0 },
-    { key: 'condoCorrente', label: 'Condomínio durante o prazo (' + meses + (meses === 1 ? ' mês' : ' meses') + ')', valor: (p.condoMes || 0) * meses },
-    { key: 'itbi', label: 'ITBI', valor: P * ((p.itbiPct || 0) / 100) },
+    { key: 'arremate', label: 'Valor de arremataçao', valor: P, confirmado: !!c.arremate },
+    { key: 'condoMensal', label: 'Condomínio mensal', valor: p.condoMes || 0, confirmado: !!c.condoMensal },
+    { key: 'cartorio', label: 'Cartório/registro', valor: p.cartorio || 0, confirmado: !!c.cartorio },
+    { key: 'condoDivida', label: 'Dívida de condomínio assumida', valor: p.condoDivida || 0, confirmado: !!c.condoDivida },
+    { key: 'iptuAtraso', label: 'IPTU/tributos em atraso', valor: p.iptuAtraso || 0, confirmado: !!c.iptuAtraso },
+    { key: 'itbi', label: 'ITBI', valor: P * ((p.itbiPct || 0) / 100), confirmado: !!c.itbi },
   ];
 }
 
 function ap302PredictedSetValue(key, novoValor) {
   const p = PROPS.gran302;
   const P = p.arremate.valor != null ? p.arremate.valor : p.P_default;
-  const meses = parseInt(el('ap302_calcPrazo').value) || 1;
-  if (key === 'cartorio') p.cartorio = novoValor;
+  if (key === 'arremate') p.arremate.valor = novoValor;
+  else if (key === 'condoMensal') {
+    p.condoMes = novoValor;
+    if (propSelect.value === 'gran302') { setMoneyValue(el('condoMesInput'), novoValor); compute(); }
+  }
+  else if (key === 'cartorio') p.cartorio = novoValor;
   else if (key === 'condoDivida') p.condoDivida = novoValor;
   else if (key === 'iptuAtraso') p.iptuAtraso = novoValor;
-  else if (key === 'condoCorrente') p.condoMes = meses > 0 ? novoValor / meses : novoValor;
   else if (key === 'itbi') p.itbiPct = P > 0 ? (novoValor / P * 100) : 0;
+}
+
+function ap302PredictedSetConfirmed(key, confirmado) {
+  const p = PROPS.gran302;
+  if (!p.calcConfirmed) p.calcConfirmed = ap302DefaultConfirmed();
+  p.calcConfirmed[key] = confirmado;
 }
 
 function ap302PredictedLineHtml(item, editing) {
   if (editing) {
-    return '<div class="gasto-line">' +
-        '<div class="gasto-line-main"><span class="gasto-line-desc">' + item.label + '</span></div>' +
-        '<div class="gasto-line-actions">' +
-          '<input type="text" inputmode="decimal" class="numfield" data-predicted-key="' + item.key + '" value="' + fmtMoneyInput(item.valor) + '" style="width:110px;text-align:right;">' +
-          '<div class="gasto-line-btns"><button type="button" class="doc-btn" data-predicted-save="' + item.key + '">💾</button></div>' +
-        '</div>' +
+    const btns = item.confirmado
+      ? '<button type="button" class="doc-btn" data-predicted-save="' + item.key + '">💾 Salvar</button>' +
+        '<button type="button" class="doc-btn" data-predicted-save-pending="' + item.key + '">↩ Pendente</button>'
+      : '<button type="button" class="gasto-confirm-btn" style="width:auto;margin:0;padding:8px 12px;" data-predicted-save-confirm="' + item.key + '">✓ Confirmar</button>';
+    return '<div class="gasto-row">' +
+        '<div class="gasto-row-top"><span class="gasto-index">' + item.label + '</span>' +
+          '<span class="gasto-confirm-badge ' + (item.confirmado ? 'done">✓ Confirmado' : 'pending">⏳ Pendente') + '</span></div>' +
+        '<div class="gasto-field"><label>Valor (R$)</label><input type="text" inputmode="decimal" class="numfield" data-predicted-key="' + item.key + '" value="' + fmtMoneyInput(item.valor) + '"></div>' +
+        '<div style="display:flex;gap:8px;margin-top:10px;">' + btns + '</div>' +
       '</div>';
   }
   return '<div class="gasto-line">' +
       '<div class="gasto-line-main">' +
         '<span class="gasto-line-desc">' + item.label + '</span>' +
-        '<span class="gasto-line-meta"><span class="gasto-confirm-badge pending">⏳ Pendente</span></span>' +
+        '<span class="gasto-line-meta"><span class="gasto-confirm-badge ' + (item.confirmado ? 'done">✓ Confirmado' : 'pending">⏳ Pendente') + '</span></span>' +
       '</div>' +
       '<div class="gasto-line-actions">' +
         '<span class="gasto-line-valor">' + fmtBRL(item.valor) + '</span>' +
@@ -1967,7 +1938,7 @@ function ap302PredictedLineHtml(item, editing) {
 function renderAp302Predicted() {
   const list = el('ap302-predicted-list');
   if (!list) return;
-  const items = ap302PredictedList().filter(it => it.valor > 0 || ap302PredictedEditing.has(it.key));
+  const items = ap302PredictedList().filter(it => it.key === 'arremate' || it.valor > 0 || ap302PredictedEditing.has(it.key));
   list.innerHTML = items.map(it => ap302PredictedLineHtml(it, ap302PredictedEditing.has(it.key))).join('');
 
   list.querySelectorAll('[data-predicted-edit]').forEach(btn => {
@@ -1978,45 +1949,36 @@ function renderAp302Predicted() {
   });
   list.querySelectorAll('[data-predicted-del]').forEach(btn => {
     btn.addEventListener('click', function() {
-      ap302PredictedSetValue(this.dataset.predictedDel, 0);
-      ap302PredictedEditing.delete(this.dataset.predictedDel);
-      renderAp302Predicted();
-      ap302Compute();
-      ap302ScheduleSave();
-    });
-  });
-  list.querySelectorAll('[data-predicted-save]').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const key = this.dataset.predictedSave;
-      const input = list.querySelector('[data-predicted-key="' + key + '"]');
-      ap302PredictedSetValue(key, getMoneyValue(input));
+      const key = this.dataset.predictedDel;
+      ap302PredictedSetValue(key, key === 'arremate' ? null : 0);
+      ap302PredictedSetConfirmed(key, false);
       ap302PredictedEditing.delete(key);
       renderAp302Predicted();
       ap302Compute();
       ap302ScheduleSave();
     });
   });
+  function ap302PredictedSave(key, confirmado) {
+    const input = list.querySelector('[data-predicted-key="' + key + '"]');
+    ap302PredictedSetValue(key, getMoneyValue(input));
+    ap302PredictedSetConfirmed(key, confirmado);
+    ap302PredictedEditing.delete(key);
+    renderAp302Predicted();
+    ap302Compute();
+    ap302ScheduleSave();
+  }
+  list.querySelectorAll('[data-predicted-save]').forEach(btn => {
+    btn.addEventListener('click', function() { ap302PredictedSave(this.dataset.predictedSave, true); });
+  });
+  list.querySelectorAll('[data-predicted-save-confirm]').forEach(btn => {
+    btn.addEventListener('click', function() { ap302PredictedSave(this.dataset.predictedSaveConfirm, true); });
+  });
+  list.querySelectorAll('[data-predicted-save-pending]').forEach(btn => {
+    btn.addEventListener('click', function() { ap302PredictedSave(this.dataset.predictedSavePending, false); });
+  });
   list.querySelectorAll('[data-predicted-key]').forEach(inp => initMoneyField(inp));
 }
 
-el('ap302_valorArremate').addEventListener('input', function() {
-  const v = this.value.trim() === '' ? NaN : getMoneyValue(this);
-  PROPS.gran302.arremate.valor = isNaN(v) ? null : v;
-  el('ap302_arremateNote').textContent = PROPS.gran302.arremate.valor != null
-    ? 'Valor de arremataçao registrado. Edite acima se precisar corrigir.'
-    : '⚠ Valor de arremataçao ainda não informado — preencha acima para a calculadora refletir o custo real.';
-  el('ap302_calcPrecoLocked').textContent = fmtBRL(PROPS.gran302.arremate.valor != null ? PROPS.gran302.arremate.valor : PROPS.gran302.P_default);
-  ap302Compute();
-  ap302ScheduleSave();
-});
-initMoneyField(el('ap302_valorArremate'));
-el('ap302_condoMes').addEventListener('input', function() {
-  const v = getMoneyValue(this);
-  PROPS.gran302.condoMes = v;
-  if (propSelect.value === 'gran302') { setMoneyValue(el('condoMesInput'), v); compute(); }
-  ap302ScheduleSave();
-});
-initMoneyField(el('ap302_condoMes'));
 el('ap302_sindicoNome').addEventListener('input', function() { PROPS.gran302.sindico.nome = this.value.trim() || null; ap302ScheduleSave(); });
 el('ap302_sindicoTel').addEventListener('input', function() { PROPS.gran302.sindico.telefone = this.value.trim() || null; ap302ScheduleSave(); });
 el('ap302_portariaTel').addEventListener('input', function() { PROPS.gran302.portaria.telefone = this.value.trim() || null; ap302ScheduleSave(); });
@@ -2104,12 +2066,13 @@ function ap302BuildBackup() {
     calcPrazo: p.calcPrazo,
     calcEntradaPct: p.calcEntradaPct,
     calcAvista: p.calcAvista,
+    calcConfirmed: p.calcConfirmed,
   };
 }
 
 function ap302ApplyBackupData(data) {
   const p = PROPS.gran302;
-  if (data.arremateValor != null) p.arremate.valor = data.arremateValor;
+  if ('arremateValor' in data) p.arremate.valor = data.arremateValor;
   if (data.condoMes != null) p.condoMes = data.condoMes;
   if (data.iptuAtraso != null) p.iptuAtraso = data.iptuAtraso;
   if (data.condoDivida != null) p.condoDivida = data.condoDivida;
@@ -2125,46 +2088,11 @@ function ap302ApplyBackupData(data) {
   if (data.calcPrazo != null) p.calcPrazo = data.calcPrazo;
   if (data.calcEntradaPct != null) p.calcEntradaPct = data.calcEntradaPct;
   if (data.calcAvista != null) { p.calcAvista = data.calcAvista; ap302Avista = data.calcAvista; }
+  if (data.calcConfirmed) p.calcConfirmed = Object.assign(ap302DefaultConfirmed(), data.calcConfirmed);
   if (data.docIdSeq) ap302DocIdSeq = data.docIdSeq;
   renderAp302();
   if (propSelect.value === 'gran302') compute();
 }
-
-el('ap302_backupSaveBtn').addEventListener('click', function() {
-  const data = ap302BuildBackup();
-  const json = JSON.stringify(data, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'ap302-backup.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  el('ap302_backupStatus').textContent = '✓ Cópia baixada.';
-});
-
-el('ap302_backupLoadBtn').addEventListener('click', function() {
-  el('ap302_backupFileInput').click();
-});
-el('ap302_backupFileInput').addEventListener('change', function() {
-  const file = this.files && this.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function() {
-    try {
-      const data = JSON.parse(reader.result);
-      ap302ApplyBackupData(data);
-      ap302ScheduleSave();
-      el('ap302_backupStatus').textContent = '✓ Cópia restaurada.';
-    } catch (e) {
-      el('ap302_backupStatus').textContent = '⚠ Não foi possível ler este arquivo — verifique se é uma cópia .json gerada por este painel.';
-    }
-  };
-  reader.readAsText(file);
-  this.value = '';
-});
 
 // ---------- Persistência compartilhada (Supabase, silenciosa) + cache local ----------
 // Mais de uma pessoa usa o app, então tudo que é editado precisa ficar salvo num lugar
