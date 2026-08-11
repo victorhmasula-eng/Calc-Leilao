@@ -619,6 +619,7 @@
               <span class="gasto-line-valor" id="ap302_calcPrecoLocked">R$ 0,00</span>
             </div>
           </div>
+          <div id="ap302-predicted-list"></div>
           <div id="ap302-gastos-list"></div>
           <div class="doc-empty" id="ap302-gastos-empty">Nenhum gasto adicionado ainda.</div>
           <button type="button" class="doc-upload-btn" id="ap302_gastoAddBtn" style="margin-top:8px;">➕ Adicionar gasto</button>
@@ -638,12 +639,6 @@
         <div class="hero">
           <div class="hero-label">Lucro estimado</div>
           <div class="hero-value" id="ap302_lucroValue">R$ 0</div>
-        </div>
-        <div class="stat-row" style="grid-template-columns:1fr;">
-          <div class="stat-tile">
-            <div class="stat-label">Caixa próprio total</div>
-            <div class="stat-value" id="ap302_caixaValue">R$ 0</div>
-          </div>
         </div>
       </div>
 
@@ -1533,7 +1528,7 @@ function syncCalcStateToProps(P, entradaPct, reforma, meses, V, taxaAA, prazoFin
   p.condoMes = condoMes; p.comissaoPct = parseFloat(comissaoPct) || 0; p.itbiPct = parseFloat(itbiPct) || 0;
   p.cartorio = cartorio; p.outros = outros; p.corretagemPct = parseFloat(corretagemPct) || 0;
   p.irPct = parseFloat(irPct) || 0;
-  scheduleAppStateSave();
+  key === 'gran302' ? ap302ScheduleSave() : scheduleAppStateSave();
 }
 
 // Reimplementação pura (sem ler o DOM) da fórmula de compute(), usada pela calculadora da aba AP302.
@@ -1899,7 +1894,8 @@ function ap302Compute() {
 
   el('ap302_lucroValue').textContent = fmtBRL(r.lucro);
   el('ap302_lucroValue').className = 'hero-value ' + (r.lucro >= 0 ? '' : 'ink-critical');
-  el('ap302_caixaValue').textContent = fmtBRL(r.caixaProprioTotal);
+
+  renderAp302Predicted();
 
   // guarda prazo/venda/entrada para não resetar ao trocar de aba, recarregar a página,
   // ou quando outra pessoa abrir o app depois
@@ -1908,6 +1904,99 @@ function ap302Compute() {
   p.calcEntradaPct = entradaPct;
   p.calcAvista = ap302Avista;
   ap302ScheduleSave();
+}
+
+// ---------- Gastos previstos (ITBI, cartório, dívidas, condomínio corrente) ----------
+// Esses custos já entram no cálculo de "caixa próprio" mesmo sem o usuário digitar nada
+// (vêm de estimativas/dados coletados). Antes ficavam escondidos dentro do total; agora
+// aparecem como linhas editáveis/excluíveis, iguais aos gastos manuais (ex: Bidmap), mas
+// marcadas como "Pendente" até serem revisadas — sem duplicar o valor no cálculo, porque
+// eles continuam sendo os MESMOS campos (p.cartorio, p.condoDivida etc.) já usados na
+// fórmula acima, só que agora com uma interface pra editar/zerar.
+let ap302PredictedEditing = new Set();
+
+function ap302PredictedList() {
+  const p = PROPS.gran302;
+  const P = p.arremate.valor != null ? p.arremate.valor : p.P_default;
+  const meses = parseInt(el('ap302_calcPrazo').value) || 1;
+  return [
+    { key: 'cartorio', label: 'Cartório/registro', valor: p.cartorio || 0 },
+    { key: 'condoDivida', label: 'Dívida de condomínio assumida', valor: p.condoDivida || 0 },
+    { key: 'iptuAtraso', label: 'IPTU/tributos em atraso', valor: p.iptuAtraso || 0 },
+    { key: 'condoCorrente', label: 'Condomínio durante o prazo (' + meses + (meses === 1 ? ' mês' : ' meses') + ')', valor: (p.condoMes || 0) * meses },
+    { key: 'itbi', label: 'ITBI', valor: P * ((p.itbiPct || 0) / 100) },
+  ];
+}
+
+function ap302PredictedSetValue(key, novoValor) {
+  const p = PROPS.gran302;
+  const P = p.arremate.valor != null ? p.arremate.valor : p.P_default;
+  const meses = parseInt(el('ap302_calcPrazo').value) || 1;
+  if (key === 'cartorio') p.cartorio = novoValor;
+  else if (key === 'condoDivida') p.condoDivida = novoValor;
+  else if (key === 'iptuAtraso') p.iptuAtraso = novoValor;
+  else if (key === 'condoCorrente') p.condoMes = meses > 0 ? novoValor / meses : novoValor;
+  else if (key === 'itbi') p.itbiPct = P > 0 ? (novoValor / P * 100) : 0;
+}
+
+function ap302PredictedLineHtml(item, editing) {
+  if (editing) {
+    return '<div class="gasto-line">' +
+        '<div class="gasto-line-main"><span class="gasto-line-desc">' + item.label + '</span></div>' +
+        '<div class="gasto-line-actions">' +
+          '<input type="text" inputmode="decimal" class="numfield" data-predicted-key="' + item.key + '" value="' + fmtMoneyInput(item.valor) + '" style="width:110px;text-align:right;">' +
+          '<div class="gasto-line-btns"><button type="button" class="doc-btn" data-predicted-save="' + item.key + '">💾</button></div>' +
+        '</div>' +
+      '</div>';
+  }
+  return '<div class="gasto-line">' +
+      '<div class="gasto-line-main">' +
+        '<span class="gasto-line-desc">' + item.label + '</span>' +
+        '<span class="gasto-line-meta"><span class="gasto-confirm-badge pending">⏳ Pendente</span></span>' +
+      '</div>' +
+      '<div class="gasto-line-actions">' +
+        '<span class="gasto-line-valor">' + fmtBRL(item.valor) + '</span>' +
+        '<div class="gasto-line-btns">' +
+          '<button type="button" class="doc-btn" data-predicted-edit="' + item.key + '">✎</button>' +
+          '<button type="button" class="doc-btn danger" data-predicted-del="' + item.key + '">🗑</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderAp302Predicted() {
+  const list = el('ap302-predicted-list');
+  if (!list) return;
+  const items = ap302PredictedList().filter(it => it.valor > 0 || ap302PredictedEditing.has(it.key));
+  list.innerHTML = items.map(it => ap302PredictedLineHtml(it, ap302PredictedEditing.has(it.key))).join('');
+
+  list.querySelectorAll('[data-predicted-edit]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      ap302PredictedEditing.add(this.dataset.predictedEdit);
+      renderAp302Predicted();
+    });
+  });
+  list.querySelectorAll('[data-predicted-del]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      ap302PredictedSetValue(this.dataset.predictedDel, 0);
+      ap302PredictedEditing.delete(this.dataset.predictedDel);
+      renderAp302Predicted();
+      ap302Compute();
+      ap302ScheduleSave();
+    });
+  });
+  list.querySelectorAll('[data-predicted-save]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const key = this.dataset.predictedSave;
+      const input = list.querySelector('[data-predicted-key="' + key + '"]');
+      ap302PredictedSetValue(key, getMoneyValue(input));
+      ap302PredictedEditing.delete(key);
+      renderAp302Predicted();
+      ap302Compute();
+      ap302ScheduleSave();
+    });
+  });
+  list.querySelectorAll('[data-predicted-key]').forEach(inp => initMoneyField(inp));
 }
 
 el('ap302_valorArremate').addEventListener('input', function() {
@@ -2002,6 +2091,8 @@ function ap302BuildBackup() {
     condoMes: p.condoMes,
     iptuAtraso: p.iptuAtraso,
     condoDivida: p.condoDivida,
+    cartorio: p.cartorio,
+    itbiPct: p.itbiPct,
     sindico: p.sindico,
     portaria: p.portaria,
     corretor: p.corretor,
@@ -2022,6 +2113,8 @@ function ap302ApplyBackupData(data) {
   if (data.condoMes != null) p.condoMes = data.condoMes;
   if (data.iptuAtraso != null) p.iptuAtraso = data.iptuAtraso;
   if (data.condoDivida != null) p.condoDivida = data.condoDivida;
+  if (data.cartorio != null) p.cartorio = data.cartorio;
+  if (data.itbiPct != null) p.itbiPct = data.itbiPct;
   if (data.sindico) p.sindico = data.sindico;
   if (data.portaria) p.portaria = data.portaria;
   if (data.corretor) p.corretor = data.corretor;
