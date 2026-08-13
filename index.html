@@ -249,6 +249,8 @@
   .seg button { padding: 6px 16px; font-size: 12px; font-weight: 700; background: var(--surface-2); color: var(--text-muted); border: none; cursor: pointer; font-family: inherit; }
   .seg button.active { background: var(--accent); color: #fff; }
 
+  textarea.numfield { resize: vertical; min-height: 68px; font-family: inherit; line-height: 1.4; }
+
   .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
   .stat-tile { background: var(--surface-2); border: 1px solid var(--border); backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur)); border-radius: 14px; padding: 14px; }
   .stat-tile .stat-label { font-size: 11.5px; color: var(--text-muted); margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
@@ -547,6 +549,10 @@
       <div class="card">
         <h2 class="sec">Dívidas</h2>
         <table class="kv" id="ap302-dividas-table"></table>
+        <details class="more" id="ap302_intimDetails" style="margin-top:6px;">
+          <summary>Explicação da intimação</summary>
+          <p class="body" id="ap302_intimObs" style="margin-top:8px;"></p>
+        </details>
       </div>
 
       <div class="card">
@@ -979,6 +985,7 @@ const PROPS = {
     leilaoAnterior: "Não encontrado registro público específico desta unidade (Apto 302, Bloco 07) — datas, praças ou valores de leilões anteriores. O status \"Averbado\" no anúncio da Caixa indica tentativa(s) anterior(es) sem comprador, mas os detalhes precisam ser confirmados no cartório.",
     averbacaoNegativa: { status: true, nota: "Confirmado \"Averbado\" no campo de situação do próprio anúncio oficial da Caixa — formaliza que a dívida do mutuário anterior foi extinta e a propriedade consolidada em nome da Caixa; pode acrescentar burocracia/tempo à transferência." },
     riscosJuridicos: "Busca aberta (WebSearch) não encontrou processo judicial nominal ligado ao endereço nem confirmação da situação de ocupação (ocupado x desocupado). Recomenda-se certidão de distribuição cível formal (TJGO, comarca de Valparaíso de Goiás) e confirmação direta com a Caixa sobre ocupação antes de dar lance.",
+    intimacao: { tipo: 'edital', obs: "Matrícula (Av-12=104.473): a ex-proprietária não foi localizada — estava em \"local ignorado, incerto e inacessível\" — então a intimação foi feita por edital eletrônico (Editais Online — Diário do Registro de Imóveis Eletrônico), publicado em 21, 24 e 25/03/2025, com 15 dias de prazo para purgação da mora antes da consolidação da propriedade em nome da Caixa. É válido pela Lei 9.514/97, mas intimação por edital costuma ser mais suscetível a questionamento judicial do que a pessoal." },
     comparaveis: [
       ["Apto 201, mesmo condomínio — em leilão ativo 26/08/2026 (SpyLeilões)", "100,23 m²", "Aval. R$180.000 / mín. R$106.667", "https://spyleiloes.com.br/imoveis-leilao/go/valparaiso-de-goias/condominio/residencial-gran-acropolis-iv"],
       ["Rua 8, 2 quartos, mesmo bairro (VivaReal)", "46 m²", "R$ 56.571", "https://www.vivareal.com.br/imovel/apartamento-2-quartos-chacaras-e-mansoes-santa-maria-valparaiso-de-goias-com-garagem-46m2-venda-RS56571-id-2883423905/"],
@@ -1623,9 +1630,12 @@ function renderAp302() {
   el('ap302-comp-note').textContent = p.comparaveisNote || '';
   el('ap302-comp-note').style.display = p.comparaveisNote ? 'block' : 'none';
 
+  const intimTipo = p.intimacao && p.intimacao.tipo;
+  const intimLabel = intimTipo === 'pessoal' ? 'Pessoalmente' : (intimTipo === 'edital' ? 'Por edital' : '—');
   el('ap302-dividas-table').innerHTML =
     '<tr><td>IPTU em atraso (R$)</td><td><input type="text" inputmode="decimal" class="numfield" id="ap302_dividaIptu" style="width:140px;text-align:right;"></td></tr>' +
-    '<tr><td>Dívida de condomínio (R$)</td><td><input type="text" inputmode="decimal" class="numfield" id="ap302_dividaCondo" style="width:140px;text-align:right;"></td></tr>';
+    '<tr><td>Dívida de condomínio (R$)</td><td><input type="text" inputmode="decimal" class="numfield" id="ap302_dividaCondo" style="width:140px;text-align:right;"></td></tr>' +
+    '<tr><td>Intimação do antigo proprietário</td><td>' + intimLabel + '</td></tr>';
   setMoneyValue(el('ap302_dividaIptu'), p.iptuAtraso);
   setMoneyValue(el('ap302_dividaCondo'), p.condoDivida);
   initMoneyField(el('ap302_dividaIptu'));
@@ -1642,6 +1652,11 @@ function renderAp302() {
     ap302Compute();
     ap302ScheduleSave();
   };
+
+  if (!p.intimacao) p.intimacao = { tipo: null, obs: '' };
+  const intimObsBox = el('ap302_intimObs');
+  intimObsBox.textContent = p.intimacao.obs || 'Sem explicação registrada.';
+  el('ap302_intimDetails').style.display = (p.intimacao.tipo || (p.intimacao.obs && p.intimacao.obs.trim())) ? 'block' : 'none';
 
   el('ap302_sindicoNome').value = p.sindico.nome || '';
   el('ap302_sindicoTel').value = p.sindico.telefone || '';
@@ -2101,6 +2116,7 @@ function ap302BuildBackup() {
     calcEntradaPct: p.calcEntradaPct,
     calcAvista: p.calcAvista,
     calcConfirmed: p.calcConfirmed,
+    intimacao: p.intimacao,
   };
 }
 
@@ -2123,6 +2139,7 @@ function ap302ApplyBackupData(data) {
   if (data.calcEntradaPct != null) p.calcEntradaPct = data.calcEntradaPct;
   if (data.calcAvista != null) { p.calcAvista = data.calcAvista; ap302Avista = data.calcAvista; }
   if (data.calcConfirmed) p.calcConfirmed = Object.assign(ap302DefaultConfirmed(), data.calcConfirmed);
+  if (data.intimacao) p.intimacao = data.intimacao;
   if (data.docIdSeq) ap302DocIdSeq = data.docIdSeq;
   renderAp302();
   if (propSelect.value === 'gran302') compute();
