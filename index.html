@@ -1635,7 +1635,7 @@ function renderAp302() {
   el('ap302-dividas-table').innerHTML =
     '<tr><td>IPTU em atraso (R$)</td><td><input type="text" inputmode="decimal" class="numfield" id="ap302_dividaIptu" style="width:140px;text-align:right;"></td></tr>' +
     '<tr><td>Dívida de condomínio (R$)</td><td><input type="text" inputmode="decimal" class="numfield" id="ap302_dividaCondo" style="width:140px;text-align:right;"></td></tr>' +
-    '<tr><td>Intimação do antigo proprietário</td><td>' + intimLabel + '</td></tr>';
+    '<tr><td>Intimação do antigo proprietário</td><td><div class="numfield" style="width:140px;margin-left:auto;text-align:right;font-weight:700;">' + intimLabel + '</div></td></tr>';
   setMoneyValue(el('ap302_dividaIptu'), p.iptuAtraso);
   setMoneyValue(el('ap302_dividaCondo'), p.condoDivida);
   initMoneyField(el('ap302_dividaIptu'));
