@@ -385,6 +385,7 @@
         <div class="callout warn" id="prop-edit-hint" style="display:none;">⚠ Campos marcados "a confirmar" são editáveis — digite o valor real assim que souber e a calculadora abaixo recalcula automaticamente.</div>
         <table class="kv" id="prop-dividas-table"></table>
         <p class="body" id="prop-dividas-note" style="margin-top:8px;font-size:12px;"></p>
+        <div id="prop-intim-box" style="margin-top:6px;"></div>
       </div>
 
       <div class="card" id="prop-admin-card">
@@ -721,7 +722,7 @@ function showTab(id) {
 document.querySelectorAll('.navbtn').forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
 
 // ---------- property data ----------
-const PROP_ORDER = ['gran','ap102','gran302','colorado','loja','belo'];
+const PROP_ORDER = ['gran','ap102','gran302','colorado','loja','belo','blend'];
 const PROPS = {
   gran: {
     link: null,
@@ -1012,9 +1013,57 @@ const PROPS = {
     entradaPct: 100, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
     unconfirmed: ['condoMes'],
   },
+  blend: {
+    link: "https://venda-imoveis.caixa.gov.br/sistema/detalhe-imovel.asp?hdnimovel=8787708068026",
+    title: "AP102 - Cond. Res. Blend",
+    subtitle: "Rua 8, Apto. 102, Bloco N, Cond. Residencial Blend, Chácaras Santa Maria, Valparaíso de Goiás/GO · Matrícula 90.129 · Insc. 132533",
+    avaliacao: "R$ 121.000,00",
+    valorMinimo: "R$ 52.902,95 (56,28% deságio)",
+    condoMensal: "A CONFIRMAR — não encontrado publicamente (condomínio diferente do Gran Acrópolis IV, administradora ainda não identificada)",
+    modalidade: "Venda Online",
+    pagamento: "Recursos próprios, FGTS",
+    endereco: "Rua 8, s/n, Apto 102, Bl N, Ch 10, Qd 08, Chácaras Santa Maria, CEP 72871-517, Valparaíso de Goiás/GO",
+    ultimaVenda: "R$ 116.000,00 em 22/04/2020 (compradora Amanda de Matos de Santana, CPF 081.034.985-05: R$14.256 recursos próprios + R$8.944 desconto FGTS/União + R$92.800 financiamento CEF)",
+    mapsQuery: "Condomínio Residencial Blend, Rua 8, Chácaras Santa Maria, Valparaíso de Goiás, GO",
+    mapsNota: "Não encontramos coordenada exata do bloco (link abre busca por endereço/nome do condomínio) — confira se o pino bate com a foto do anúncio antes de usar. Atenção: bairro \"Chácaras Santa Maria\" é diferente de \"Chácaras e Mansões Santa Maria\" (onde fica o Gran Acrópolis IV) — não confundir os dois condomínios.",
+    administradora: { nome: null, telefone: null, email: null, cnpj: "37.150.187/0001-10 (CNPJ do próprio condomínio, não confirmado se é o da administradora)", confirmado: false },
+    iptuCheckLink: "https://nfe.valparaisodegoias.go.gov.br/IPTU_Index.aspx?Origem=Menu",
+    iptuInscricao: "132533",
+    iptuInscricaoNota: "Portal de IPTU permite buscar direto pela inscrição, mas exige resolver um captcha visual — não conseguimos automatizar isso (política de não contornar captchas). Peça pro Victor/Ciro consultarem manualmente em nfe.valparaisodegoias.go.gov.br com a inscrição 132533.",
+    edital: { aplicavel: false, texto: "Venda Online — não tem edital individual por imóvel, é regida pelo regulamento geral da Caixa.", link: "https://venda-imoveis.caixa.gov.br/editais/regras-VOL/comocomprar.pdf?v=01" },
+    matriculaInfo: { cartorio: "Cartório de Registro de Imóveis e Anexos de Valparaíso de Goiás/GO (CNS 02.615-3)", telefone: "(61) 3669-9600", nota: "Matrícula não tem link público de consulta — só via 2ª via paga direto no cartório." },
+    leiloeiro: { aplicavel: false, nota: "Venda Online — venda direta pela própria Caixa, sem leiloeiro." },
+    closing: { tipo: "sem_prazo", nota: "Venda Online — anúncio não mostra data de encerramento; geralmente fica disponível até ser vendido." },
+    historicoResumo: "Matrícula 90.129 lida na íntegra (via link \"Baixar matrícula do imóvel\" do próprio anúncio da Caixa). Prédio (Bloco N, térreo) construído pela incorporadora Edificar Construções e Incorporações Ltda (CNPJ 10.677.952/0001-06), habite-se em 11/11/2019. Unidade vendida originalmente em 22/04/2020 por R$116.000 a Amanda de Matos de Santana, com financiamento CEF de R$92.800 (360 meses, 5,50% a.a. nominal). Consolidação de propriedade em nome da CEF em 05/12/2024 por inadimplência da compradora.",
+    leilaoAnterior: "Anúncio oficial da Caixa mostra situação \"Averbado\", indicando leilão(ões) anterior(es) sem comprador — datas e valores não encontrados publicamente.",
+    averbacaoNegativa: { status: true, nota: "Confirmado \"Averbado\" no campo de situação do próprio anúncio oficial da Caixa." },
+    riscosJuridicos: "Matrícula não traz nenhuma certidão de dívida de IPTU anexada. Existe página do Jusbrasil listando processos judiciais em nome de \"Condomínio Residencial Blend\" (não foi possível abrir o conteúdo remotamente — bloqueado). Antes de dar lance, recomenda-se: (1) abrir essa lista de processos manualmente para ver se algum é cobrança de condomínio ligada a este apto ou à antiga proprietária Amanda de Matos de Santana, (2) certidão de distribuição cível nominal no TJGO, (3) confirmar situação de ocupação (não informada no anúncio nem na matrícula).",
+    comparaveis: [
+      ["Rua Recife, Parque Marajó, bairro vizinho (VivaReal)", "45 m²", "R$ 120.000 (condomínio R$250/mês, IPTU R$300)", "https://www.vivareal.com.br/venda/goias/valparaiso-de-goias/bairros/chacaras-santa-maria/apartamento_residencial/"],
+    ],
+    comparaveisNote: "Poucos comparáveis diretos no bairro \"Chácaras Santa Maria\" (achamos só 1 anúncio ativo). O único encontrado (45 m², R$120.000) é de bairro vizinho (Parque Marajó) mas tamanho/perfil parecido — sugere que a avaliação da Caixa (R$121.000 para 49,95 m²) está alinhada ao mercado local, bem acima do valor mínimo de venda (R$52.902,95).",
+    outrosPortais: [
+      ["ZapImóveis (busca no bairro)", "https://www.zapimoveis.com.br/venda/imoveis/go+valparaiso-de-goias++ch-sta-maria/"],
+      ["VivaReal (busca no bairro)", "https://www.vivareal.com.br/venda/goias/valparaiso-de-goias/bairros/chacaras-santa-maria/"],
+      ["DFimoveis (busca no bairro)", "https://www.dfimoveis.com.br/venda/df/valparaiso-de-goias/chacaras-santa-maria/imoveis"],
+    ],
+    dividasIPTU: "R$ 1.603,37 (confirmado — guia agrupada nº 5312623, válida até 03/09/2026)",
+    dividasCondominio: "A CONFIRMAR",
+    dividasOutros: null,
+    dividasNote: "IPTU confirmado — guia agrupada (D.A.M.) emitida em 24/08/2026 pela inscrição 132533, cobrindo dívidas de 2020, 2022 a 2026 (referências individuais: 1/2020 R$456,05; 1/2022 R$403,48; 1/2023 R$366,56; 1/2024 R$340,36; 1/2025 R$308,85; 1/2026 R$277,26). Sub total R$1.371,92 + multa R$31,14 + juros R$564,76 + correção R$184,74 − descontos R$549,19 = total a recolher R$1.603,37, válido até 03/09/2026. Dívida de condomínio ainda não confirmada — administradora não identificada (diferente da JK Exclusive, que administra os prédios do Gran Acrópolis IV). Teto de responsabilidade do comprador (10% da avaliação): R$12.100.",
+    intimacao: { tipo: 'edital', obs: "Matrícula (Av-11=90.129): a antiga proprietária/devedora Amanda de Matos de Santana não foi localizada — estava em \"local ignorado, incerto e inacessível\" — intimação feita por edital eletrônico (Editais Online — Diário do Registro de Imóveis Eletrônico), publicado em 5, 6 e 9/09/2024, com 15 dias de prazo para purgação da mora antes da consolidação da propriedade em nome da Caixa em 05/12/2024. Válido pela Lei 9.514/97, mas intimação por edital costuma ser mais suscetível a questionamento judicial do que a pessoal." },
+    fontes: "venda-imoveis.caixa.gov.br (anúncio, hdnimovel=8787708068026), matrícula 90.129 (PDF baixado direto pelo link \"Baixar matrícula do imóvel\" do próprio anúncio da Caixa), guia de IPTU agrupada nº 5312623 (nfe.valparaisodegoias.go.gov.br, inscrição 132533, emitida 24/08/2026, informada pelo usuário), vivareal.com.br (comparável e busca por bairro), cnpj.biz e diariocidade.com (CNPJ do condomínio 37.150.187/0001-10), jusbrasil.com.br (processos do condomínio, conteúdo não acessado). Dívida de condomínio ainda não verificada diretamente.",
+    P_min: 52902.95, P_max: 121000, P_default: 52902.95,
+    V_min: 60000, V_max: 150000, V_default: 118000,
+    reforma: 5000, condoDivida: 0, iptuAtraso: 1603.37, condoMes: 250,
+    comissaoPct: 0, itbiPct: 2, cartorio: 2000, outros: 0,
+    corretagemPct: 6, irPct: 15,
+    entradaPct: 20, taxaAA: 11.49, prazoFin: 360, seguroPct: 0.035,
+    unconfirmed: ['condoDivida', 'condoMes'],
+  },
 };
 
-let propStatus = { gran: 'analise', ap102: 'analise', gran302: 'comprado', colorado: 'descartado', loja: 'descartado', belo: 'descartado' };
+let propStatus = { gran: 'analise', ap102: 'analise', gran302: 'comprado', colorado: 'descartado', loja: 'descartado', belo: 'descartado', blend: 'analise' };
 const STATUS_LABEL = { analise: 'Em análise', descartado: 'Descartado', comprado: 'Comprado' };
 const STATUS_CLASS = { analise: 'badge-progress', descartado: 'badge-dead', comprado: 'badge-live' };
 const STATUS_DOT   = { analise: 'status-warning', descartado: 'status-muted', comprado: 'status-good' };
@@ -1129,6 +1178,21 @@ function renderProperty(key) {
   el('prop-dividas-note').style.display = p.dividasNote ? 'block' : 'none';
   el('prop-edit-hint').style.display = unc.length ? 'flex' : 'none';
 
+  const intimTipo = p.intimacao && p.intimacao.tipo;
+  const intimObs = (p.intimacao && p.intimacao.obs) || '';
+  el('prop-intim-box').innerHTML =
+    '<div class="field-label"><span>Intimação do antigo proprietário</span></div>' +
+    '<div class="seg intim-seg" style="margin-left:auto;">' +
+      '<button type="button" class="intim-btn' + (intimTipo === 'pessoal' ? ' active' : '') + '" data-key="' + key + '" data-tipo="pessoal">Pessoalmente</button>' +
+      '<button type="button" class="intim-btn' + (intimTipo === 'edital' ? ' active' : '') + '" data-key="' + key + '" data-tipo="edital">Por edital</button>' +
+    '</div>' +
+    '<details class="more"' + (intimObs.trim() ? ' open' : '') + '>' +
+      '<summary>Explicação</summary>' +
+      '<textarea class="numfield intim-obs" data-key="' + key + '" style="margin-top:8px;" placeholder="Breve explicação de como foi feita a intimação (ex: trecho da matrícula, datas do edital, etc.)"></textarea>' +
+    '</details>';
+  const intimObsEl = el('prop-intim-box').querySelector('.intim-obs');
+  if (intimObsEl) intimObsEl.value = intimObs;
+
   // ---- Administradora ----
   const adm = p.administradora || {};
   const admChip = '<span class="confirm-chip ' + (adm.confirmado ? 'yes">confirmado' : 'no">não confirmado') + '</span>';
@@ -1205,6 +1269,7 @@ function renderProperty(key) {
   loadPreset(key);
   bindEditableFields();
   bindLinkFields();
+  bindIntimFields();
 }
 
 // ---- Cronômetro regressivo de encerramento do lote ----
@@ -1265,6 +1330,29 @@ function bindEditableFields() {
         if (field === 'iptuAtraso') setMoneyValue(el('iptuAtrasoInput'), val);
         compute();
       }
+      key === 'gran302' ? ap302ScheduleSave() : scheduleAppStateSave();
+    });
+  });
+}
+
+function bindIntimFields() {
+  document.querySelectorAll('.intim-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.key;
+      const tipo = btn.dataset.tipo;
+      const p = PROPS[key];
+      if (!p.intimacao) p.intimacao = { tipo: null, obs: '' };
+      p.intimacao.tipo = p.intimacao.tipo === tipo ? null : tipo;
+      renderProperty(key);
+      key === 'gran302' ? ap302ScheduleSave() : scheduleAppStateSave();
+    });
+  });
+  document.querySelectorAll('.intim-obs').forEach(ta => {
+    ta.addEventListener('input', () => {
+      const key = ta.dataset.key;
+      const p = PROPS[key];
+      if (!p.intimacao) p.intimacao = { tipo: null, obs: '' };
+      p.intimacao.obs = ta.value;
       key === 'gran302' ? ap302ScheduleSave() : scheduleAppStateSave();
     });
   });
@@ -2221,7 +2309,7 @@ async function ap302LoadFromCloud() {
 const APPSTATE_STORAGE_KEY = 'leiloes_app_estado_v1';
 const MUTABLE_PROP_FIELDS = ['link','condoMes','iptuAtraso','condoDivida','P_default','V_default',
   'entradaPct','reforma','prazoMeses','taxaAA','prazoFin','seguroPct','comissaoPct','itbiPct',
-  'cartorio','outros','corretagemPct','irPct'];
+  'cartorio','outros','corretagemPct','irPct','intimacao'];
 let appStateSaveTimer = null;
 
 function buildAppStateSnapshot() {
