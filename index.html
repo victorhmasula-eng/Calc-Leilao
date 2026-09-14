@@ -2262,7 +2262,12 @@ async function cloudSave(rowId, dataObj) {
 
 async function cloudLoad(rowId) {
   try {
-    const res = await fetch(SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE + '?id=eq.' + rowId + '&select=data');
+    const res = await fetch(SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE + '?id=eq.' + rowId + '&select=data', {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      },
+    });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const rows = await res.json();
     return (rows.length && rows[0].data) ? rows[0].data : null;
