@@ -1900,10 +1900,11 @@ function renderAp302Gastos() {
       if (field === 'valor') {
         g.valor = getMoneyValue(this);
         renderAp302DebtSummary();
-        ap302Compute();
+        ap302Compute(); // já dispara o salvamento
       } else {
         g[field] = this.value;
         if (field === 'pagoPor') renderAp302DebtSummary();
+        ap302ScheduleSave(); // descrição/pagoPor precisam salvar também, não só o valor
       }
     });
     if (inp.dataset.gastoField === 'valor') initMoneyField(inp);
